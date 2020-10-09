@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="default_vat_in_config_01" model="vat.in.configuration">
+        <field name="name">Hàng hoá, dịch vụ dùng riêng cho SXKD chịu thuế GTGT và sử dụng cho các hoạt động cung cấp hàng hoá, dịch vụ không kê khai, nộp thuế GTGT đủ điều kiện khấu trừ thuế</field>
+        <field name="default_vat_in" eval="True"/>
+    </record>
+
+    <record id="default_vat_in_config_02" model="vat.in.configuration">
+        <field name="name">Hàng hoá, dịch vụ không đủ điều kiện khấu trừ</field>
+        <field name="default_vat_in" eval="False"/>
+    </record>
+
+    <record id="default_vat_in_config_03" model="vat.in.configuration">
+        <field name="name">Hàng hoá, dịch vụ dùng chung cho SXKD chịu thuế và không chịu thuế đủ điều kiện khấu trừ thuế</field>
+        <field name="default_vat_in" eval="False"/>
+    </record>
+
+    <record id="default_vat_in_config_04" model="vat.in.configuration">
+        <field name="name">Hàng hóa, dịch vụ dùng cho dự án đầu tư đủ điều kiện được khấu trừ thuế</field>
+        <field name="default_vat_in" eval="False"/>
+    </record>
+
+    <record id="default_vat_in_config_05" model="vat.in.configuration">
+        <field name="name">Hàng hóa, dịch vụ không phải tổng hợp trên tờ khai 01/GTGT</field>
+        <field name="default_vat_in" eval="False"/>
+    </record>
+</odoo>

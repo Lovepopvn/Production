@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="factory_constants_lp_machine_flow_tree_view" model="ir.ui.view">
+        <field name="name">factory.constants.lp.machine.flow.tree</field>
+        <field name="model">factory.constants.lp.machine.flow</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="factory_constants_lp_machine_flow_search_view" model="ir.ui.view">
+        <field name="name">factory.constants.lp.machine.flow.search</field>
+        <field name="model">factory.constants.lp.machine.flow</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_factory_constants_lp_machine_flow" model="ir.actions.act_window">
+        <field name="name">Factory Constants LP Machine Flow</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">factory.constants.lp.machine.flow</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="lp_mrp.factory_constants_lp_machine_flow_tree_view"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first Factory Constants LP Machine Flow
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_factory_constants_lp_machine_flow"
+        name="Factory Constants LP Machine Flow"
+        action="lp_mrp.action_factory_constants_lp_machine_flow"
+        parent="mrp.menu_mrp_configuration"
+        sequence="15"/>
+</odoo>

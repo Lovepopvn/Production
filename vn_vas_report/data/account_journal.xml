@@ -1,0 +1,7 @@
+<odoo>
+    <!-- <record id="record_account_journal_closing_balance" model="account.journal">
+        <field name="name">Closing Balance</field>
+        <field name="type">general</field>
+        <field name="code">CLS</field>
+    </record> -->
+</odoo>

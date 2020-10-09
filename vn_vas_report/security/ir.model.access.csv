@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_activity_invoice,account.activity.invoice,vn_vas_report.model_account_activity,account.group_account_invoice,1,0,0,0
+access_account_activity_advisor,account.activity.advisor,vn_vas_report.model_account_activity,account.group_account_manager,1,0,0,0
+access_account_activity_user,account.activity.user,vn_vas_report.model_account_activity,account.group_account_user,1,1,1,1
+access_account_activity_operation_invoice,account.activity.operation.invoice,vn_vas_report.model_account_activity_operation,account.group_account_invoice,1,0,0,0
+access_account_activity_operation_advisor,account.activity.operation.advisor,vn_vas_report.model_account_activity_operation,account.group_account_manager,1,0,0,0
+access_account_activity_operation_user,account.activity.operation.user,vn_vas_report.model_account_activity_operation,account.group_account_user,1,1,1,1

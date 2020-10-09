@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="action_account_vat_in_report" model="ir.actions.client">
+        <field name="name">Purchase VAT Report</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.vat.in.report'}" />
+    </record>
+
+    <menuitem id="menu_account_vat_in"
+              action="action_account_vat_in_report"
+              parent="l10n_vn.account_reports_vn_statements_menu"/>
+</odoo>

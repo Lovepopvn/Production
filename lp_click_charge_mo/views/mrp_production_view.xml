@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_click_charge_view" model="ir.ui.view">
+        <field name="name">mrp.production.form.click.charge</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="lp_mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_mo_id']" position="after">
+                <field name="average_click_charge_when_done" attrs="{'invisible': [('state', '!=', 'done')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

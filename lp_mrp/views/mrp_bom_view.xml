@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="mrp_bom_form_view" model="ir.ui.view">
+	    <field name="name">mrp.bom.form</field>
+	    <field name="model">mrp.bom</field>
+	    <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+	    <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="before">
+                <page string="Cutting Data" name="cutting_data">
+                    <field name="cutting_data_ids" widget="one2many">
+                        <tree string="Cutting Data" editable="bottom">
+                            <field name="code_id"/>
+                            <field name="product_id"/>
+                            <field name="paper_description"/>
+                            <field name="quantity"/>
+                            <field name="additional_material"/>
+                            <field name="codes_per_sheet"/>
+                            <field name="number_printed_side"/>
+                            <field name="machine_flow_id"/>
+                            <field name="extra_cut"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Packaging Data" name="packaging_data">
+                    <field name="packaging_data_ids" widget="one2many">
+                        <tree string="Packaging Data" editable="bottom">
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                            <field name="unit_package"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+		</field>
+	</record>
+
+    <record id="action_update_production_bom" model="ir.actions.server">
+		<field name="name">Update to production BOM</field>
+		<field name="model_id" ref="mrp.model_mrp_bom"/>
+		<field name="binding_model_id" ref="mrp.model_mrp_bom"/>
+		<field name="state">code</field>
+		<field name="code">action = records.update_production_bom()</field>
+	</record>
+</odoo>

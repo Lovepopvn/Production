@@ -1,0 +1,229 @@
+<odoo>
+
+
+    <!-- ORIGIN HEADER FORM account_report module -->
+    <template id="origin_header">
+        <div class="o_account_reports_header">
+                <h2><t t-esc="report.get('name')"></t></h2>
+
+                <t t-if="not options.get('multi_company')">
+                    <h4 class='text-muted no_print' t-esc="report.get('company_name')"/>
+                </t>
+                <t t-if="options.get('multi_company')">
+                    <h4 class="no_print">
+                    Companies:
+                    <t t-set="company_value" t-value="'All'"/>
+                    <t t-foreach="options['multi_company']" t-as="c">
+                        <t t-if="c.get('selected') == True">
+                            <t t-set="company_value" t-value="''"/>
+                            "<t t-esc="c.get('name')"/>"
+                        </t>
+                    </t>
+                    <t t-esc="company_value"/>
+                    </h4>
+                </t>
+                <t t-if="model._name == 'account.general.ledger'">
+                    <div class="o_account_reports_filter_input_wrapper no_print">
+                        <span class="searchIcon"><i class="fa fa-search" role="img" aria-label="Search" title="Search"></i></span>
+                        <input class="o_account_reports_filter_input" type="text" placeholder="Search account" />
+                    </div>
+                </t>
+                <t t-call="account_reports.filter_info_template"/>
+            </div>
+    </template>
+    <!-- END ORIGIN HEADER -->
+
+    <!-- CUSTOM HEADER -->
+    <template id="custom_header">
+        <style>
+            .pnl_header table tr td{
+                font-size:9pt !important;
+            }
+            .pnl_header table tr td table.left tr td{
+                text-align:left !important;
+            }
+            .pnl_header table tr td table.right{
+                text-align: right !important;
+            }
+        </style>
+        <div class="o_account_reports_header pnl_header" style="font-size:8pt;">
+            <table style="font-size:8pt;">
+                <tr>
+                    <td>
+                        <!-- Đơn vị báo cáo: .................
+                        Địa chỉ:…………..............
+                        BÁO CÁO KẾT QUẢ HOẠT ĐỘNG KINH DOANH
+                        Năm……… -->
+                        <table width="500px" class="left">
+                            <tr>
+                                <td width="100px">
+                                    Đơn vị báo cáo
+                                </td>
+                                <td width="4px">:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Địa chỉ
+                                </td>
+                                <td>:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    BÁO CÁO KẾT QUẢ HOẠT ĐỘNG KINH DOANH
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Năm
+                                </td>
+                                <td>:</td>
+                                <td>
+                                    <!-- <quote>
+                                        dd_filter = options.get('date')
+                                        dd_filter_to = datetime.strptime(dd_filter.get('date_to'), '%Y-%m-%d')
+                                        year = dd_filter_to.strftime('%Y')
+                                    </quote>
+                                    <br/> -->
+                                    
+                                    <t t-set="date_to" t-value="datetime.datetime.strptime(options.get('date').get('date_to'), '%Y-%m-%d')"/>
+                                    <t t-set="year" t-value="date_to.strftime('%Y')"/>
+                                    <span t-esc="year"/>
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </td>
+                    <td>
+
+                        <!-- 		Mẫu số B 02 – DN
+                        "(Ban hành theo Thông tư số 200/2014/TT-BTC
+                        Ngày 22/12/2014 của Bộ Tài chính)"		 -->
+                        <table>
+                            <tr>
+                                <td>
+                                    Mẫu số B 02 – DN
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    (Ban hành theo Thông tư số 200/2014/TT-BTC Ngày 22/12/2014 của Bộ Tài chính)
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+    <!-- CUSTOM HEADER -->
+
+    <template id="template_bs_header">
+        <style>
+            thead, tfoot {
+                display: table-row-group;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+            tr.o_account_reports_level1 > td {
+                padding-top: 20px;
+            }
+        </style>
+        <div class="o_account_reports_header bs_header" style="font-size:9pt;">
+            <div class="row">
+                <div class="col-8">
+                    <div>
+                        <span t-raw="report.get('company_name_vn')"/><br/>
+                        <span t-raw="report.get('company_address_vn')"/><br/><br/>
+                        <span t-raw="report.get('bs_header_text3_vn')"/><br/>
+                        <span t-raw="report.get('date_report_vn')"/><br/>
+                        <span t-raw="report.get('bs_header_text4_vn')"/>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="text-center">
+                        <span t-raw="report.get('bs_header_text1_vn')"/><br/>
+                        <span t-esc="report.get('bs_header_text2_vn')"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <div><span t-raw="report.get('bs_header_text5_vn')"/></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template_icf_header">
+        <style>
+            thead, tfoot {
+                display: table-row-group;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+            tr.o_account_reports_level1 > td {
+                padding-top: 20px;
+            }
+        </style>
+        <div class="o_account_reports_header bs_header" style="font-size:9pt;">
+            <div class="row">
+                <div class="col-8">
+                    <div>
+                        <span t-raw="report.get('company_name_vn')"/><br/>
+                        <span t-raw="report.get('company_address_vn')"/><br/>
+                        <span t-raw="report.get('icf_header_text3_vn')"/><br/>
+                        <span t-raw="report.get('icf_header_text4_vn')"/><br/>
+                        <span t-raw="report.get('date_report_vn')"/>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="text-center">
+                        <span t-raw="report.get('icf_header_text1_vn')"/><br/>
+                        <span t-esc="report.get('icf_header_text2_vn')"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <div><span t-raw="report.get('icf_header_text5_vn')"/></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template_footer">
+        <div t-if="report.get('report_footer')" style="font-size:12pt;">
+            <div class="row mt-5">
+                <t t-foreach="report['report_footer']" t-as="footer">
+                    <div class="col-4 text-center">
+                        <span t-esc="footer[0]"/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <span t-esc="footer[1]"/>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <template id="main_template" inherit_id="account_reports.main_template">
+        <xpath expr="//div[hasclass('o_account_reports_header')]" position="replace">
+            <t t-if="report.get('report_type') == 'pnl'" t-call='vn_vas_report.custom_header'/>
+            <t t-elif="report.get('report_type') == 'bs' and report.get('is_print_mode') == True" t-call='vn_vas_report.template_bs_header'/>
+            <t t-elif="report.get('report_type') == 'icf' and report.get('is_print_mode') == True" t-call='vn_vas_report.template_icf_header'/>
+            <t t-else="" t-call='vn_vas_report.origin_header'/>
+        </xpath>
+        <xpath expr="//div[hasclass('table-responsive')]" position="after">
+            <t t-if="report.get('report_type') in ['bs', 'icf'] and report.get('is_print_mode') == True" t-call="vn_vas_report.template_footer"/>
+        </xpath>
+    </template>
+</odoo>

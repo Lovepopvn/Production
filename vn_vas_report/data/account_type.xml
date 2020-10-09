@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="data_account_type_financial_income" model="account.account.type">
+            <field name="name">Financial Income</field>
+            <field name="type">other</field>
+            <field name="internal_group">income</field>
+            <field name="include_initial_balance" eval="True"/>
+        </record>
+        <record id="data_account_type_income_deduction" model="account.account.type">
+            <field name="name">Income Deduction</field>
+            <field name="type">other</field>
+            <field name="internal_group">income</field>
+            <field name="include_initial_balance" eval="True"/>
+        </record>
+    </data>
+</odoo>

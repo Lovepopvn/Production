@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <report
+            id="action_stock_valuation_ondate"
+            model="stock.move"
+            string="Stock Valuation Report"
+            report_type="qweb-pdf"
+            name="stock_valuation_on_date.stock_valuation_ondate_report"
+            file="stock_valuation_on_date.stock_valuation_ondate_report"
+            menu="False"
+        />
+</odoo>

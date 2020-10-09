@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="bi_financial_excel_reports_view_excel_report" model="ir.ui.view">
+            <field name="name">bi.financial.excel.reports.view.excel.report</field>
+            <field name="model">excel.report</field>
+            <field name="arch" type="xml">
+                <form string="Genrated xls File">
+                    <group>
+                        <field name="file_name" invisible="1"/>
+                        <field name="excel_file" readonly="1" filename="file_name"/>
+                    </group>
+                    <footer>
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

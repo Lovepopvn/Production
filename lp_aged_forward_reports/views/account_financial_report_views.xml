@@ -1,0 +1,25 @@
+<odoo>
+
+    <record id="action_account_report_afr" model="ir.actions.client">
+        <field name="name">Aged Forward Receivable</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.aged.forward.receivable'}" />
+    </record>
+
+    <record id="action_account_report_afp" model="ir.actions.client">
+        <field name="name">Aged Forward Payable</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'model': 'account.aged.forward.payable'}" />
+    </record>
+
+    <menuitem id="menu_action_account_report_aged_forward_receivable"
+        name="Aged Forward Receivable"
+        action="action_account_report_afr"
+        parent="account_reports.account_reports_partners_reports_menu"/>
+
+    <menuitem id="menu_action_account_report_aged_forward_payable"
+        name="Aged Forward Payable"
+        action="action_account_report_afp"
+        parent="account_reports.account_reports_partners_reports_menu"/>
+
+</odoo>

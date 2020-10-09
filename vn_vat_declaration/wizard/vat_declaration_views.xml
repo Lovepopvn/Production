@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id='vat_declaration_view' model="ir.ui.view">
+            <field name="name">vn_vat_declaration.vat_declaration_view</field>
+            <field name="model">vat.declaration.report</field>
+            <field name="arch" type="xml">
+                <form string="VAT Declaration Report" create="false" edit="false">
+                    <group>
+                        <field name="report_type" string="View Report By"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="period" attrs="{'invisible': [('report_type', '!=', 'period')]}" />
+                            <field name="month" attrs="{'invisible': [('report_type', '!=', 'month')]}" />
+                            <field name="start_date" attrs="{'invisible': [('report_type', '!=', 'manual')]}" />
+                        </group>
+                        <group>
+                            <field name="year" attrs="{'invisible': [('report_type', 'not in', ['period','month'])]}" />
+                            <field name="end_date" attrs="{'invisible': [('report_type', '!=', 'manual')]}" />
+                        </group>
+                        <group>
+                            <field name="submission_time" string="Submission Time"/>
+                        </group>
+                    </group>
+                    <!-- <group>
+                        <field invisible="1" name="state_x"/>
+                        <group attrs="{'invisible':[('state_x','!=','get')]}">
+                            <separator colspan="4" string="Generate to Excel done. Download by click link below"/>
+                            <br/>
+                            <field name="data_x" nolabel="1" readonly="1" width="100" filename="name"/>
+                            <field name="name" invisible="1"/>
+                        </group>
+                    </group> -->
+                    <footer>
+                    <button type="object"
+                            name="print_pdf"
+                            string="Print Preview"
+                            class="btn-primary" />
+                    <button type="object"
+                            name="print_excel"
+                            string="Export XLSX"
+                            class="btn-primary" />
+                    <button special="cancel"
+                            string="Cancel"
+                            class="btn-secondary" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="account_financial_report_pnl_b02" model="account.financial.html.report">
+            <field name="name">Profit And Loss (B02-DN)</field>
+            <field name="tax_report" eval="False"/>
+            <field name="date_range" eval="1"/>
+            <field name="comparison" eval="1"/>
+            <!-- <field name="cash_basis" eval="1"/> -->
+            <field name="unfold_all_filter" eval="0"/>
+            <field name="show_journal_filter" eval="0"/>
+            <field name="parent_id" ref="l10n_vn.account_reports_vn_statements_menu"/>
+        </record> 
+    </data>
+</odoo>

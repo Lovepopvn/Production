@@ -1,0 +1,242 @@
+Account Code,Name,Account type
+111,Tiền mặt,Bank and Cash
+112,Tiền gửi Ngân hàng,Bank and Cash
+113,Tiền đang chuyển,Current Assets
+121,Chứng khoán kinh doanh,Current Assets
+128,Đầu tư nắm giữ đến ngày đáo hạn,Current Assets
+131,Phải thu của khách hàng,Receivable
+133,Thuế GTGT được khấu trừ,Current Assets
+136,Phải thu nội bộ,Current Assets
+138,Phải thu khác,Current Assets
+141,Tạm ứng,Current Assets
+151,Hàng mua đang đi đường,Current Assets
+152,"Nguyên liệu, vật liệu",Current Assets
+153,"Công cụ, dụng cụ",Current Assets
+154,"Chi phí sản xuất, kinh doanh dở dang",Current Assets
+155,Thành phẩm,Current Assets
+156,Hàng hóa,Current Assets
+157,Hàng gửi đi bán,Current Assets
+158,Hàng hoá kho bảo thuế,Current Assets
+161,Chi sự nghiệp,Current Assets
+171,Giao dịch mua bán lại trái phiếu chính phủ,Current Assets
+211,Tài sản cố định hữu hình,Fixed Assets
+212,Tài sản cố định thuê tài chính,Non-current Assets
+213,Tài sản cố định vô hình,Non-current Assets
+214,Hao mòn tài sản cố định,Non-current Assets
+217,Bất động sản đầu tư,Non-current Assets
+221,Đầu tư vào công ty con,Non-current Assets
+222,"Đầu tư vào công ty liên doanh, liên kết",Non-current Assets
+228,Đầu tư khác,Non-current Assets
+229,Dự phòng tổn thất tài sản,Non-current Assets
+241,Xây dựng cơ bản dở dang,Non-current Assets
+242,Chi phí trả trước,Non-current Assets
+243,Tài sản thuế thu nhập hoãn lại,Non-current Assets
+244,"Cầm cố, thế chấp, ký quỹ, ký cược",Non-current Assets
+331,Phải trả cho người bán,Payable
+333,Thuế và các khoản phải nộp Nhà nước,Current Liabilities
+334,Phải trả người lao động,Current Liabilities
+335,Chi phí phải trả,Current Liabilities
+3351,Trích trước chi phi lãi vay,Current Liabilities
+336,Phải trả nội bộ,Current Liabilities
+337,Thanh toán theo tiến độ kế hoạch hợp đồng xây dựng,Current Liabilities
+338,"Phải trả, phải nộp khác",Current Liabilities
+341,Vay và nợ thuê tài chính,Current Liabilities
+343,Trái phiếu phát hành,Current Liabilities
+344,"Nhận ký quỹ, ký cược",Current Liabilities
+347,Thuế thu nhập hoãn lại phải trả,Current Liabilities
+352,Dự phòng phải trả,Current Liabilities
+353,Quỹ khen thưởng phúc lợi,Current Liabilities
+356,Quỹ phát triển khoa học và công nghệ,Current Liabilities
+357,Quỹ bình ổn giá,Current Liabilities
+411,Vốn đầu tư của chủ sở hữu,Equity
+412,Chênh lệch đánh giá lại tài sản,Equity
+413,Chênh lệch tỷ giá hối đoái,Equity
+414,Quỹ đầu tư phát triển,Equity
+417,Quỹ hỗ trợ sắp xếp doanh nghiệp,Equity
+418,Các quỹ khác thuộc vốn chủ sở hữu,Equity
+419,Cổ phiếu quỹ,Equity
+421,Lợi nhuận sau thuế chưa phân phối,Equity
+441,Nguồn vốn đầu tư xây dựng cơ bản,Equity
+461,Nguồn kinh phí sự nghiệp,Equity
+466,Nguồn kinh phí đã hình thành TSCĐ,Equity
+511,Doanh thu bán hàng và cung cấp dịch vụ,Income
+515,Doanh thu hoạt động tài chính,Income
+521,Các khoản giảm trừ doanh thu,Income
+611,Mua hàng,Expenses
+621,"Chi phí nguyên liệu, vật liệu trực tiếp",Expenses
+622,Chi phí nhân công trực tiếp,Expenses
+623,Chi phí sử dụng máy thi công,Expenses
+627,Chi phí sản xuất chung,Expenses
+631,Giá thành sản xuất,Expenses
+632,Giá vốn hàng bán,Expenses
+635,Chi phí tài chính,Expenses
+6351,Chi phí lãi vay,Expenses
+641,Chi phí bán hàng,Expenses
+642,Chi phí quản lý doanh nghiệp,Expenses
+711,Thu nhập khác,Other Income
+811,Chi phí khác,Expenses
+821,Chi phí thuế thu nhập doanh nghiệp,Expenses
+911,Xác định kết quả kinh doanh,Financial Income
+1111,Tiền Việt Nam,Bank and Cash
+1112,Ngoại tệ,Bank and Cash
+1113,Vàng tiền tệ,Bank and Cash
+1121,Tiền Việt Nam,Bank and Cash
+1122,Ngoại tệ,Bank and Cash
+1123,Vàng tiền tệ,Current Assets
+1131,Tiền Việt Nam,Current Assets
+1132,Ngoại tệ,Current Assets
+1211,Cổ phiếu,Current Assets
+1212,Trái phiếu,Current Assets
+1218,Chứng khoán và công cụ tài chính khác,Current Assets
+1281,Tiền gửi có kỳ hạn,Current Assets
+1282,Trái phiếu,Current Assets
+1283,Cho vay,Current Assets
+1288,Các khoản đầu tư khác nắm giữ đến ngày đáo hạn,Current Assets
+1331,"Thuế GTGT được khấu trừ của hàng hóa, dịch vụ",Current Assets
+1332,Thuế GTGT được khấu trừ của TSCĐ,Current Assets
+1361,Vốn kinh doanh ở các đơn vị trực thuộc,Current Assets
+1362,Phải thu nội bộ về chênh lệch tỷ giá,Current Assets
+1363,Phải thu nội bộ về chi phí đi vay đủ điều kiện được vốn hoá,Current Assets
+1368,Phải thu nội bộ khác,Current Assets
+1381,Tài sản thiếu chờ xử lý,Current Assets
+1385,Phải thu về cổ phần hoá,Current Assets
+1388,Phải thu khác,Current Assets
+1531,"Công cụ, dụng cụ",Current Assets
+1532,Bao bì luân chuyển,Current Assets
+1533,Đồ dùng cho thuê,Current Assets
+1534,"Thiết bị, phụ tùng thay thế",Current Assets
+1551,Thành phẩm nhập kho,Current Assets
+1557,Thành phẩm bất động sản,Current Assets
+1561,Giá mua hàng hóa,Current Assets
+1562,Chi phí thu mua hàng hóa,Current Assets
+1567,Hàng hóa bất động sản,Current Assets
+1611,Chi sự nghiệp năm trước,Current Assets
+1612,Chi sự nghiệp năm nay,Non-current Assets
+2111,"Nhà cửa, vật kiến trúc",Non-current Assets
+2112,"Máy móc, thiết bị",Non-current Assets
+2113,"Phương tiện vận tải, truyền dẫn",Non-current Assets
+2114,"Thiết bị, dụng cụ quản lý",Non-current Assets
+2115,"Cây lâu năm, súc vật làm việc và cho sản phẩm",Non-current Assets
+2118,TSCĐ khác,Non-current Assets
+2121,TSCĐ hữu hình thuê tài chính.,Non-current Assets
+2122,TSCĐ vô hình thuê tài chính.,Non-current Assets
+2131,Quyền sử dụng đất,Non-current Assets
+2132,Quyền phát hành,Non-current Assets
+2133,"Bản quyền, bằng sáng chế",Non-current Assets
+2134,"Nhãn hiệu, tên thương mại",Non-current Assets
+2135,Chương trình phần mềm,Non-current Assets
+2136,Giấy phép và giấy phép nhượng quyền,Non-current Assets
+2138,TSCĐ vô hình khác,Non-current Assets
+2141,Hao mòn TSCĐ hữu hình,Depreciation
+2142,Hao mòn TSCĐ thuê tài chính,Depreciation
+2143,Hao mòn TSCĐ vô hình,Depreciation
+2147,Hao mòn bất động sản đầu tư,Depreciation
+2281,Đầu tư góp vốn vào đơn vị khác,Non-current Assets
+2288,Đầu tư khác,Non-current Assets
+2291,Dự phòng giảm giá chứng khoán kinh doanh,Non-current Assets
+2292,Dự phòng tổn thất đầu tư vào đơn vị khác,Non-current Assets
+2293,Dự phòng phải thu khó đòi,Non-current Assets
+22931,Dự phòng phải thu ngắn hạn khó đòi,Non-current Assets
+22932,Dự phòng phải thu dài hạn khó đòi,Non-current Assets
+2294,Dự phòng giảm giá hàng tồn kho,Non-current Assets
+22941,Dự phòng giảm giá hàng tồn kho,Non-current Assets
+22942,"Dự phòng giảm giá của chi phí sản xuất, kinh doanh dở dang dài hạn và thiết bị, vật tư, phụ tùng thay thế dài hạn",Non-current Assets
+2411,Mua sắm TSCĐ,Non-current Assets
+2412,Xây dựng cơ bản,Non-current Assets
+2413,Sửa chữa lớn TSCĐ,Current Liabilities
+3331,Thuế giá trị gia tăng phải nộp,Current Liabilities
+33311,Thuế GTGT đầu ra,Current Liabilities
+33312,Thuế GTGT hàng nhập khẩu,Current Liabilities
+3332,Thuế tiêu thụ đặc biệt,Current Liabilities
+3333,"Thuế xuất, nhập khẩu",Current Liabilities
+3334,Thuế thu nhập doanh nghiệp,Current Liabilities
+3335,Thuế thu nhập cá nhân,Current Liabilities
+3336,Thuế tài nguyên,Current Liabilities
+3337,"Thuế nhà đất, tiền thuê đất",Current Liabilities
+3338,Thuế bảo vệ môi trường và các loại thuế khác,Current Liabilities
+33381,Thuế bảo vệ môi trường,Current Liabilities
+33382,Các loại thuế khác,Current Liabilities
+3339,"Phí, lệ phí và các khoản phải nộp khác",Current Liabilities
+3341,Phải trả công nhân viên,Current Liabilities
+3348,Phải trả người lao động khác,Current Liabilities
+3361,Phải trả nội bộ về vốn kinh doanh,Current Liabilities
+3362,Phải trả nội bộ về chênh lệch tỷ giá,Current Liabilities
+3363,Phải trả nội bộ về chi phí đi vay đủ điều kiện được vốn hoá,Current Liabilities
+3368,Phải trả nội bộ khác,Current Liabilities
+3381,Tài sản thừa chờ giải quyết,Current Liabilities
+3382,Kinh phí công đoàn,Current Liabilities
+3383,Bảo hiểm xã hội,Current Liabilities
+3384,Bảo hiểm y tế,Current Liabilities
+3385,Phải trả về cổ phần hoá,Current Liabilities
+3386,Bảo hiểm thất nghiệp,Current Liabilities
+3387,Doanh thu chưa thực hiện,Current Liabilities
+3388,"Phải trả, phải nộp khác",Current Liabilities
+3411,Các khoản đi vay,Current Liabilities
+3412,Nợ thuê tài chính,Current Liabilities
+3431,Trái phiếu thường,Current Liabilities
+3432,Trái phiếu chuyển đổi,Current Liabilities
+3521,Dự phòng bảo hành sản phẩm hàng hóa,Current Liabilities
+3522,Dự phòng bảo hành công trình xây dựng,Current Liabilities
+3523,Dự phòng tái cơ cấu doanh nghiệp,Current Liabilities
+3524,Dự phòng phải trả khác,Current Liabilities
+3531,Quỹ khen thưởng,Current Liabilities
+3532,Quỹ phúc lợi,Current Liabilities
+3533,Quỹ phúc lợi đã hình thành TSCĐ,Current Liabilities
+3534,Quỹ thưởng ban quản lý điều hành công ty,Current Liabilities
+3561,Quỹ phát triển khoa học và công nghệ,Current Liabilities
+3562,Quỹ phát triển khoa học và công nghệ đã hình thành TSCĐ,Equity
+4111,Vốn góp của chủ sở hữu,Equity
+4112,Thặng dư vốn cổ phần,Equity
+4113,Quyền chọn chuyển đổi trái phiếu,Equity
+4118,Vốn khác,Equity
+4131,Chênh lệch tỷ giá do đánh giá lại các khoản mục tiền tệ có gốc ngoại tệ,Equity
+4132,Chênh lệch tỷ giá hối đoái trong giai đoạn trước hoạt động,Equity
+4211,Lợi nhuận sau thuế chưa phân phối năm trước,Equity
+4212,Lợi nhuận sau thuế chưa phân phối năm nay,Equity
+4611,Nguồn kinh phí sự nghiệp năm trước,Equity
+4612,Nguồn kinh phí sự nghiệp năm nay,Income
+5111,Doanh thu bán hàng hóa,Income
+5112,Doanh thu bán các thành phẩm,Income
+5113,Doanh thu cung cấp dịch vụ,Income
+5114,"Doanh thu trợ cấp, trợ giá",Income
+5117,Doanh thu kinh doanh bất động sản đầu tư,Income
+5118,Doanh thu khác,Income
+5211,Chiết khấu thương mại,Income
+5212,Hàng bán bị trả lại,Income
+5213,Giảm giá hàng bán,Expenses
+6111,"Mua nguyên liệu, vật liệu",Expenses
+6112,Mua hàng hóa,Expenses
+6231,Chi phí nhân công,Expenses
+6232,"Chi phí nguyên, vật liệu",Expenses
+6233,Chi phí dụng cụ sản xuất,Expenses
+6234,Chi phí khấu hao máy thi công,Expenses
+6237,Chi phí dịch vụ mua ngoài,Expenses
+6238,Chi phí bằng tiền khác,Expenses
+6271,Chi phí nhân viên phân xưởng,Expenses
+6272,"Chi phí nguyên, vật liệu",Expenses
+6273,Chi phí dụng cụ sản xuất,Expenses
+6274,Chi phí khấu hao TSCĐ,Expenses
+6277,Chi phí dịch vụ mua ngoài,Expenses
+6278,Chi phí bằng tiền khác,Expenses
+6411,Chi phí nhân viên,Expenses
+6412,"Chi phí nguyên vật liệu, bao bì",Expenses
+6413,"Chi phí dụng cụ, đồ dùng",Expenses
+6414,Chi phí khấu hao TSCĐ,Expenses
+6415,Chi phí bảo hành,Expenses
+6417,Chi phí dịch vụ mua ngoài,Expenses
+6418,Chi phí bằng tiền khác,Expenses
+6421,Chi phí nhân viên quản lý,Expenses
+6422,Chi phí vật liệu quản lý,Expenses
+6423,Chi phí đồ dùng văn phòng,Expenses
+6424,Chi phí khấu hao TSCĐ,Expenses
+6425,"Thuế, phí và lệ phí",Expenses
+6426,Chi phí dự phòng,Expenses
+6427,Chi phí dịch vụ mua ngoài,Expenses
+6428,Chi phí bằng tiền khác,Expenses
+8211,Chi phí thuế TNDN hiện hành,Expenses
+8212,Chi phí thuế TNDN hoãn lại,Current Liabilities
+34311,Mệnh giá,Current Liabilities
+34312,Chiết khấu trái phiếu,Current Liabilities
+34313,Phụ trội trái phiếu,Equity
+41111,Cổ phiếu phổ thông có quyền biểu quyết,Equity
+41112,Cổ phiếu ưu đãi,Equity

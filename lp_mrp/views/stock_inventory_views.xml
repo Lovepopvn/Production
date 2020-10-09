@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_lot_shipped_tree_view" model="ir.ui.view">
+        <field name="name">product.lot.shipped.tree</field>
+        <field name="model">product.lot</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="_barcode_scanned" widget="barcode_handler" invisible="1"/>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="so_number"/>
+                <field name="mo_id"/>
+                <field name="number_of_items"/>
+                <field name="partner_id"/>
+                <field name="brightpearl_warehouse_id"/>
+                <field name="pallet"/>
+                <field name="carrier_id"/>
+                <field name="shipment_method"/>
+                <field name="picking_wave_id"/>
+                <field name="received"/>
+                <field name="state"/>
+                <field name="tracking_number"/>
+                <field name="expected_delivery_date"/>
+                <field name="create_date" optional="hide" />
+                <field name="do_ship_date" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_lot_shipped_form_view" model="ir.ui.view">
+        <field name="name">product.lot.shipped.form</field>
+        <field name="model">product.lot</field>
+        <field name="arch" type="xml">
+            <form string="Product Lot">
+                <field name="_barcode_scanned" widget="barcode_handler"/>
+                <group>
+                   <group string="Definition">
+                        <field name="name"/>
+                        <field name="state"/>
+                        <field name="so_number"/>
+                        <field name="partner_id"/>
+                        <field name="delivery_order_id" readonly="1"/>
+                        <field name="mo_id" readonly="1"/>
+                        <field name="product_id" readonly="1"/>
+                        <field name="brightpearl_warehouse_id"/>
+                        <field name="pallet"/>
+                        <field name="expected_delivery_date"/>
+                        <field name="tracking_number"/>
+                        <field name="tracking_link"/>
+                        <field name="picking_wave_id" readonly="1"/>
+                        <field name="create_date"/>
+                        <field name="do_ship_date"/>
+                        <field name="ready_to_shipped"/>
+                    </group>
+                    <group string="Charateristics">
+                        <field name="number_of_items"/>
+                        <field name="number_of_inner"/>
+                        <field name="inner_per_outer"/>
+                        <field name="items_per_inner_carton"/>
+                        <field name="sequence_number"/>
+                        <field name="sequence_total"/>
+                        <field name="unit_weight"/>
+                        <field name="unit_price"/>
+                        <field name="loaded_container_length"/>
+                        <field name="loaded_container_width"/>
+                        <field name="loaded_container_height"/>
+                        <field name="loaded_container_weight"/>
+                        <field name="scanning_order"/>
+                        <field name="inner_type"/>
+                        <field name="received"/>
+                        <field name="urgency"/>
+                        <field name="shipment_method"/>
+                        <field name="carrier_id" options="{'no_create': True}"/>
+                        <field name="packaging_id" options="{'no_create': True}"/>
+                        <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_product_lot_shipped" model="ir.actions.act_window">
+        <field name="name">Product Lots To be Shipped</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.lot</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="lp_mrp.product_lot_shipped_tree_view"/>
+        <field name="view_ids"
+            eval="[(5, 0, 0),
+                    (0, 0, {'view_mode': 'tree', 'view_id': ref('lp_mrp.product_lot_shipped_tree_view')}),
+                    (0, 0, {'view_mode': 'form', 'view_id': ref('lp_mrp.product_lot_shipped_form_view')})]"/>
+        <field name="search_view_id" eval='False'/>
+        <field name="context">{}</field>
+        <field name="domain">[('ready_to_shipped', '=', True),('picking_wave_id', '=', False)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first Product Lot Shipped
+            </p>
+        </field>
+    </record>
+
+    <menuitem 
+        action="action_product_lot_shipped" 
+        name="Product Lots To be Shipped"
+        id="menu_action_product_lot_shipped_form" 
+        parent="stock.menu_stock_warehouse_mgmt" 
+        sequence="9"/>
+
+    <record model="ir.actions.server" id="action_create_shipping_wave">
+        <field name="name">Create Shipping Wave</field>
+        <field name="model_id" ref="model_product_lot"/>
+        <field name="binding_model_id" ref="model_product_lot"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.create_shipping_wave()
+        </field>
+    </record>
+</odoo>

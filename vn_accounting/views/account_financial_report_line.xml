@@ -1,0 +1,20 @@
+<odoo>
+    <record model="ir.ui.view" id="view_account_financial_report_line_form">
+        <field name="name">View Account Financial Report Line Form</field>
+        <field name="model">account.financial.html.report.line</field>
+        <field name="inherit_id" ref="account_reports.view_account_financial_report_line_form" />
+        <field name="arch" type="xml">
+            <field name="domain" position="after">
+                <field name="date_maturity_domain"/>
+                <field name="period"/>
+                <field name="source"/>
+                <field name="group_line"/>
+            </field>
+            <field name="level" position="before">
+                <field name="show" />
+                <field name="calc_type" />
+                <field name="zero_if_negative"/>
+            </field>
+        </field>
+    </record>
+</odoo>

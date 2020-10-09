@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_delivery_carrier_form_with_provider_fedex" model="ir.ui.view">
+	    <field name="name">delivery.carrier.form.provider.fedex.inherit</field>
+	    <field name="model">delivery.carrier</field>
+	    <field name="inherit_id" ref="delivery_fedex.view_delivery_carrier_form_with_provider_fedex"/>
+	    <field name="arch" type="xml">
+            <field name="fedex_account_number" position="after">
+                <field name="fedex_bill_account_number" string="Billing Account Number" attrs="{'required': [('delivery_type', '=', 'fedex')]}"/>
+            </field>
+		</field>
+	</record>
+</odoo>

@@ -1,0 +1,251 @@
+id,name,en_name,code,user_type_id/id
+__export__.account_account_191_73ca6acc,Tiền mặt,Cash,111,account.data_account_type_liquidity
+__export__.account_account_233_4cde1c7d,Ngoại tệ,Foreign currencies,1112,account.data_account_type_liquidity
+__export__.account_account_234_ccbc55b9,Vàng tiền tệ,Monetary gold,1113,account.data_account_type_liquidity
+__export__.account_account_192_b44f41e8,Tiền gửi Ngân hàng,Cash in banks,112,account.data_account_type_liquidity
+__export__.account_account_235_7100e850,Ngoại tệ,Foreign currencies,1122,account.data_account_type_liquidity
+__export__.account_account_236_835f471d,Vàng tiền tệ,Monetary gold,1123,account.data_account_type_current_assets
+__export__.account_account_193_be67dfb4,Tiền đang chuyển,Cash in transit,113,account.data_account_type_current_assets
+l10n_vn.1_vn_template_liquidity_transfer,Tiền Việt Nam đang chuyển,Vietnam Dong,1131,account.data_account_type_current_assets
+__export__.account_account_237_48f7272c,Ngoại tệ,Foreign currencies,1132,account.data_account_type_current_assets
+__export__.account_account_194_0e536d72,Chứng khoán kinh doanh,Trading securities,121,account.data_account_type_current_assets
+l10n_vn.1_chart1211,Cổ phiếu,Shares,1211,account.data_account_type_current_assets
+l10n_vn.1_chart1212,"Trái phiếu, Tín phiếu, Kỳ phiếu",Bonds,1212,account.data_account_type_current_assets
+l10n_vn.1_chart1218,Chứng khoán và công cụ tài chính khác,Other securities and financial instruments,1218,account.data_account_type_current_assets
+__export__.account_account_195_adbf93ae,Đầu tư nắm giữ đến ngày đáo hạn,Held to maturity investments,128,account.data_account_type_current_assets
+l10n_vn.1_chart1281,Tiền gửi có kỳ hạn,Term deposits,1281,account.data_account_type_current_assets
+l10n_vn.1_chart1282,Trái phiếu có kỳ hạn,Bonds,1282,account.data_account_type_current_assets
+l10n_vn.1_chart1283,Cho vay,Lending loans,1283,account.data_account_type_current_assets
+l10n_vn.1_chart1288,Các khoản đầu tư khác nắm giữ đến ngày đáo hạn,Other held to maturity investments,1288,account.data_account_type_current_assets
+l10n_vn.1_chart131,Phải thu của khách hàng,Trade receivables,131,account.data_account_type_receivable
+__export__.account_account_196_035c5eaf,Thuế GTGT được khấu trừ,Deductible VAT,133,account.data_account_type_current_assets
+l10n_vn.1_chart1331,"Thuế GTGT được khấu trừ của hàng hóa, dịch vụ",VAT on purchase of goods and services,1331,account.data_account_type_current_assets
+l10n_vn.1_chart1332,Thuế GTGT được khấu trừ của TSCĐ,VAT on purchase of fixed assets,1332,account.data_account_type_current_assets
+__export__.account_account_197_5f2fe5ba,Phải thu nội bộ,Intra-company receivables,136,account.data_account_type_current_assets
+l10n_vn.1_chart1361,Vốn kinh doanh ở đơn vị trực thuộc,Working capital provided to subsidiary units,1361,account.data_account_type_current_assets
+l10n_vn.1_chart1362,Phải thu nội bộ về chênh lệch tỷ giá,Intra-company receivables on foreign exchange differences,1362,account.data_account_type_current_assets
+l10n_vn.1_chart1363,Phải thu nội bộ về chi phí đi vay đủ điều kiện được vốn hoá,Intra-company receivables on borrowing costs eligible to be capitalized,1363,account.data_account_type_current_assets
+l10n_vn.1_chart1368,Phải thu nội bộ khác,Other intra-company receivables,1368,account.data_account_type_current_assets
+__export__.account_account_198_04025010,Phải thu khác,Other receivables,138,account.data_account_type_current_assets
+l10n_vn.1_chart1381,Tài sản thiếu chờ xử lý,Shortage of assets awaiting resolution,1381,account.data_account_type_current_assets
+l10n_vn.1_chart1385,Phải thu về cổ phần hóa,Receivables from equitization,1385,account.data_account_type_current_assets
+l10n_vn.1_chart1388,Phải thu khác,Others,1388,account.data_account_type_current_assets
+l10n_vn.1_chart141,Tạm ứng,Advances,141,account.data_account_type_current_assets
+l10n_vn.1_chart151,Hàng hóa mua đang đi trên đường,Purchased goods in transit,151,account.data_account_type_current_assets
+l10n_vn.1_chart152,"Nguyên liệu, vật liệu",Raw materials,152,account.data_account_type_current_assets
+__export__.account_account_199_46d6d504,"Công cụ, dụng cụ",Tools and supplies,153,account.data_account_type_current_assets
+l10n_vn.1_chart1531,"Công cụ, dụng cụ",Tools and supplies,1531,account.data_account_type_current_assets
+l10n_vn.1_chart1532,Bao bì luân chuyển,Packing materials subject to rotation,1532,account.data_account_type_current_assets
+l10n_vn.1_chart1533,Đồ dùng cho thuê,Instruments for renting,1533,account.data_account_type_current_assets
+l10n_vn.1_chart1534,"Thiết bị, phụ tùng thay thế","Equipment, spare and replacement parts",1534,account.data_account_type_current_assets
+__export__.account_account_324_4ae43724,"Thiết bị, phụ tùng thay thế ngắn hạn",,15341,account.data_account_type_current_assets
+__export__.account_account_256_bc068792,"Thiết bị, phụ tùng thay thế dài hạn",,15342,account.data_account_type_current_assets
+__export__.account_account_257_e975f330,"Thiết bị, phụ tùng thay thế ngắn hạn",,15351,account.data_account_type_current_assets
+l10n_vn.1_chart154,Chi phí sản xuất kinh doanh dở dang,Work-in-progress expenses,154,account.data_account_type_current_assets
+__export__.account_account_249_1312d75c,"Chi phí sản xuất, kinh doanh dở dang ngắn hạn",,1541,account.data_account_type_current_assets
+__export__.account_account_250_272d3ee5,"Chi phí sản xuất, kinh doanh dở dang dài hạn",,1542,account.data_account_type_current_assets
+__export__.account_account_200_d622a14e,Thành phẩm,Finished goods,155,account.data_account_type_current_assets
+l10n_vn.1_chart1551,Thành phẩm nhập kho,Inventory,1551,account.data_account_type_current_assets
+l10n_vn.1_chart1557,Thành phẩm bất động sản,Real estate,1557,account.data_account_type_current_assets
+__export__.account_account_201_3e343249,Hàng hóa,Mercantile goods,156,account.data_account_type_current_assets
+l10n_vn.1_chart1561,Giá mua hàng hóa,Purchase costs,1561,account.data_account_type_current_assets
+l10n_vn.1_chart1562,Chi phí thu mua hàng hóa,Incidental purchase costs,1562,account.data_account_type_current_assets
+l10n_vn.1_chart1567,Hàng hóa bất động sản,Real property,1567,account.data_account_type_current_assets
+l10n_vn.1_chart157,Hàng gửi đi bán,Outward goods on consignment,157,account.data_account_type_current_assets
+l10n_vn.1_chart158,Hàng hóa kho bảo thuế,Goods in bonded warehouse,158,account.data_account_type_current_assets
+__export__.account_account_202_6a81af56,Chi sự nghiệp,Non-business expenditure,161,account.data_account_type_current_assets
+l10n_vn.1_chart1611,Chi sự nghiệp năm trước,Expenditure brought forward,1611,account.data_account_type_current_assets
+l10n_vn.1_chart1612,Chi sự nghiệp năm nay,Expenditure of current year,1612,account.data_account_type_non_current_assets
+l10n_vn.1_chart171,Giao dịch mua bán lại trái phiếu chính phủ,Government bonds purchased for resale,171,account.data_account_type_current_assets
+__export__.account_account_203_34588dbc,Tài sản cố định hữu hình,Tangible fixed assets,211,account.data_account_type_fixed_assets
+l10n_vn.1_chart2111,"Nhà cửa, vật kiến trúc","Buildings, houses, fixtures and architectural structures",2111,account.data_account_type_non_current_assets
+l10n_vn.1_chart2112,"Máy móc, thiết bị",Machinery and equipment,2112,account.data_account_type_non_current_assets
+l10n_vn.1_chart2113,Phương tiện vận tải truyền dẫn,Means of transportation or transmission,2113,account.data_account_type_non_current_assets
+l10n_vn.1_chart2114,"Thiết bị, dụng cụ quản lý",Equipment or furniture used for management purposes,2114,account.data_account_type_non_current_assets
+l10n_vn.1_chart2115,"Cây lâu năm, súc vật làm việc và cho sản phẩm","Perennial plants, draft animals and farm livestocks",2115,account.data_account_type_non_current_assets
+l10n_vn.1_chart2118,Tài sản cố định khác,Other fixed assets,2118,account.data_account_type_non_current_assets
+__export__.account_account_204_322b0c64,Tài sản cố định thuê tài chính,Finance-lease fixed assets,212,account.data_account_type_non_current_assets
+l10n_vn.1_chart2121,Tài sản cố định hữu hình thuê tài chính,Finance lease tangible fixed assets,2121,account.data_account_type_non_current_assets
+l10n_vn.1_chart2122,Tài sản cố định vô hình thuê tài chính,Finance lease intangible fixed assets,2122,account.data_account_type_non_current_assets
+__export__.account_account_205_3518ea7d,Tài sản cố định vô hình,Intangible fixed assets,213,account.data_account_type_non_current_assets
+l10n_vn.1_chart2131,Quyền sử dụng đất,Land use rights,2131,account.data_account_type_non_current_assets
+l10n_vn.1_chart2132,Quyền phát hành,Publication rights,2132,account.data_account_type_non_current_assets
+l10n_vn.1_chart2133,"Bản quyền, bằng sáng chế",Copyrights and patents,2133,account.data_account_type_non_current_assets
+l10n_vn.1_chart2134,"Nhãn hiệu, tên thương mại",Product labels and trademarks,2134,account.data_account_type_non_current_assets
+l10n_vn.1_chart2135,Chương trình phần mềm,Computer software,2135,account.data_account_type_non_current_assets
+l10n_vn.1_chart2136,Giấy phép và giấy phép nhượng quyền,Licences and franchises,2136,account.data_account_type_non_current_assets
+l10n_vn.1_chart2138,Tài sản cố định vô hình khác,Other intangible fixed assets,2138,account.data_account_type_non_current_assets
+__export__.account_account_206_3864b0d1,Hao mòn tài sản cố định,Depreciation of fixed assets,214,account.data_account_type_non_current_assets
+l10n_vn.1_chart2141,Hao mòn TSCĐ cố định hữu hình,Depreciation of tangible fixed assets,2141,account.data_account_type_depreciation
+l10n_vn.1_chart2142,Hao mòn TSCĐ thuê tài chính,Depreciation of finance-lease fixed assets,2142,account.data_account_type_depreciation
+l10n_vn.1_chart2143,Hao mòn TSCĐ vô hình,Amortisation of intangible fixed assets,2143,account.data_account_type_depreciation
+l10n_vn.1_chart2147,Hao mòn bất động sản đầu tư,Depreciation of invested real property,2147,account.data_account_type_depreciation
+l10n_vn.1_chart217,Bất động sản đầu tư,Investment real property,217,account.data_account_type_non_current_assets
+l10n_vn.1_chart221,Đầu tư vào công ty con,Investment in subsidiaries,221,account.data_account_type_non_current_assets
+l10n_vn.1_chart222,Đầu tư vào công ty liên doanh,Investments in joint ventures and associates,222,account.data_account_type_non_current_assets
+__export__.account_account_207_a7e7eae8,Đầu tư khác,Other investments,228,account.data_account_type_non_current_assets
+l10n_vn.1_chart2281,Đầu tư góp vốn vào đơn vị khác,Investments in equity of other entities,2281,account.data_account_type_non_current_assets
+l10n_vn.1_chart2288,Đầu tư dài hạn khác,Other investments,2288,account.data_account_type_non_current_assets
+__export__.account_account_208_685e4150,Dự phòng tổn thất tài sản,Allowance for any asset impairment,229,account.data_account_type_non_current_assets
+l10n_vn.1_chart2291,Dự phòng giảm giá chứng khoán kinh doanh,Allowances for decline in value of trading securities,2291,account.data_account_type_non_current_assets
+l10n_vn.1_chart2292,Dự phòng tổn thất đầu tư vào đơn vị khác,Allowances for impairment of investments in other entities,2292,account.data_account_type_non_current_assets
+l10n_vn.1_chart2293,Dự phòng phải thu khó đòi,Allowances for doubtful debts,2293,account.data_account_type_non_current_assets
+__export__.account_account_238_9bd3a9ef,Dự phòng phải thu ngắn hạn khó đòi,Short-term allowances for doubtful debts,22931,account.data_account_type_non_current_assets
+__export__.account_account_239_5e4ee873,Dự phòng phải thu dài hạn khó đòi,Long-term allowances for doubtful debts,22932,account.data_account_type_non_current_assets
+l10n_vn.1_chart2294,Dự phòng giảm giá hàng tồn kho,Allowances for decline in value of inventories,2294,account.data_account_type_non_current_assets
+__export__.account_account_240_8e059a75,Dự phòng giảm giá hàng tồn kho,Allowances for decline in value of inventories,22941,account.data_account_type_non_current_assets
+__export__.account_account_241_aa4961cb,"Dự phòng giảm giá của chi phí sản xuất, kinh doanh dở dang dài hạn và thiết bị, vật tư, phụ tùng thay thế dài hạn","include provision for devaluation of costs of long-term work in progress and long term equipment, materials, spare parts",22942,account.data_account_type_non_current_assets
+__export__.account_account_259_91d7c933,"Dự phòng giảm giá của chi phí sản xuất, kinh doanh dở dang dài hạn",,229421,account.data_account_type_non_current_assets
+__export__.account_account_260_cf739c43,"Dự phòng giảm giá của thiết bị, vật tư, phụ tùng thay thế dài hạn",,229422,account.data_account_type_non_current_assets
+__export__.account_account_258_5e60e633,"Dự phòng giảm giá của chi phí sản xuất, kinh doanh dở dang dài hạn và thiết bị, vật tư, phụ tùng thay thế dài hạn (copy)",,22952,account.data_account_type_non_current_assets
+__export__.account_account_209_0cb916ca,Xây dựng cơ bản dở dang,Capital construction in progress,241,account.data_account_type_non_current_assets
+l10n_vn.1_chart2411,Mua sắm TSCĐ,Procurement of fixed assets,2411,account.data_account_type_non_current_assets
+l10n_vn.1_chart2412,Xây dựng cơ bản,Capital construction works,2412,account.data_account_type_non_current_assets
+l10n_vn.1_chart2413,Sửa chữa lớn TSCĐ,Major repairs of fixed assets,2413,account.data_account_type_current_liabilities
+l10n_vn.1_chart242,Chi phí trả trước dài hạn,Prepaid expenses,242,account.data_account_type_non_current_assets
+l10n_vn.1_chart243,Tài sản thuế thu nhập hoãn lại,Deferred tax assets,243,account.data_account_type_non_current_assets
+l10n_vn.1_chart244,"Cầm cố, thế chấp, ký quỹ, ký cược","Mortgage, collaterals and deposits",244,account.data_account_type_non_current_assets
+l10n_vn.1_chart331,Phải trả người bán,Accounts payable to sellers,331,account.data_account_type_payable
+__export__.account_account_210_4ec45ed0,Thuế và các khoản phải nộp Nhà nước,Taxes and charges payable to the State Budget,333,account.data_account_type_current_liabilities
+l10n_vn.1_chart3331,Thuế giá trị gia tăng phải nộp,VAT,3331,account.data_account_type_current_liabilities
+l10n_vn.1_chart33311,Thuế GTGT đầu ra,Output VAT,33311,account.data_account_type_current_liabilities
+l10n_vn.1_chart33312,Thuế GTGT hàng nhập khẩu,VAT on imports,33312,account.data_account_type_current_liabilities
+l10n_vn.1_chart3332,Thuế tiêu thụ đặc biệt,Excise duty,3332,account.data_account_type_current_liabilities
+l10n_vn.1_chart3333,"Thuế xuất, nhập khẩu","Import, export duty",3333,account.data_account_type_current_liabilities
+l10n_vn.1_chart3334,Thuế thu nhập doanh nghiệp,Corporate income tax,3334,account.data_account_type_current_liabilities
+l10n_vn.1_chart3335,Thuế thu nhập cá nhân,Personal income tax,3335,account.data_account_type_current_liabilities
+l10n_vn.1_chart3336,Thuế tài nguyên,Natural resources tax,3336,account.data_account_type_current_liabilities
+l10n_vn.1_chart3337,"Thuế nhà đất, tiền thuê đất","Housing and land tax, and rental charges",3337,account.data_account_type_current_liabilities
+l10n_vn.1_chart3338,Các loại thuế môi trường và các loại thuế khác,Environment protection tax and other taxes,3338,account.data_account_type_current_liabilities
+l10n_vn.1_chart33381,Các loại thuế môi trường,Environment protection tax,33381,account.data_account_type_current_liabilities
+l10n_vn.1_chart33382,Các loại thuế khác,Other taxes,33382,account.data_account_type_current_liabilities
+l10n_vn.1_chart3339,"Phí, lệ phí và các khoản phải nộp khác","Fees, charges and other payables",3339,account.data_account_type_current_liabilities
+__export__.account_account_211_4746bc4a,Phải trả người lao động,Payables to employees,334,account.data_account_type_current_liabilities
+l10n_vn.1_chart3341,Phải trả công nhân viên,Payables to staff,3341,account.data_account_type_current_liabilities
+l10n_vn.1_chart3348,Phải trả người lao động khác,Payables to other employees,3348,account.data_account_type_current_liabilities
+l10n_vn.1_chart335,Chi phí phải trả,Accrued expenses,335,account.data_account_type_current_liabilities
+__export__.account_account_212_86460df4,Trích trước chi phi lãi vay,Accruing interest expenses from loans payable,3351,account.data_account_type_current_liabilities
+__export__.account_account_251_53f06394,Chi phí phải trả khác,Accrued expenses - others,3352,account.data_account_type_current_liabilities
+__export__.account_account_213_cdb2f2b6,Phải trả nội bộ,Intra-company payables,336,account.data_account_type_current_liabilities
+l10n_vn.1_chart3361,Phải trả nội bộ về vốn kinh doanh,Intra-company payables for operating capital received,3361,account.data_account_type_current_liabilities
+l10n_vn.1_chart3362,Phải trả nội bộ về vốn chênh lệch tỷ giá,Intra-company payables on foreign exchange differences,3362,account.data_account_type_current_liabilities
+l10n_vn.1_chart3363,Phải trả nội bộ về chi phí đi vay đủ điều kiện được vốn hoá,Intra-company payables on borrowing costs eligible to be capitalized,3363,account.data_account_type_current_liabilities
+l10n_vn.1_chart3368,Phải trả nội bộ khác,Other intra-company payables,3368,account.data_account_type_current_liabilities
+l10n_vn.1_chart337,Thanh toán theo tiến độ kế hoạch hợp đồng xây dựng,Construction progress-based billings,337,account.data_account_type_current_liabilities
+__export__.account_account_214_0fbe790e,"Phải trả, phải nộp khác",Other payables,338,account.data_account_type_current_liabilities
+l10n_vn.1_chart3381,Tài sản thừa chờ giải quyết,Surplus of assets awaiting resolution,3381,account.data_account_type_current_liabilities
+l10n_vn.1_chart3382,Kinh phí công đoàn,Trade union fees,3382,account.data_account_type_current_liabilities
+l10n_vn.1_chart3383,Bảo hiểm xã hội,Social insurance,3383,account.data_account_type_current_liabilities
+l10n_vn.1_chart3384,Bảo hiểm y tế,Health insurance,3384,account.data_account_type_current_liabilities
+l10n_vn.1_chart3385,Phải trả về cổ phần hóa,Payables concerning equitization,3385,account.data_account_type_current_liabilities
+l10n_vn.1_chart3386,Bảo hiểm thất nghiệp,Unemployment insurance,3386,account.data_account_type_current_liabilities
+l10n_vn.1_chart3387,Doanh thu chưa thực hiện,Unearned revenue,3387,account.data_account_type_current_liabilities
+l10n_vn.1_chart3388,"Phải trả, phải nộp khác",Other payables,3388,account.data_account_type_current_liabilities
+__export__.account_account_215_be887a18,Vay và nợ thuê tài chính,Borrowings and finance lease liabilities,341,account.data_account_type_current_liabilities
+l10n_vn.1_chart3411,Các khoản đi vay,Borrowings,3411,account.data_account_type_current_liabilities
+l10n_vn.1_chart3412,Nợ thuê tài chính,Finance lease liabilities,3412,account.data_account_type_current_liabilities
+__export__.account_account_216_968b0e9f,Trái phiếu phát hành,Issued bonds,343,account.data_account_type_current_liabilities
+l10n_vn.1_chart3431,Trái phiếu,Ordinary bonds,3431,account.data_account_type_current_liabilities
+l10n_vn.1_chart34311,Mệnh giá trái phiếu,Par value of bonds,34311,account.data_account_type_current_liabilities
+l10n_vn.1_chart34312,Chiết khấu trái phiếu,Bond discounts,34312,account.data_account_type_current_liabilities
+l10n_vn.1_chart34313,Phụ trội trái phiếu,Bond premiums,34313,account.data_account_type_equity
+l10n_vn.1_chart3432,Trái phiếu chuyển đổi,Convertible bonds,3432,account.data_account_type_current_liabilities
+l10n_vn.1_chart344,"Nhận ký quỹ, ký cược dài hạn",Deposits received,344,account.data_account_type_current_liabilities
+l10n_vn.1_chart347,Thuế thu nhập hoãn lại phải trả,Deferred tax liabilities,347,account.data_account_type_current_liabilities
+__export__.account_account_217_ed269f05,Dự phòng phải trả,Provisions,352,account.data_account_type_current_liabilities
+l10n_vn.1_chart3521,Dự phòng bảo hành sản phẩm hàng hóa,Product warranty provisions,3521,account.data_account_type_current_liabilities
+l10n_vn.1_chart3522,Dự phòng bảo hành công trình xây dựng,Construction warranty provisions,3522,account.data_account_type_current_liabilities
+l10n_vn.1_chart3523,Dự phòng tái cơ cấu doanh nghiệp,Enterprise restructuring provisions,3523,account.data_account_type_current_liabilities
+l10n_vn.1_chart3524,Dự phòng phải trả khác,Other provisions,3524,account.data_account_type_current_liabilities
+__export__.account_account_218_d6020435,Quỹ khen thưởng phúc lợi,Bonus and welfare fund,353,account.data_account_type_current_liabilities
+l10n_vn.1_chart3531,Quỹ khen thưởng,Bonus fund,3531,account.data_account_type_current_liabilities
+l10n_vn.1_chart3532,Quỹ phúc lợi,Welfare fund,3532,account.data_account_type_current_liabilities
+l10n_vn.1_chart3533,Quỹ phúc lợi đã hình thành TSCĐ,Welfare fund used for fixed asset acquisitions,3533,account.data_account_type_current_liabilities
+l10n_vn.1_chart3534,Quỹ thưởng ban quản lý điều hành công ty,Management bonus fund,3534,account.data_account_type_current_liabilities
+__export__.account_account_219_c17e7cd6,Quỹ phát triển khoa học và công nghệ,Science and technology development fund,356,account.data_account_type_current_liabilities
+l10n_vn.1_chart3561,Quỹ phát triển khoa học và công nghệ,Science and technology development fund,3561,account.data_account_type_current_liabilities
+l10n_vn.1_chart3562,Quỹ phát triển khoa học và công nghệ đã hình thành TSCĐ,Science and technology development fund used for fixed asset acquisition,3562,account.data_account_type_equity
+l10n_vn.1_chart357,Quỹ bình ổn giá,Price stabilization fund,357,account.data_account_type_current_liabilities
+__export__.account_account_220_a91d89cf,Vốn đầu tư của chủ sở hữu,Invested capital,411,account.data_account_type_equity
+l10n_vn.1_chart4111,Vốn đầu tư chủ sỡ hữu,Contributed capital,4111,account.data_account_type_equity
+l10n_vn.1_chart41111,Cổ phiếu phổ thông có quyền biểu quyết,Ordinary shares with voting rights,41111,account.data_account_type_equity
+l10n_vn.1_chart41112,Cổ phiếu ưu đãi,Preferred stocks,41112,account.data_account_type_equity
+__export__.account_account_252_e1f6a3b1,Cổ phiếu ưu đãi phân loại vốn CSH,Preferred stocks - equity,411121,account.data_account_type_equity
+__export__.account_account_253_064df7c7,Cổ phiếu ưu đãi phân loại nợ phải trả,Preferred stocks - payable,411122,account.data_account_type_equity
+l10n_vn.1_chart4112,Thặng dư vốn cổ phần,Capital surplus,4112,account.data_account_type_equity
+l10n_vn.1_chart4113,Quyền chọn chuyển đổi trái phiếu,Conversion options on convertible bonds,4113,account.data_account_type_equity
+l10n_vn.1_chart4118,Vốn khác,Other capital,4118,account.data_account_type_equity
+l10n_vn.1_chart412,Chênh lệch đánh giá lại tài sản,Differences upon asset revaluation,412,account.data_account_type_equity
+__export__.account_account_221_70b8f457,Chênh lệch tỷ giá hối đoái,Exchange rate differences,413,account.data_account_type_equity
+l10n_vn.1_chart4131,Chênh lệch tỷ giá do đánh giá lại các khoản mục tiền tệ có gốc ngoại tệ,Exchange rate differences upon revaluation of monetary items denominated in foreign currency,4131,account.data_account_type_equity
+l10n_vn.1_chart4132,Chênh lệch tỷ giá hối đoái trong giai đoạn trước hoạt động,Exchange rate differences in pre-operating period,4132,account.data_account_type_equity
+l10n_vn.1_chart414,Quỹ đầu tư phát triển,Investment and development fund,414,account.data_account_type_equity
+l10n_vn.1_chart417,Quỹ hỗ trợ sắp xếp doanh nghiệp,Enterprise reorganization assistance fund,417,account.data_account_type_equity
+l10n_vn.1_chart418,Các quỹ khác thuộc vốn chủ sở hữu,Other equity funds,418,account.data_account_type_equity
+l10n_vn.1_chart419,Cổ phiếu quỹ,Treasury stocks,419,account.data_account_type_equity
+__export__.account_account_222_b7df9239,Lợi nhuận sau thuế chưa phân phối,Undistributed profit after tax,421,account.data_account_type_equity
+l10n_vn.1_chart4211,Lợi nhuận chưa phân phối năm trước,Undistributed profit after tax brought forward,4211,account.data_account_type_equity
+l10n_vn.1_chart4212,Lợi nhuận chưa phân phối năm nay,Undistributed profit after tax for the current year,4212,account.data_account_type_equity
+l10n_vn.1_chart441,Ngồn vố đầu tư xây dựng cơ bản,Capital construction investment funds,441,account.data_account_type_equity
+__export__.account_account_223_be0afb16,Nguồn kinh phí sự nghiệp,Non-business funds,461,account.data_account_type_equity
+l10n_vn.1_chart4611,Nguồn kinh phí sự nghiệp năm trước,Non-business funds bought forward,4611,account.data_account_type_equity
+l10n_vn.1_chart4612,Nguồn kinh phí sự nghiệp năm nay,Non-business funds for the current year,4612,account.data_account_type_revenue
+l10n_vn.1_chart466,Nguồn kinh phí đã hình thành TSCĐ,Non-business funds used for fixed asset acquisitions,466,account.data_account_type_equity
+__export__.account_account_224_0e79e0c5,Doanh thu bán hàng và cung cấp dịch vụ,Revenue gained from sale of goods and provision of services,511,account.data_account_type_revenue
+l10n_vn.1_chart5111,Doanh thu bán hàng hóa,Revenue gained from sale of goods,5111,account.data_account_type_revenue
+l10n_vn.1_chart5112,Doanh thu bán các thành phẩm,Revenue gained from sale of finished goods,5112,account.data_account_type_revenue
+l10n_vn.1_chart5113,Doanh thu cung cấp dịch vụ,Revenue gained from provision of services,5113,account.data_account_type_revenue
+l10n_vn.1_chart5114,"Doanh thu trợ cấp, trợ giá",Revenue gained from government grants or subsidies,5114,account.data_account_type_revenue
+l10n_vn.1_chart5117,Doanh thu kinh doanh bất động sản đầu tư,Revenue gained from trade in investment real property,5117,account.data_account_type_revenue
+l10n_vn.1_chart5118,Doanh thu khác,Others revenue,5118,account.data_account_type_revenue
+l10n_vn.1_chart515,Doanh thu hoạt động tài chính,Revenue gained from financial transactions,515,account.data_account_type_revenue
+__export__.account_account_225_8134c028,Các khoản giảm trừ doanh thu,Revenue deductions,521,account.data_account_type_revenue
+l10n_vn.1_chart5211,Chiết khấu thương mại,Trade discounts,5211,account.data_account_type_revenue
+l10n_vn.1_chart5212,Giảm giá hàng bán,Sales rebates,5212,account.data_account_type_revenue
+l10n_vn.1_chart5213,Hàng bán bị trả lại,Sales returns,5213,account.data_account_type_expenses
+__export__.account_account_226_5c0e4115,Mua hàng,Purchases,611,account.data_account_type_expenses
+l10n_vn.1_chart6111,"Mua nguyên liệu, vật liệu",Purchases of raw materials,6111,account.data_account_type_expenses
+l10n_vn.1_chart6112,Mua hàng hóa,Purchases of goods,6112,account.data_account_type_expenses
+l10n_vn.1_chart621,"Chi phí nguyên liệu, vật liệu trực tiếp",Direct raw material costs,621,account.data_account_type_expenses
+l10n_vn.1_chart622,Chi phí nhân công trực tiếp,Direct labour costs,622,account.data_account_type_expenses
+__export__.account_account_227_cdd2fdae,Chi phí sử dụng máy thi công,Costs of construction machinery,623,account.data_account_type_expenses
+l10n_vn.1_chart6231,Chi phí nhân công,Labour costs,6231,account.data_account_type_expenses
+l10n_vn.1_chart6232,Chi phí vật liệu,Raw material costs,6232,account.data_account_type_expenses
+l10n_vn.1_chart6233,Chi phí dụng cụ sản xuất,Costs of production tools and instruments,6233,account.data_account_type_expenses
+l10n_vn.1_chart6234,Chi phí khấu hao máy thi công,Cost of amortization of construction machinery,6234,account.data_account_type_expenses
+l10n_vn.1_chart6237,Chi phí dịch vụ mua ngoài,Outsourced service costs,6237,account.data_account_type_expenses
+l10n_vn.1_chart6238,Chi phí bằng tiền khác,Other monetary expenses,6238,account.data_account_type_expenses
+__export__.account_account_228_ee500cd8,Chi phí sản xuất chung,Production overheads,627,account.data_account_type_expenses
+l10n_vn.1_chart6271,Chi phí nhân viên phân xưởng,Factory staff costs,6271,account.data_account_type_expenses
+l10n_vn.1_chart6272,Chi phí vật liệu,Raw material costs,6272,account.data_account_type_expenses
+l10n_vn.1_chart6273,Chi phí dụng cụ sản xuất,Costs of production tools and instruments,6273,account.data_account_type_expenses
+l10n_vn.1_chart6274,Chi phí khấu hao TSCĐ,Cost of amortization of fixed assets,6274,account.data_account_type_expenses
+l10n_vn.1_chart6277,Chi phí dịch vụ mua ngoài,Outsourced service costs,6277,account.data_account_type_expenses
+l10n_vn.1_chart6278,Chi phí bằng tiền khác,Other monetary expenses,6278,account.data_account_type_expenses
+l10n_vn.1_chart631,Giá thành sản xuất,Production costs,631,account.data_account_type_expenses
+l10n_vn.1_chart632,Giá vốn hàng bán,Cost price,632,account.data_account_type_expenses
+l10n_vn.1_chart635,Chi phí tài chính,Financial expenses,635,account.data_account_type_expenses
+__export__.account_account_229_4c062077,Chi phí lãi vay,Interest expense,6351,account.data_account_type_expenses
+__export__.account_account_254_03384875,Chi phí tài chính khác,Other interest expense,6358,account.data_account_type_expenses
+__export__.account_account_230_327c5cc9,Chi phí bán hàng,Selling expenses,641,account.data_account_type_expenses
+l10n_vn.1_chart6411,Chi phí nhân viên,Staff expenses,6411,account.data_account_type_expenses
+l10n_vn.1_chart6412,"Chi phí vật liệu, bao bì",Raw and packing material costs,6412,account.data_account_type_expenses
+l10n_vn.1_chart6413,"Chi phí dụng cụ, đồ dùng",Costs of tools and instruments,6413,account.data_account_type_expenses
+l10n_vn.1_chart6414,Chi phí khấu hao TSCĐ,Costs of amortization of fixed assets,6414,account.data_account_type_expenses
+l10n_vn.1_chart6415,Chi phí bảo hành,Warranty expenses,6415,account.data_account_type_expenses
+l10n_vn.1_chart6417,Chi phí dịch vụ mua ngoài,Outsourced service costs,6417,account.data_account_type_expenses
+l10n_vn.1_chart6418,Chi phí bằng tiền khác,Other monetary expenses,6418,account.data_account_type_expenses
+__export__.account_account_231_889f9133,Chi phí quản lý doanh nghiệp,General administrative expenses,642,account.data_account_type_expenses
+l10n_vn.1_chart6421,Chi phí nhân viên quản lý,Management staff costs,6421,account.data_account_type_expenses
+l10n_vn.1_chart6422,Chi phí vật liệu quản lý,Office supply expenses,6422,account.data_account_type_expenses
+l10n_vn.1_chart6423,Chi phí đồ dùng văn phòng,Office furniture expenses,6423,account.data_account_type_expenses
+l10n_vn.1_chart6424,Chi phí khấu hao tài sản cố định,Costs of amortization of fixed assets,6424,account.data_account_type_expenses
+l10n_vn.1_chart6425,"Thuế, phí và lệ phí","Taxes, fees and charges",6425,account.data_account_type_expenses
+l10n_vn.1_chart6426,Chi phí dự phòng,Provisions,6426,account.data_account_type_expenses
+l10n_vn.1_chart6427,Chi phí dịch vụ mua ngoài,Outsourced service costs,6427,account.data_account_type_expenses
+l10n_vn.1_chart6428,Chi phí bằng tiền khác,Other monetary expenses,6428,account.data_account_type_expenses
+l10n_vn.1_chart711,Thu nhập khác,Other income,711,account.data_account_type_other_income
+l10n_vn.1_chart811,Chi phí khác,Other expenses,811,account.data_account_type_expenses
+l10n_vn.1_chart8211,Chi phí thuế TNDN hiện hành,Current tax expenses,8211,account.data_account_type_expenses
+l10n_vn.1_chart8212,Chi phí thuế TNDN hoãn lại,Deferred tax expenses,8212,account.data_account_type_current_liabilities
+__export__.account_account_255_1899c7a3,Xác định kết quả kinh doanh,Determination of business outcomes,911,vn_vas_report.data_account_type_financial_income

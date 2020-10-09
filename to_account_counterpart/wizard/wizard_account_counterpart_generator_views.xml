@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<record id="wizard_account_counterpart_generator_view_form"
+			model="ir.ui.view">
+			<field name="name">wizard.account.counterpart.generator.form</field>
+			<field name="model">wizard.account.counterpart.generator</field>
+			<field name="arch" type="xml">
+				<form string="Account Counterparts Generator">
+					<div>
+						This wizard may take long time for a system with large number
+						of accounting journal items (e.g. a million item)...
+					</div>
+					<group id="general">
+						<group>
+							<field name="type" />
+							<field name="recreate_for_the_partially"
+								attrs="{'invisible':[('type','!=','missing_only')]}" />
+
+							<field name="rec_limit" />
+							<label for="ignore_if_lines_count_larger_than"
+								class="oe_inline" />
+							<div class="o_row">
+								<field name="ignore_if_lines_count_larger_than"
+									class="oe_inline" />
+								<span>Journal Items</span>
+							</div>
+						</group>
+						<group>
+							<field name="from_date" />
+							<field name="to_date" />
+						</group>
+					</group>
+					<group>
+						<field name="journal_ids" widget="many2many_tags" />
+					</group>
+					<footer>
+						<button name="action_generate_counterparts" string="Start"
+							type="object" default_focus="1" class="oe_highlight" />
+						or
+						<button string="Cancel" class="oe_link" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_counterpart_generator_form"
+			model="ir.actions.act_window">
+			<field name="name">Account Counterparts Generator</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">wizard.account.counterpart.generator</field>
+			<field name="view_mode">form</field>
+			<field name="view_id"
+				ref="wizard_account_counterpart_generator_view_form" />
+			<field name="target">new</field>
+		</record>
+
+		<menuitem action="action_counterpart_generator_form"
+			id="menu_action_counterpart_generator_form"
+			name="Generate Counterparts"
+			parent="account.menu_finance_entries_actions" groups="base.group_no_one"
+			sequence="112" />
+	</data>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_kpi_report" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.kpi.report</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='group_product_pricelist']/../.." position="after">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">Transfer Price Update</span>
+                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                        <div class="text-muted mb8">
+                            Daily update of Products' Transfer Price from selected Pricelist
+                        </div>
+                        <div class="text-muted mb16">
+                            Scheduler is activated when a pricelist is selected here, and deactivated when removed here (and the Settings are saved).
+                        </div>
+                        <label for="transfer_price_update_pricelist_id"/>
+                        <div class="text-muted">
+                            <field name="transfer_price_update_pricelist_id" options="{'no_create_edit': True, 'no_open': True}"/>
+                        </div>
+                        <label for="transfer_price_update_scheduler_id" class="o_form_label mt16" attrs="{'invisible': [('transfer_price_update_scheduler_id', '=', False)]}"/>
+                        <div class="text-muted" attrs="{'invisible': [('transfer_price_update_scheduler_id', '=', False)]}">
+                            <field name="transfer_price_update_scheduler_id" style="width: 100%;" readonly="1"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

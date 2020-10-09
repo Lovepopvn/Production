@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="cancel_so_wizard_view" model="ir.ui.view">
+		<field name="name">Cancel Sale Order</field>
+		<field name="model">cancel.so</field>
+		<field name="arch" type="xml">
+			<form>
+				<field name="description" readonly="1"/>
+				<footer>
+					<button name="action_cancel" type="object" string="Cancel" class="btn-primary"/>
+					<button string="Close" class="btn-default" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+	
+	<record id="act_cancel_so" model="ir.actions.act_window">
+	    <field name="name">Cancel Sale Order</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">cancel.so</field>
+	    <field name="view_mode">form</field>
+	    <field name="view_id" ref="lp_mrp.cancel_so_wizard_view"/>
+	    <field name="context">{}</field>
+	    <field name="target">new</field>
+	</record>
+</odoo>

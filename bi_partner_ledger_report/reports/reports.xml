@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+                id="bi_report_partnerledger_action"
+                model="accounting_report.partner_ledger"
+                string="Partner Ledger"
+                report_type="qweb-pdf"
+                name="bi_partner_ledger_report.bi_report_partnerledger"
+                file="bi_partner_ledger_report.bi_report_partnerledger"
+        />
+
+
+        <report
+                id="action_aged_partner_balance_report"
+                model="bi.account.aged.partner.balance"
+                string="Aged Partner Balance"
+                menu="False"
+                report_type="qweb-pdf"
+                name="bi_partner_ledger_report.bi_report_agedpartnerbalance"
+                file="bi_partner_ledger_report.bi_report_agedpartnerbalance"
+        />
+    </data>
+</odoo>

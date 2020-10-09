@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="factory_constants_form_view_lp" model="ir.ui.view">
+            <field name="name">factory.constants.form.lp</field>
+            <field name="model">factory.constants</field>
+            <field name="inherit_id" ref="lp_mrp.factory_constants_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='production']/group" position="before">
+                    <group>
+                        <group>
+                            <field name="average_click_charge"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

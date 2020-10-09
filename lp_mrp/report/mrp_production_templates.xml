@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_mrporder_inherit" inherit_id="mrp.report_mrporder">
+        <xpath expr="//t[@t-call='web.internal_layout']/div[hasclass('page')]/div[4]/div[1]" position="replace">
+            <div class="col-3">
+                <strong>Finished Product:</strong><br/>
+                <span t-field="o.product_id"/> 
+                <t t-if="o.product_id.fsc_group_id or o.product_id.fsc_status_id">
+                    <t t-if="o.product_id.fsc_group_id and o.product_id.fsc_status_id">
+                        - 
+                        <span t-field="o.product_id.fsc_group_id"/> 
+                        <span t-field="o.product_id.fsc_status_id"/> 
+                    </t>
+                    <t t-if="o.product_id.fsc_group_id and not o.product_id.fsc_status_id">
+                        -
+                        <span t-field="o.product_id.fsc_group_id"/> 
+                    </t>
+                    <t t-if="o.product_id.fsc_status_id and not o.product_id.fsc_group_id">
+                        -
+                        <span t-field="o.product_id.fsc_status_id"/>
+                    </t>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-call='web.internal_layout']/div[hasclass('page')]/table/tbody/t/tr/td[1]" position="replace">
+            <td>
+                <span t-field="raw_line.product_id"/>
+                <t t-if="raw_line.product_id.fsc_group_id or raw_line.product_id.fsc_status_id">
+                    <t t-if="raw_line.product_id.fsc_group_id and raw_line.product_id.fsc_status_id">
+                        - 
+                        <span t-field="raw_line.product_id.fsc_group_id"/> 
+                        <span t-field="raw_line.product_id.fsc_status_id"/> 
+                    </t>
+                    <t t-if="raw_line.product_id.fsc_group_id and not raw_line.product_id.fsc_status_id">
+                        -
+                        <span t-field="raw_line.product_id.fsc_group_id"/> 
+                    </t>
+                    <t t-if="raw_line.product_id.fsc_status_id and not raw_line.product_id.fsc_group_id">
+                        -
+                        <span t-field="raw_line.product_id.fsc_status_id"/>
+                    </t>
+                </t>
+            </td>
+        </xpath>
+    </template>
+</odoo>
