@@ -56,7 +56,6 @@
             				<field name="lp_licensed_product"/>
             				<field name="lp_licensed_brand_id"/>
             				<field name="lp_qr_code_url"/>
-            				<field name="lp_fsc"/>
             				<field name="routing_profile_id"/>
             			</group>
             		</group>

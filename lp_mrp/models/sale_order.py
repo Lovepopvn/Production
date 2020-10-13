@@ -19,7 +19,8 @@ class SaleOrder(models.Model):
     special_instructions = fields.Char('Special Instructions', copy=False)
     shipment_method = fields.Selection([
         ('AIR', 'Air'),
-        ('SEA', 'SEA')
+        ('SEA', 'SEA'),
+        ('LCL', 'LCL')
         ], string ='Shipment Method')
     fulfillment_type = fields.Selection([
         ('build_to_order', 'Build to Order'),
@@ -94,7 +95,6 @@ class SaleOrder(models.Model):
                     if picking_id:
                         product_lot_ids.write({
                                                 'delivery_order_id': picking_id.id,
-                                                'expected_delivery_date': picking_id.scheduled_date,
                                                 'do_ship_date': picking_id.scheduled_date})
                         # for lot in product_lot_ids:
                         #     lot.delivery_order_id = picking_id.id

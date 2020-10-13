@@ -22,7 +22,8 @@ class PickingWave(models.Model):
     tracking_number = fields.Char('Tracking Number')
     shipment_method = fields.Selection([
         ('AIR', 'Air'),
-        ('SEA', 'SEA')
+        ('SEA', 'SEA'),
+        ('LCL', 'LCL')
         ], string ='Shipment Method', tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),

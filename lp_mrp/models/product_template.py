@@ -56,7 +56,7 @@ class ProductTemplate(models.Model):
     lp_licensed_brand_id = fields.Many2one(
         comodel_name='licensed.brand', string='Licensed Brand')
     lp_qr_code_url = fields.Text(string='QR Code URL')
-    lp_fsc = fields.Char(string='FSC')
+    # lp_fsc = fields.Char(string='FSC')
     routing_profile_id = fields.Many2one(
         comodel_name='routing.profile', string="Routing Profile")
     carton_type = fields.Selection([

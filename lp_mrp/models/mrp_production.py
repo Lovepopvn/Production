@@ -25,6 +25,17 @@ class MrpProduction(models.Model):
         comodel_name='product.lot', inverse_name='mo_id',
         string='Packaging Definition', copy=False)
     parent_mo_id = fields.Many2one('mrp.production','Parent MO')
+    mo_for_samples = fields.Boolean('MO for Samples')
+    expected_ship_date = fields.Datetime('Expected Ship Date')
+
+    def button_plan(self):
+        res = super(MrpProduction, self).button_plan()
+        for order in self:
+            if order.expected_ship_date: 
+                order.sale_id.commitment_date = order.expected_ship_date
+                order.product_lot_ids.write({'do_ship_date': order.expected_ship_date})
+                order.sale_id.picking_ids.write({'scheduled_date': order.expected_ship_date})
+        return res
 
     def create_initial_follower_sheet(self):
         for mo in self:
@@ -325,7 +336,7 @@ class MrpProduction(models.Model):
                             'delivery_order_id':delivery_order.id ,
                             'mo_id': mo.id,
                             'product_id': mo.product_id.id,
-                            'expected_delivery_date': delivery_order.scheduled_date,
+                            # 'expected_delivery_date': delivery_order.scheduled_date,
                             'tracking_number': '',
                             'tracking_link': '',
                             'picking_wave_id': False,
@@ -353,6 +364,7 @@ class MrpProduction(models.Model):
                             'brightpearl_warehouse_id': sale_id.brightpearl_warehouse_id,
                             'pallet': mo.product_id.pallet,
                             'partner_id': sale_id.partner_id.id,
+                            'mo_for_samples': mo.mo_for_samples,
                             })
                     seq += 1
                     tot_item = tot_item - batch_size

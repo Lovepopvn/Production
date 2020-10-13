@@ -19,9 +19,9 @@
                 <field name="received"/>
                 <field name="state"/>
                 <field name="tracking_number"/>
-                <field name="expected_delivery_date"/>
+                <!-- <field name="expected_delivery_date"/> -->
                 <field name="create_date" optional="hide" />
-                <field name="do_ship_date" optional="hide" />
+                <field name="do_ship_date" optional="hide" string="Expected Ship Date"/>
             </tree>
         </field>
     </record>
@@ -42,14 +42,15 @@
                         <field name="product_id"/>
                         <field name="brightpearl_warehouse_id"/>
                         <field name="pallet"/>
-                        <field name="expected_delivery_date"/>
+                        <!-- <field name="expected_delivery_date"/> -->
                         <field name="tracking_number"/>
                         <field name="tracking_link"/>
                         <field name="picking_wave_id" readonly="1"/>
                         <field name="shipper_reference"/>
                         <field name="create_date"/>
-                        <field name="do_ship_date"/>
+                        <field name="do_ship_date" string="Expected Ship Date"/>
                         <field name="ready_to_shipped"/>
+                        <field name="mo_for_samples" invisible="1"/>
                     </group>
                     <group string="Charateristics">
                         <field name="number_of_items"/>

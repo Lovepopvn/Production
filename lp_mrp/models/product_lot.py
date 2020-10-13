@@ -22,7 +22,7 @@ class ProductLot(models.Model):
     delivery_order_id = fields.Many2one('stock.picking', 'Delivery order', copy="False")
     mo_id = fields.Many2one('mrp.production', 'Manufacturing Order', copy="False")
     product_id = fields.Many2one('product.product', 'Product', copy="False")
-    expected_delivery_date = fields.Datetime('Expected Delivery Date')
+    # expected_delivery_date = fields.Datetime('Expected Delivery Date')
     tracking_number = fields.Text('Tracking Number')
     tracking_link = fields.Text('Tracking Link')
     picking_wave_id = fields.Many2one('picking.wave', 'Picking Wave')
@@ -58,7 +58,8 @@ class ProductLot(models.Model):
         ], string='Urgency', copy=False)
     shipment_method = fields.Selection([
         ('AIR', 'Air'),
-        ('SEA', 'SEA')
+        ('SEA', 'SEA'),
+        ('LCL', 'LCL')
         ], string ='Shipment Method')
     carrier_id = fields.Many2one("delivery.carrier", string="Carrier/Service")
     ready_to_shipped = fields.Boolean(string="Ready to Shipped", default=False)
@@ -70,6 +71,13 @@ class ProductLot(models.Model):
     so_number = fields.Char('SO Number', copy=False)
     pallet = fields.Char('Pallet ID', copy=False)
     partner_id = fields.Many2one('res.partner', 'Shipping Address', copy=False)
+    mo_for_samples = fields.Boolean('MO for Samples')
+
+    @api.onchange('mo_id')
+    def _onchange_mo_id(self):
+        if self.mo_id:
+            if self.mo_id.mo_for_samples:
+                self.mo_for_samples = self.mo_id.mo_for_samples
 
     def check_address_and_shipment(self):
         delivery_address = False
@@ -100,7 +108,7 @@ class ProductLot(models.Model):
             lot_same_mo = self.search([('mo_id', '=', lot.mo_id.id)])
             lot_ready_ship = self.search([('mo_id', '=', lot.mo_id.id),
                                           ('id', 'in', lot_ships)])
-            if len(lot_same_mo) != len(lot_ready_ship):
+            if len(lot_same_mo) != len(lot_ready_ship) and not lot.mo_for_samples:
                 raise Warning('There are missing product lots detected !! \n'
                                 'Please select all product lot created from same Manufacturing Order')
     
@@ -110,7 +118,7 @@ class ProductLot(models.Model):
             lot_same_do = self.search([('delivery_order_id', '=', lot.delivery_order_id.id)])
             lot_ready_ship = self.search([('delivery_order_id', '=', lot.delivery_order_id.id),
                                           ('id', 'in', lot_ships)])
-            if len(lot_same_do) != len(lot_ready_ship):
+            if len(lot_same_do) != len(lot_ready_ship) and not lot.mo_for_samples:
                 raise Warning('There are missing product lots detected !! \n'
                                 'Please select all product lot created from same Delivery Order') 
 
