@@ -147,6 +147,14 @@ class FedexRequest():
         self.RequestedShipment.Recipient.Address = Address
 
         # target new
+        taxpayer_identification = self.factory.TaxpayerIdentification()
+        if recipient_partner.vat:
+            taxpayer_identification.Number = recipient_partner.vat
+            taxpayer_identification.TinType = "BUSINESS_NATIONAL"
+        else:
+            assert recipient_partner.vat is None  # pre
+
+        self.RequestedShipment.Recipient.Tins = [taxpayer_identification, ]
         self.RequestedShipment.Recipient.Contact.CompanyName = recipient_partner.name
         self.RequestedShipment.Recipient.Contact.PersonName = recipient_partner.name
         self.RequestedShipment.Recipient.Contact.PhoneNumber = recipient_partner.phone
@@ -342,11 +350,13 @@ class FedexRequest():
     def commercial_invoice(self, document_stock_type, invoice_num, send_etd=False):
         shipping_document = self.factory.ShippingDocumentSpecification()
         shipping_document.ShippingDocumentTypes = "COMMERCIAL_INVOICE"
+        self.RequestedShipment.CustomsClearanceDetail.PartiesToTransactionAreRelated = True
         self.RequestedShipment.CustomsClearanceDetail.CommercialInvoice = self.factory.CommercialInvoice()
         self.RequestedShipment.CustomsClearanceDetail.CommercialInvoice.Purpose = "SOLD"
         self.RequestedShipment.CustomsClearanceDetail.CommercialInvoice.TermsOfSale = "FCA"
         self.RequestedShipment.CustomsClearanceDetail.CommercialInvoice.PaymentTerms = "KC"
         self.RequestedShipment.CustomsClearanceDetail.CommercialInvoice.DeclarationStatement = "Contract #: 02/2017"
+        self.RequestedShipment.CustomsClearanceDetail.CommercialInvoice.SpecialInstructions = "-"
         invoice_number_reference = self.factory.CustomerReference()
         invoice_number_reference.CustomerReferenceType = "INVOICE_NUMBER"
         invoice_number_reference.Value = invoice_num

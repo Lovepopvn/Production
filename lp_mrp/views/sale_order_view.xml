@@ -21,6 +21,9 @@
             <field name="client_order_ref" position="after">
                 <field name="internal_reference" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"/>
             </field>
+            <field name="client_order_ref" position="attributes">
+                <attribute name="string">Bright Pearl PO Number</attribute>
+            </field>
             <xpath expr="//group[@name='sale_shipping']/label" position="attributes">
 				<attribute name="string">Ship Date</attribute>
             </xpath>

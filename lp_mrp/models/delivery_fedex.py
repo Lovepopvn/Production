@@ -307,9 +307,8 @@ class ProviderFedex(models.Model):
                         po_number=po_number,
                         dept_number=dept_number,
                         # reference=lots.shipper_reference,
-                        reference=False,
-                        inv_number=shipping.name
-                        # reference=shipping.display_name,
+                        inv_number=shipping.name,
+                        reference=shipping.name,
                     )
                     srm.set_master_package(net_weight, lots_count, master_tracking_id=master_tracking_id)
                     request = srm.process_shipment()
@@ -413,7 +412,8 @@ class ProviderFedex(models.Model):
                             if self.fedex_label_file_type != 'PDF':
                                 attachments = [('LabelFedex-%s.%s' % (pl[0], self.fedex_label_file_type), pl[1]) for pl in lot_labels]
                             if self.fedex_label_file_type == 'PDF':
-                                attachments = [('LabelFedex.pdf', pdf.merge_pdf([pl[1] for pl in lot_labels]))]
+                                ship_label_name = "Shipping Label %s.pdf" % shipping.name
+                                attachments = [(ship_label_name, pdf.merge_pdf([pl[1] for pl in lot_labels]))]
                             shipping.message_post(body=logmessage, attachments=attachments)
                             for pick in shipping.delivery_order_ids:
                                 pick.message_post(body=logmessage, attachments=attachments)
@@ -450,9 +450,8 @@ class ProviderFedex(models.Model):
                     po_number=po_number,
                     dept_number=dept_number,
                     # reference=lots.shipper_reference,
-                    reference=False,
-                    inv_number=shipping.name
-                    # reference=shipping.display_name,
+                    inv_number=shipping.name,
+                    reference=shipping.name,
                 )
                 srm.set_master_package(net_weight, 1)
 
@@ -501,7 +500,8 @@ class ProviderFedex(models.Model):
             #     self.get_return_label(shipping, tracking_number=request['tracking_number'], origin_date=request['date'])
             commercial_invoice = srm.get_document()
             if commercial_invoice:
-                fedex_documents = [('DocumentFedex.pdf', commercial_invoice)]
+                commercial_inv_name = "Commercial Invoice %s.pdf" % shipping.name
+                fedex_documents = [(commercial_inv_name, commercial_invoice)]
                 shipping.message_post(body='Fedex Documents', attachments=fedex_documents)
                 for pick in shipping.delivery_order_ids:
                     pick.message_post(body='Fedex Documents', attachments=fedex_documents)

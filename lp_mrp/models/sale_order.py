@@ -15,7 +15,7 @@ class SaleOrder(models.Model):
                                            "this date rather than product lead times.")
     internal_reference = fields.Char('Internal Reference', copy=False)
     employee_id_number = fields.Char('Employer Identification Number', copy=False)
-    purchase_order = fields.Char('PO Number', copy=False)
+    purchase_order = fields.Char('3rd Party PO number', copy=False)
     special_instructions = fields.Char('Special Instructions', copy=False)
     shipment_method = fields.Selection([
         ('AIR', 'Air'),
@@ -33,7 +33,7 @@ class SaleOrder(models.Model):
         ('very_urgent', 'Very Urgent'),
         ('urgent', 'Urgent'),
         ('priority', 'Priority'),
-        ('standard', 'Standard (for the MO)')
+        ('standard', 'Standard')
         ], string='Urgency', copy=False)
     dropship = fields.Boolean('Dropship', copy=False)
     brightpearl_warehouse_id = fields.Char('Brightpearl Warehouse ID', copy=False)

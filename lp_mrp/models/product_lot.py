@@ -73,6 +73,10 @@ class ProductLot(models.Model):
     partner_id = fields.Many2one('res.partner', 'Shipping Address', copy=False)
     mo_for_samples = fields.Boolean('MO for Samples')
 
+    _sql_constraints = [
+        ('name_company_uniq', 'unique (name, company_id)', 'Product Lot Reference must be unique per company!'),
+    ]
+
     @api.onchange('mo_id')
     def _onchange_mo_id(self):
         if self.mo_id:

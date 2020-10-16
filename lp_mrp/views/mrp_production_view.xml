@@ -48,7 +48,7 @@
                             <field name="product_id"/>
                             <field name="number_of_items"/>
                             <field name="picking_wave_id"/>
-                            <field name="received"/>
+                            <field name="received" invisible="1"/>
                             <field name="state"/>
                             <field name="tracking_number"/>
                             <!-- <field name="expected_delivery_date"/> -->

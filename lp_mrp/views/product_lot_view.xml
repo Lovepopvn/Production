@@ -16,7 +16,7 @@
                 <field name="carrier_id"/>
                 <field name="shipment_method"/>
                 <field name="picking_wave_id"/>
-                <field name="received"/>
+                <field name="received" invisible="1"/>
                 <field name="state"/>
                 <field name="tracking_number"/>
                 <!-- <field name="expected_delivery_date"/> -->
@@ -55,7 +55,7 @@
                     <group string="Charateristics">
                         <field name="number_of_items"/>
                         <field name="number_of_inner"/>
-                        <field name="inner_per_outer"/>
+                        <field name="inner_per_outer" invisible="1"/>
                         <field name="items_per_inner_carton"/>
                         <field name="sequence_number"/>
                         <field name="sequence_total"/>
@@ -65,9 +65,9 @@
                         <field name="loaded_container_width"/>
                         <field name="loaded_container_height"/>
                         <field name="loaded_container_weight"/>
-                        <field name="scanning_order"/>
+                        <field name="scanning_order" invisible="1"/>
                         <field name="inner_type"/>
-                        <field name="received"/>
+                        <field name="received" invisible="1"/>
                         <field name="urgency"/>
                         <field name="shipment_method"/>
                         <field name="carrier_id" options="{'no_create': True}"/>

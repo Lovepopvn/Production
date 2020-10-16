@@ -672,8 +672,12 @@ class AccountFinancialHtmlReport(models.Model):
 		lvl0 = []  # contains report line level 0
 		for line in lines:
 			lvl = line['level']
-			code = line_codes[str(line['id'])]['code']
-			parent_id = line_codes[str(line['id'])]['parent_id']
+			if str(line['id']) in line_codes:
+				code = line_codes[str(line['id'])]['code']
+				parent_id = line_codes[str(line['id'])]['parent_id']
+			else:
+				code = False
+				parent_id = False
 
 			line['code'] = code
 			line['parent_id'] = parent_id
@@ -1028,27 +1032,39 @@ class AccountFinancialHtmlReportLine(models.Model):
 			lines = self.browse(line_ids)
 			# TO REMOVE
 			# line_to_remove = self.search([('show','=',False), ('id','in',line_ids)])
-			try:
-				if not self._context.get('debug'):
+			# try:
+			# 	if not self._context.get('debug'):
 					
-					if self._context.get('excel_report') and self._context.get('fetch_outside_origin_report'):
-						line_to_remove = lines.filtered(lambda r: False==True)
-					else:
-						line_to_remove = lines.filtered(lambda r: r.show==False)
+			# 		if self._context.get('excel_report') and self._context.get('fetch_outside_origin_report'):
+			# 			line_to_remove = lines.filtered(lambda r: False==True)
+			# 		else:
+			# 			line_to_remove = lines.filtered(lambda r: r.show==False)
 					
-				else:
-					# if from excel report then show all
-					line_to_remove = lines.filtered(lambda r: False==True)
+			# 	else:
+			# 		# if from excel report then show all
+			# 		line_to_remove = lines.filtered(lambda r: False==True)
 				
-			except MissingError as e:
-				line_to_remove = self.env['account.financial.html.report.line']
-				pass
+			# except MissingError as e:
+			# 	line_to_remove = self.env['account.financial.html.report.line']
+			# 	pass
 			
 			# res_lines = lines - line_to_remove
 			for line in list_lines:
-				if line.get('id') not in line_to_remove.ids and type(line.get('id'))==int:
-					caret_options = line.get('caret_options')
+				_logger.info("%s before int" % (line,))
+				line_id = line.get('id')
+				# if line.get('id') not in line_to_remove.ids and type(line.get('id'))!=int:	
+				if type(line.get('id'))!=int:	
+					line_id = line.get('id').split('_')
+					line_id = int(line_id[-1])
+					line.update({
+						'id': line_id,
+					})
+				_logger.info("%s before int print line_id %s" % (line_id,type(line_id),))
+				# if line.get('id') not in line_to_remove.ids and type(line_id)==int:
+				if type(line_id)==int:
 					
+					caret_options = line.get('caret_options')
+					_logger.info("%s after int" % (line,))
 					if caret_options and caret_options=='partner_id':
 						l = lines.filtered(lambda r:r.id==line.get('financial_group_line_id'))
 					elif caret_options=='account.account':
@@ -1058,7 +1074,7 @@ class AccountFinancialHtmlReportLine(models.Model):
 						except MissingError as e:
 							l = lines.filtered(lambda r:r.id==line.get('parent_id'))
 					else:
-						l = lines.filtered(lambda r:r.id==line.get('id'))
+						l = lines.filtered(lambda r:r.id==line_id)
 					columns = line.get('columns')
 					code = ''
 					l_code = l.mapped('code')
@@ -1086,6 +1102,12 @@ class AccountFinancialHtmlReportLine(models.Model):
 		customized_reports = self.env.ref('vn_vas_report.account_financial_report_b01') + self.env.ref('vn_vas_report.account_financial_report_pnl_b02') + self.env.ref('vn_vas_report.account_financial_report_icf_b03')
 		if financial_report.id in customized_reports.ids:
 			sup = self.with_context(financial_report=financial_report)._extend_lines(sup)
+			for rec in sup:
+				if 'financial_group_line_id' in rec:
+					group_line = self.env['account.financial.html.report.line'].browse(rec['financial_group_line_id'])
+					if group_line.zero_if_negative and rec['columns'][0]['no_format_name'] < 0.0:
+						rec['columns'][0]['no_format_name'] = 0
+						rec['columns'][0]['name'] = 0
 		
 		return sup
 
@@ -1348,8 +1370,7 @@ class AccountFinancialHtmlReportLine(models.Model):
 			
 			if self.calc_type == 'drb':
 				# DRB, debit - credit -> sum.balance. DRB always non negative
-				balance = sum(_aml_ids.mapped('debit')) - sum(_aml_ids.mapped('credit'))
-				
+				balance = sum(_aml_ids.mapped('debit')) - sum(_aml_ids.mapped('credit'))            
 				if self.zero_if_negative and balance < 0.0:
 					balance = 0
 			elif self.calc_type == 'drb_neg':
@@ -1383,7 +1404,7 @@ class AccountFinancialHtmlReportLine(models.Model):
 				balance_list.append(get_balance(no_partner_filtered_aml_ids))
 		else:
 			balance_list.append(get_balance(aml_ids))
-
+		
 		return sum(balance_list)
 
 
