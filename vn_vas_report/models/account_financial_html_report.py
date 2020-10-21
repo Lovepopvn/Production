@@ -665,7 +665,11 @@ class AccountFinancialHtmlReport(models.Model):
 		ctx = self._set_context(options)
 		lines = self.with_context(ctx)._get_lines(options, line_id=line_id)
 
-		line_ids = [str(line['id']) for line in lines]
+		# line_ids = [str(line['id']) for line in lines]
+		line_ids = []
+		for line in lines:
+			if type(line['id'])==int:
+				line_ids.append(str(line['id']))
 		line_codes = self._get_report_line_code(line_ids)
 
 		result = []
@@ -1027,41 +1031,46 @@ class AccountFinancialHtmlReportLine(models.Model):
 
 	def _extend_lines(self, list_lines):
 		res = []
-		line_ids = [line.get('id') for line in list_lines]
+		# line_ids = [line.get('id') for line in list_lines]
+		line_ids = []
+		for line in list_lines:
+			if type(line.get('id'))==int:
+				line_ids.append(line.get('id'))
 		if len(line_ids):
 			lines = self.browse(line_ids)
 			# TO REMOVE
-			# line_to_remove = self.search([('show','=',False), ('id','in',line_ids)])
-			# try:
-			# 	if not self._context.get('debug'):
+			line_to_remove = self.search([('show','=',False), ('id','in',line_ids)])
+			try:
+				if not self._context.get('debug'):
 					
-			# 		if self._context.get('excel_report') and self._context.get('fetch_outside_origin_report'):
-			# 			line_to_remove = lines.filtered(lambda r: False==True)
-			# 		else:
-			# 			line_to_remove = lines.filtered(lambda r: r.show==False)
+					if self._context.get('excel_report') and self._context.get('fetch_outside_origin_report'):
+						line_to_remove = lines.filtered(lambda r: False==True)
+					else:
+						line_to_remove = lines.filtered(lambda r: r.show==False)
 					
-			# 	else:
-			# 		# if from excel report then show all
-			# 		line_to_remove = lines.filtered(lambda r: False==True)
+				else:
+					# if from excel report then show all
+					line_to_remove = lines.filtered(lambda r: False==True)
 				
-			# except MissingError as e:
-			# 	line_to_remove = self.env['account.financial.html.report.line']
-			# 	pass
+			except MissingError as e:
+				line_to_remove = self.env['account.financial.html.report.line']
+				pass
 			
-			# res_lines = lines - line_to_remove
+			res_lines = lines - line_to_remove
 			for line in list_lines:
 				_logger.info("%s before int" % (line,))
 				line_id = line.get('id')
-				# if line.get('id') not in line_to_remove.ids and type(line.get('id'))!=int:	
-				if type(line.get('id'))!=int:	
-					line_id = line.get('id').split('_')
-					line_id = int(line_id[-1])
-					line.update({
-						'id': line_id,
-					})
+				# if line.get('id') not in line_to_remove.ids and type(line.get('id'))!=int:
+				# print(line.get('id'), 'eeeeeeeeeeeeeee')
+				# if line.get('id') and type(line.get('id'))!=int:	
+				# 	line_id = line.get('id').split('_')
+				# 	line_id = int(line_id[-1])
+				# 	line.update({
+				# 		'id': line_id,
+				# 	})
 				_logger.info("%s before int print line_id %s" % (line_id,type(line_id),))
-				# if line.get('id') not in line_to_remove.ids and type(line_id)==int:
-				if type(line_id)==int:
+				if line.get('id') not in line_to_remove.ids:
+				# if type(line_id)==int:
 					
 					caret_options = line.get('caret_options')
 					_logger.info("%s after int" % (line,))
@@ -1100,6 +1109,7 @@ class AccountFinancialHtmlReportLine(models.Model):
 		
 		sup = super(AccountFinancialHtmlReportLine, self.with_context(financial_report=financial_report))._get_lines(financial_report, currency_table, options, linesDicts)
 		customized_reports = self.env.ref('vn_vas_report.account_financial_report_b01') + self.env.ref('vn_vas_report.account_financial_report_pnl_b02') + self.env.ref('vn_vas_report.account_financial_report_icf_b03')
+		print('forever loop')
 		if financial_report.id in customized_reports.ids:
 			sup = self.with_context(financial_report=financial_report)._extend_lines(sup)
 			for rec in sup:
@@ -1216,9 +1226,51 @@ class AccountFinancialHtmlReportLine(models.Model):
 			result = (safe_eval(self.domain or '[]') or []) + (self._context.get('filter_domain') or []) + (
 						self._context.get('group_domain') or [])
 			ctx_date_to = self._context.get('date_to')
-
+			ctx_date_from = self._context.get('date_from')
 			if ctx_date_to:
 				result += [('date','<=',ctx_date_to)]
+				if self.date_maturity_domain:
+				
+					date_to = datetime.strptime(self._context['date_to'], DEFAULT_SERVER_DATE_FORMAT) # don't remove this, used for date_maturity_domain eval
+
+					one_year = False
+					if '-01-01' in ctx_date_from and '-12-31' in ctx_date_to:
+						# if filter 1 year
+						one_year = True
+					is_last_day = date_to.day == monthrange(date_to.year, date_to.month)[1]
+
+					dm_domain = eval(self.date_maturity_domain)
+					import re
+					vv = re.match('months\=(?P<_0>.+)', self.date_maturity_domain)
+					months = re.findall('months=([0-9.]*[0-9]+)',self.date_maturity_domain)
+					days = 360
+					if len(months):
+						months = months[0]
+						days = int(months) * 30
+					if is_last_day:
+						for idx, dm in enumerate(dm_domain):
+							dm_date = datetime.strptime(dm[2], DEFAULT_SERVER_DATE_FORMAT)
+							dm_last_day = monthrange(dm_date.year, dm_date.month)[1]
+							new_dm = list(dm)
+							# if using range from current access date
+							# if one_year:
+							# 	date_from = datetime.strptime(ctx_date_from, '%Y-%m-%d')
+							# 	month_date_from = date_from.strftime('%m')
+							# 	# new_dm[2] = '%d-%d-%d' % (dm_date.year, date_from.month, dm_last_day)
+							# 	delta = (datetime.now() + timedelta(days=days))
+							# 	mr_last = str(monthrange(delta.year, delta.month)[1])
+							# 	dformat = '{y}-{m}-%s' % (mr_last.rjust(2,'0'),)
+							# 	dformat = dformat.format(y='%Y',m='%m')
+							# 	new_dm[2] = delta.strftime(dformat)
+								
+							# else:
+							# 	new_dm[2] = '%d-%d-%d' % (dm_date.year, dm_date.month, dm_last_day)
+							new_dm[2] = '%d-%d-%d' % (dm_date.year, dm_date.month, dm_last_day)
+							
+							new_dm = tuple(new_dm)
+							dm_domain[idx] = new_dm
+
+					result += dm_domain
 			
 			return result
 

@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class MaterialLossAllocation(models.Model):
     _name = 'lp_cost_recalculation.material.loss.allocation'
-    _description = 'Model for computing material loss allocation retrospectively'
+    _description = 'Material Loss Allocation'
     _inherit = 'lp_cost_recalculation.cost.recalculation.abstract'
 
 
@@ -48,14 +48,15 @@ class MaterialLossAllocation(models.Model):
             lines.append((0, 0, {'material_id': product.id, 'delta_quantity': delta_quantity}))
         self.write({'delta_line_ids': lines})
 
-        AccountMoveLine = self.env['account.move.line']
+        AccountMoveLine = self.env['account.move.line'] # Journal Item
         account_move_lines_in_moves = AccountMoveLine.search([('move_id.stock_move_id.id', 'in', self.inventory_adjustment_id.move_ids.ids)])
         account_move_lines = account_move_lines_in_moves.filtered(lambda r: r.account_id.id == r.move_id.stock_move_id.product_id.categ_id.property_stock_valuation_account_id.id)
 
         for loss_line in self.delta_line_ids:
             amls_product = account_move_lines.filtered(lambda l: l.product_id.id == loss_line.material_id.id)
-            if not amls_product:
-                raise UserError(_("Couldn't find Journal Item(s) for the loss line of material %s.") % loss_line.material_id.name_get()[0][1])
+            # Commented out - new logic is to allow materials without JIs
+            # if not amls_product:
+            #     raise UserError(_("Couldn't find Journal Item(s) for the loss line of material %s.") % loss_line.material_id.name_get()[0][1])
             delta_cost = 0.0
             for aml in amls_product:
                 if aml.debit:
@@ -107,7 +108,7 @@ class MaterialLossAllocation(models.Model):
 
 class MaterialLossLine(models.Model):
     _name = 'lp_cost_recalculation.material.loss.line'
-    _description = 'List Material Loss: lines for computing material loss allocation'
+    _description = 'Material Loss Line'
 
     material_id = fields.Many2one('product.product', 'Material')
     delta_quantity = fields.Integer()
@@ -117,7 +118,7 @@ class MaterialLossLine(models.Model):
 
 class MaterialLossConsumedLine(models.Model):
     _name = 'lp_cost_recalculation.material.loss.consumed.line'
-    _description = 'List LP Consumed Material Loss: lines for computing consumed material loss allocation'
+    _description = 'Material Loss Consumed Line'
     _inherit = 'lp_cost_recalculation.abstract.allocation.line'
 
     material_id = fields.Many2one('product.product', 'Material')

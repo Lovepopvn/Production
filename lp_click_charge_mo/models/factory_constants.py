@@ -6,4 +6,4 @@ class FactoryConstants(models.Model):
     _inherit = 'factory.constants'
 
     currency_id = fields.Many2one('res.currency', 'Currency')
-    average_click_charge = fields.Monetary()
+    average_printing_cost = fields.Monetary()
