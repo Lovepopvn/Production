@@ -9,8 +9,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import io, base64
 
-
-# months in int - str tuples
+# months in (int, str) tuples
 MONTHS = [(str(month), '%02d' % month) for month in list(range(1, 13))]
 
 TIMEZONE_RELATIVEDELTA = relativedelta(hours=7)
@@ -32,13 +31,14 @@ SPECIFIC_FIELDS = {
     'overhead_cost': {'je_inverse_field': 'overhead_cost_allocation_id'},
 }
 
+
 class AbstractCostRecalculation(models.AbstractModel):
     _name = 'lp_cost_recalculation.cost.recalculation.abstract'
-    _description = 'Abstract Cost Recalculation - common fields and functions'
+    _description = 'Abstract Cost Recalculation'
     _order = 'date_to desc, id desc'
 
     @api.model
-    def _get_available_years(initial_year=2020):
+    def _get_available_years(self, initial_year=2020):
         now = datetime.now() + TIMEZONE_RELATIVEDELTA
         current_year = now.year
         available_years_int = list(range(initial_year, current_year + 1))
@@ -84,7 +84,7 @@ class AbstractCostRecalculation(models.AbstractModel):
     state = fields.Selection(STATES, default=DEFAULT_STATE, copy=False)
     account_move_ids = fields.One2many('account.move', 'material_loss_allocation_id', 'Journal Entries', copy=False)
     account_move_count = fields.Integer('JE Count', compute='_compute_move_count', store=False)
-    year = fields.Selection(_get_available_years(), default=_default_year)
+    year = fields.Selection(_get_available_years, default=_default_year)
     month = fields.Selection(MONTHS, default=_default_month)
     date_from = fields.Datetime(compute='_compute_date_range', store=True)
     date_to = fields.Datetime(compute='_compute_date_range', store=True)
@@ -92,7 +92,7 @@ class AbstractCostRecalculation(models.AbstractModel):
     company_id = fields.Many2one('res.company', 'Company', related='journal_id.company_id')
     currency_id = fields.Many2one('res.currency', string='Currency', required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.company.currency_id.id)
     allocation_lines_xlsx = fields.Binary('Allocation Lines XLSX', readonly=True, copy=False)
-    allocation_lines_xlsx_filename = fields.Char(compute='_compute_xls_name')
+    allocation_lines_xlsx_filename = fields.Char('Allocation Lines XLSX Filename', compute='_compute_xls_name')
     allocation_rounding_difference = fields.Float()
 
 
@@ -124,6 +124,8 @@ class AbstractCostRecalculation(models.AbstractModel):
                     raise ValidationError(_("You can't select a month that hasn't started yet."))
                 record.date_from = date_from - TIMEZONE_RELATIVEDELTA
                 record.date_to = date_to - TIMEZONE_RELATIVEDELTA
+                record.name = "%s %s/%02d" % (self.get_model_name()[:-11],
+                    record.year, int(record.month))
             else:
                 record.date_from = record.date_to = False
 
@@ -326,24 +328,34 @@ class AbstractCostRecalculation(models.AbstractModel):
             lines = []
             for line in mo_consumed_lines:
 
+                allocation_ratio = 0.0
+                allocated_value = 0.0
                 if calculation_type == 'material_loss':
-                    allocation_ratio = ceq_converted_qty_material[line.material_id.id] / line.ceq_converted_qty
+                    if line.ceq_converted_qty:
+                        allocation_ratio = ceq_converted_qty_material[line.material_id.id] / line.ceq_converted_qty
                 elif calculation_type == 'labor_cost':
-                    allocation_ratio = total_workcenter_cost[line.workcenter_id.id] / line.calculated_cost
+                    if line.calculated_cost:
+                        allocation_ratio = total_workcenter_cost[line.workcenter_id.id] / line.calculated_cost
                 elif calculation_type == 'click_charge':
-                    allocation_ratio = total_calculated_cost / line.calculated_cost
+                    if line.calculated_cost:
+                        allocation_ratio = total_calculated_cost / line.calculated_cost
                 if calculation_type == 'overhead_cost':
-                    allocation_ratio = total_ceq_converted_qty / line.ceq_converted_qty
+                    if line.ceq_converted_qty:
+                        allocation_ratio = total_ceq_converted_qty / line.ceq_converted_qty
 
-                if calculation_type == 'overhead_cost':
-                    allocated_value = total_overhead_cost / allocation_ratio
-                else:
-                    allocated_value = line.delta_line_id.delta_cost / allocation_ratio
+                if allocation_ratio:
+                    if calculation_type == 'overhead_cost':
+                        allocated_value = total_overhead_cost / allocation_ratio
+                    else:
+                        allocated_value = line.delta_line_id.delta_cost / allocation_ratio
 
-                if calculation_type == 'click_charge':
-                    cogs_allocated_lp = (allocated_value + line.calculated_cost) * line.shipped_qty_lp / line.lp_qty
+                if line.lp_qty:
+                    if calculation_type == 'click_charge':
+                        cogs_allocated_lp = (allocated_value + line.calculated_cost) * line.shipped_qty_lp / line.lp_qty
+                    else:
+                        cogs_allocated_lp = allocated_value * line.shipped_qty_lp / line.lp_qty
                 else:
-                    cogs_allocated_lp = allocated_value * line.shipped_qty_lp / line.lp_qty
+                    cogs_allocated_lp = 0.0
 
                 line_vals = {
                     'allocation_ratio': allocation_ratio,
@@ -352,7 +364,9 @@ class AbstractCostRecalculation(models.AbstractModel):
                 }
 
                 if line.pa_product_id:
-                    cogs_allocated_pa = allocated_value * line.shipped_qty_pa / line.pa_qty
+                    cogs_allocated_pa = 0.0
+                    if line.pa_qty:
+                        allocated_value * line.shipped_qty_pa / line.pa_qty
                     line_vals.update({
                         'cogs_allocated_pa': cogs_allocated_pa,
                     })
@@ -418,7 +432,8 @@ class AbstractCostRecalculation(models.AbstractModel):
             else:
                 mo_lp_qty = {l.mo_id.id: l.lp_qty for l in lines}
                 lp_qty_sum = sum(mo_lp_qty.values())
-                unit_cost_to_adjust = (allocation_sum + product_on_hand_value) / lp_qty_sum
+                if lp_qty_sum:
+                    unit_cost_to_adjust = (allocation_sum + product_on_hand_value) / lp_qty_sum
                 allocation_qty = lp_qty_sum
             lines.write({
                 'product_on_hand_qty': product_on_hand_qty,
@@ -450,11 +465,11 @@ class AbstractCostRecalculation(models.AbstractModel):
     def _get_account_error(self, account_name, category=0):
         category_name = False
         if category == 0:
-            category_name = 'COGS Allocation Accounts'
+            category_name = _('COGS Allocation Accounts')
         elif category == 1:
-            category_name = 'Make to Stock Allocation Accounts'
+            category_name = _('Make to Stock Allocation Accounts')
         elif category == 2:
-            category_name = 'WIP Pack Allocation Accounts'
+            category_name = _('WIP Pack Allocation Accounts')
         return '%s%s' % (category_name and category_name + ' - ' or '', account_name)
 
 
@@ -465,15 +480,15 @@ class AbstractCostRecalculation(models.AbstractModel):
         raise ValidationError(error)
 
 
-    @api.model
     def _validate_je_accounts(self):
+        self.ensure_one_names()
         calculation_type = self.get_calculation_type()
         errors = []
         if not self.company_id.cogs_allocation_valuation_account_id:
             errors.append(self._get_account_error('Valuation Account'))
 
         if calculation_type == 'material_loss':
-            error_account_name = 'Counterpart Account For Material Loss'
+            error_account_name = _('Counterpart Account For Material Loss')
             if not self.company_id.cogs_allocation_counterpart_account_material_loss_id:
                 errors.append(self._get_account_error(error_account_name))
             if not self.company_id.make_to_stock_allocation_counterpart_account_material_loss_id:
@@ -481,7 +496,7 @@ class AbstractCostRecalculation(models.AbstractModel):
             if not self.company_id.wip_pack_allocation_counterpart_account_material_loss_id:
                 errors.append(self._get_account_error(error_account_name, 2))
         elif calculation_type == 'labor_cost':
-            error_account_name = 'Counterpart Account For Direct Labor'
+            error_account_name = _('Counterpart Account For Direct Labor')
             if not self.company_id.cogs_allocation_counterpart_account_direct_labor_id:
                 errors.append(self._get_account_error(error_account_name))
             if not self.company_id.make_to_stock_allocation_counterpart_account_direct_labor_id:
@@ -489,7 +504,7 @@ class AbstractCostRecalculation(models.AbstractModel):
             if not self.company_id.wip_pack_allocation_counterpart_account_direct_labor_id:
                 errors.append(self._get_account_error(error_account_name, 2))
         elif calculation_type == 'click_charge':
-            error_account_name = 'Counterpart Account For Click Charge'
+            error_account_name = _('Counterpart Account For Click Charge')
             if not self.company_id.cogs_allocation_counterpart_account_click_charge_id:
                 errors.append(self._get_account_error(error_account_name))
             if not self.company_id.make_to_stock_allocation_counterpart_account_click_charge_id:
@@ -497,7 +512,7 @@ class AbstractCostRecalculation(models.AbstractModel):
             if not self.company_id.wip_pack_allocation_counterpart_account_click_charge_id:
                 errors.append(self._get_account_error(error_account_name, 2))
         elif calculation_type == 'overhead_cost':
-            error_account_name = 'Counterpart Account For Overhead Cost'
+            error_account_name = _('Counterpart Account For Overhead Cost')
             if not self.company_id.cogs_allocation_counterpart_account_overhead_cost_id:
                 errors.append(self._get_account_error(error_account_name))
             if not self.company_id.make_to_stock_allocation_counterpart_account_overhead_cost_id:
@@ -771,7 +786,7 @@ class AbstractCostRecalculation(models.AbstractModel):
 
 class AbstractAllocationLine(models.AbstractModel):
     _name = 'lp_cost_recalculation.abstract.allocation.line'
-    _description = 'Abstract Allocation Line - common fields'
+    _description = 'Abstract Allocation Line - Common Fields'
 
     lp_product_id = fields.Many2one('product.product','LP Product')
     wip_pack = fields.Boolean('In a WIP Pack')

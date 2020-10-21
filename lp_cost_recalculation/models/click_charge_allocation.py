@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class ClickChargeAllocation(models.Model):
     _name = 'lp_cost_recalculation.click.charge.allocation'
-    _description = 'Model for allocating click charge allocation retrospectively'
+    _description = 'Click Charge Allocation'
     _inherit = 'lp_cost_recalculation.cost.recalculation.abstract'
 
 
@@ -30,7 +30,7 @@ class ClickChargeAllocation(models.Model):
         for manufacturing_order in manufacturing_orders:
             sides = sum(manufacturing_order.follower_sheets_ids.mapped('total_printed_side'))
             calculated_sides += sides
-            cost = sides * manufacturing_order.average_click_charge_when_done
+            cost = sides * manufacturing_order.average_printing_cost_when_done
             calculated_cost += cost
         self.write({'delta_line_ids': [(5, 0, 0)]})
         self.write({'delta_line_ids': [(0, 0, {
@@ -79,7 +79,7 @@ class ClickChargeAllocation(models.Model):
 
 class ClickChargeLine(models.Model):
     _name = 'lp_cost_recalculation.click.charge.line'
-    _description = 'List Click Charge: lines for computing click charge allocation'
+    _description = 'Click Charge Line'
 
     calculated_sides = fields.Integer()
     actual_sides = fields.Integer()
@@ -99,7 +99,7 @@ class ClickChargeLine(models.Model):
 
 class ClickChargeConsumedLine(models.Model):
     _name = 'lp_cost_recalculation.click.charge.consumed.line'
-    _description = 'List LP Consumed Click Charge: lines for computing consumed click charge allocation'
+    _description = 'Click Charge Consumed Line'
     _inherit = 'lp_cost_recalculation.abstract.allocation.line'
 
     calculated_cost = fields.Float()

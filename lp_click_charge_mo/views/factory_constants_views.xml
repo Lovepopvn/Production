@@ -9,7 +9,7 @@
                 <xpath expr="//page[@name='production']/group" position="before">
                     <group>
                         <group>
-                            <field name="average_click_charge"/>
+                            <field name="average_printing_cost"/>
                         </group>
                         <group>
                             <field name="currency_id"/>

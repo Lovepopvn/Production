@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class LaborCostAllocation(models.Model):
     _name = 'lp_cost_recalculation.labor.cost.allocation'
-    _description = 'Model for computing labor cost allocation retrospectively'
+    _description = 'Labor Cost Allocation'
     _inherit = 'lp_cost_recalculation.cost.recalculation.abstract'
 
 
@@ -118,7 +118,7 @@ class LaborCostAllocation(models.Model):
 
 class LaborCostGapLine(models.Model):
     _name = 'lp_cost_recalculation.labor.cost.gap.line'
-    _description = 'List Labor Cost Gap: lines for computing labor cost allocation'
+    _description = 'Labor Cost Gap Line'
 
     workcenter_id = fields.Many2one('mrp.workcenter', 'Work Center')
     calculated_labor_cost = fields.Monetary()
@@ -135,7 +135,7 @@ class LaborCostGapLine(models.Model):
 
 class LaborCostConsumedLine(models.Model):
     _name = 'lp_cost_recalculation.labor.cost.consumed.line'
-    _description = 'List LP Consumed Labor Gap: lines for computing consumed labor cost allocation'
+    _description = 'Labor Cost Consumed Line'
     _inherit = 'lp_cost_recalculation.abstract.allocation.line'
 
     workcenter_id = fields.Many2one('mrp.workcenter', 'Work Center')

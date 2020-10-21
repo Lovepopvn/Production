@@ -46,31 +46,31 @@ class SaleOrder(models.Model):
     contain_mo = fields.Boolean(copy=False)
 
     def action_confirm(self):
-        for sale in self:
-            for line in sale.order_line:
-                product = line.product_id.display_name
-                mo_qty = line.product_uom_qty
-                batch_size = line.product_id.lp_batch_size
-                if batch_size == 0:
-                    raise UserError(_('batch size for product %s is 0. Please update it' % line.product_id.display_name))
-                divisible = mo_qty % batch_size
-                if divisible > 0 and not self._context.get('pass_confirm'):
-                    view = self.env.ref('lp_mrp.mo_divisible_wizard_view')
-                    desc = "The default batchsize of Product %s is %s. \nDo you want to continue to confirm?" % (product, batch_size)
-                    wiz = self.env['mo.divisible'].create({'sale_id': sale.id,
-                                                            'description': desc})
-                    return {
-                        'name': _('Mo Divisible Confirmation'),
-                        'type': 'ir.actions.act_window',
-                        'view_type': 'form',
-                        'view_mode': 'form',
-                        'res_model': 'mo.divisible',
-                        'views': [(view.id, 'form')],
-                        'view_id': view.id,
-                        'target': 'new',
-                        'res_id': wiz.id,
-                        'context': self.env.context,
-                    }
+        # for sale in self:
+        #     for line in sale.order_line:
+        #         product = line.product_id.display_name
+        #         mo_qty = line.product_uom_qty
+        #         batch_size = line.product_id.lp_batch_size
+        #         if batch_size == 0:
+        #             raise UserError(_('batch size for product %s is 0. Please update it' % line.product_id.display_name))
+        #         divisible = mo_qty % batch_size
+        #         if divisible > 0 and not self._context.get('pass_confirm'):
+        #             view = self.env.ref('lp_mrp.mo_divisible_wizard_view')
+        #             desc = "The default batchsize of Product %s is %s. \nDo you want to continue to confirm?" % (product, batch_size)
+        #             wiz = self.env['mo.divisible'].create({'sale_id': sale.id,
+        #                                                     'description': desc})
+        #             return {
+        #                 'name': _('Mo Divisible Confirmation'),
+        #                 'type': 'ir.actions.act_window',
+        #                 'view_type': 'form',
+        #                 'view_mode': 'form',
+        #                 'res_model': 'mo.divisible',
+        #                 'views': [(view.id, 'form')],
+        #                 'view_id': view.id,
+        #                 'target': 'new',
+        #                 'res_id': wiz.id,
+        #                 'context': self.env.context,
+        #             }
 
         res = super(SaleOrder, self).action_confirm()
         for sale in self:

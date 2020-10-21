@@ -31,7 +31,7 @@ class StockMove(models.Model):
         click_rate = 0
         factory_constants = self.env.company.factory_constants_id
         if factory_constants:
-            click_rate = factory_constants.average_click_charge
+            click_rate = factory_constants.average_printing_cost
         total_printed_sides = sum(self.production_id.follower_sheets_ids.mapped('total_printed_side'))
         printing_cost = round(total_printed_sides * click_rate)
 

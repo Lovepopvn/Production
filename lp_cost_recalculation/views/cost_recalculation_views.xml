@@ -24,17 +24,23 @@
                             </button>
                         </div>
 
+                        <group>
+                            <group>
+                                <field name="year" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="month" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
+                                <label for="date_from" class="text-muted"/>
+                                <field name="date_from" readonly="1" nolabel="1" class="text-muted"/>
+                                <label for="date_to" class="text-muted"/>
+                                <field name="date_to" readonly="1" nolabel="1" class="text-muted"/>
+                            </group>
+                        </group>
                         <div class="oe_title">
                             <h1><field name="name" placeholder="Name" nolabel="1" attrs="{'readonly': [('state', '=', 'posted')]}"/></h1>
                         </div>
                         <group>
                             <group>
-                                <field name="year" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <field name="month" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <label for="date_from" class="text-muted"/>
-                                <field name="date_from" readonly="1" nolabel="1" class="text-muted"/>
-                                <label for="date_to" class="text-muted"/>
-                                <field name="date_to" readonly="1" nolabel="1" class="text-muted"/>
                                 <field name="inventory_adjustment_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create_edit': True}"/>
                             </group>
                             <group>
@@ -152,18 +158,22 @@
                             </button>
                         </div>
 
-                        <div class="oe_title">
-                            <h1><field name="name" placeholder="Name" nolabel="1" attrs="{'readonly': [('state', '=', 'posted')]}"/></h1>
-                        </div>
                         <group>
                             <group>
                                 <field name="year" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="month" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
                                 <label for="date_from" class="text-muted"/>
                                 <field name="date_from" readonly="1" nolabel="1" class="text-muted"/>
                                 <label for="date_to" class="text-muted"/>
                                 <field name="date_to" readonly="1" nolabel="1" class="text-muted"/>
                             </group>
+                        </group>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Name" nolabel="1" attrs="{'readonly': [('state', '=', 'posted')]}"/></h1>
+                        </div>
+                        <group>
                             <group>
                                 <field name="journal_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create_edit': True}"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
@@ -280,18 +290,22 @@
                             </button>
                         </div>
 
-                        <div class="oe_title">
-                            <h1><field name="name" placeholder="Name" nolabel="1" attrs="{'readonly': [('state', '=', 'posted')]}"/></h1>
-                        </div>
                         <group>
                             <group>
                                 <field name="year" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="month" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
                                 <label for="date_from" class="text-muted"/>
                                 <field name="date_from" readonly="1" nolabel="1" class="text-muted"/>
                                 <label for="date_to" class="text-muted"/>
                                 <field name="date_to" readonly="1" nolabel="1" class="text-muted"/>
                             </group>
+                        </group>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Name" nolabel="1" attrs="{'readonly': [('state', '=', 'posted')]}"/></h1>
+                        </div>
+                        <group>
                             <group>
                                 <field name="journal_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create_edit': True}"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
@@ -401,18 +415,22 @@
                             </button>
                         </div>
 
-                        <div class="oe_title">
-                            <h1><field name="name" placeholder="Name" nolabel="1" attrs="{'readonly': [('state', '=', 'posted')]}"/></h1>
-                        </div>
                         <group>
                             <group>
                                 <field name="year" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="month" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
                                 <label for="date_from" class="text-muted"/>
                                 <field name="date_from" readonly="1" nolabel="1" class="text-muted"/>
                                 <label for="date_to" class="text-muted"/>
                                 <field name="date_to" readonly="1" nolabel="1" class="text-muted"/>
                             </group>
+                        </group>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Name" nolabel="1" attrs="{'readonly': [('state', '=', 'posted')]}"/></h1>
+                        </div>
+                        <group>
                             <group>
                                 <field name="journal_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create_edit': True}"/>
                                 <field name="company_id" groups="base.group_multi_company"/>

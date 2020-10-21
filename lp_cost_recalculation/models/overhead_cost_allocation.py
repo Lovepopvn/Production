@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class OverheadCostAllocation(models.Model):
     _name = 'lp_cost_recalculation.overhead.cost.allocation'
-    _description = 'Model for allocating overhead cost allocation retrospectively'
+    _description = 'Overhead Cost Allocation'
     _inherit = 'lp_cost_recalculation.cost.recalculation.abstract'
 
 
@@ -40,9 +40,7 @@ class OverheadCostAllocation(models.Model):
     def validate(self):
         self.ensure_one_names()
         self._create_journal_entries()
-        counterpart_account = self.company_id.make_to_stock_allocation_counterpart_account_overhead_cost_id
-        wip_counterpart_account = self.company_id.wip_pack_allocation_counterpart_account_overhead_cost_id
-        self._update_costs(counterpart_account.id, wip_counterpart_account.id)
+        self._update_costs()
         self.write({'state': 'posted'})
 
 
@@ -51,7 +49,7 @@ class OverheadCostAllocation(models.Model):
 
 class OverheadCostLine(models.Model):
     _name = 'lp_cost_recalculation.overhead.cost.line'
-    _description = 'List Input Overhead Cost: lines for computing overhead cost allocation'
+    _description = 'Overhead Cost Line'
 
     overhead_cost_account_id = fields.Many2one('account.account', 'Overhead Cost Account')
     actual_cost = fields.Monetary()
@@ -60,7 +58,7 @@ class OverheadCostLine(models.Model):
 
 class OverheadCostConsumedLine(models.Model):
     _name = 'lp_cost_recalculation.overhead.cost.consumed.line'
-    _description = 'List LP Consumed Overhead Cost: lines for computing consumed overhead cost allocation'
+    _description = 'Overhead Cost Consumed Line'
     _inherit = 'lp_cost_recalculation.abstract.allocation.line'
 
     ceq_factor = fields.Float('CEQ Factor')
