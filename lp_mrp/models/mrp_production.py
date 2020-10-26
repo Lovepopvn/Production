@@ -16,7 +16,7 @@ class MrpProduction(models.Model):
         ('very_urgent', 'Very Urgent'),
         ('urgent', 'Urgent'),
         ('priority', 'Priority'),
-        ('standard', 'Standard (for the MO)')
+        ('standard', 'Standard')
         ], string='Urgency', copy=False)
     follower_sheets_ids = fields.One2many(
         comodel_name='follower.sheet', inverse_name='mo_id',
@@ -29,6 +29,12 @@ class MrpProduction(models.Model):
     expected_ship_date = fields.Datetime('Expected Ship Date')
 
     def button_plan(self):
+        for order in self:
+            if not all(line.product_uom_qty == line.reserved_availability for line in order.move_raw_ids.filtered(
+                    lambda x: x.product_id.categ_id.require_for_mo == True)):
+                raise UserError(_('To consume & Reserver should be same for specific product category'))
+            # if all(line.statement_id for line in line.payment_id.move_line_ids.filtered(
+            #             lambda r: r.id != line.id and r.account_id.internal_type == 'liquidity')):
         res = super(MrpProduction, self).button_plan()
         for order in self:
             if order.expected_ship_date: 

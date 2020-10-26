@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''Mrp Work Order'''
 from odoo import fields, models, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, Warning
 from datetime import datetime
 from odoo.tests.common import Form
 
@@ -200,6 +200,7 @@ class MrpWorkOrder(models.Model):
     def do_finish(self):
         # res = super(MrpWorkOrder, self).do_finish()
         workcenter_tab_obj = self.env['workcenter.tab']
+        # set warning when there is issue in scanning pieces
         if self.workcenter_id.used_scan_process:
             workcenter_tab_ids = workcenter_tab_obj.search([
                                 ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
@@ -223,8 +224,35 @@ class MrpWorkOrder(models.Model):
                 for done in self.time_done_ids:
                     if done.code_id.id not in pieces_done:
                         raise UserError(_('There are pieces that are not assigned to this Work Order . Please check again'))
-        return super(MrpWorkOrder, self).do_finish()
-        
+        res = super(MrpWorkOrder, self).do_finish()
+        # set done component which consumed in the work order
+        self.production_id.post_inventory()
+        if self.production_id.workorder_ids:
+            all_wo_done = True
+            for wo in self.production_id.workorder_ids:
+                if wo.state != 'done':
+                    all_wo_done = False
+            if all_wo_done == True:
+                # finds all manufacturing orders that contain this manufacturing as a source
+                mos = self.env['mrp.production'].search([('origin','ilike',self.production_id.name)])
+                # loops through the manufacturing orders
+                for mo in mos:
+                    # checks to see the state
+                    if mo.state != 'done' and mo.state != 'cancel':
+                        warn = """
+                                Before completing this manufacturing order (%s),\n  all manufacturing orders that produce sub-assemblies must first be complete.\n
+                                %s (which produces %s x [%s] %s) is not yet complete.\n
+                                Truoc khi bam thao tac hoan thanh don hang tong (%s),\n ban phai hoan thanh truoc cac don hang nho cua don hang tong nay.\n
+                                Don hang %s (gom %s don hang x [%s] %s la chua duoc hoan thanh.)
+                                """ % (self.production_id.name,mo.name,str(int(mo.product_qty)),mo.product_id.default_code,mo.product_id.name,
+                                        self.production_id.name,mo.name,str(int(mo.product_qty)),mo.product_id.default_code,mo.product_id.name)
+                        raise Warning(warn)
+                self.production_id.button_mark_done()
+            else:
+                if self.production_id.state in ('confirmed','planned','done'):
+                    self.production_id.write({'state': 'progress'})
+        return res
+
     def _compute_working_users(self):
         res = super(MrpWorkOrder, self)._compute_working_users()
         for order in self:

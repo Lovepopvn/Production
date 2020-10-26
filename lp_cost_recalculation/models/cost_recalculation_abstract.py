@@ -379,7 +379,9 @@ class AbstractCostRecalculation(models.AbstractModel):
         rounding_difference_sum = 0.0
         for lp_product in self.allocation_line_ids.mapped('lp_product_id'):
             lines_product = self.allocation_line_ids.filtered(lambda l: 
-                l.lp_product_id.id == lp_product.id and not l.parent_mo_id)
+                l.lp_product_id.id == lp_product.id and (not l.parent_mo_id or l.wip_pack))
+            # PA products, LP Products that are not a part of a pack,
+            # LP products that are a part of a WIP pack
 
             lines_lp = lines_product.filtered(lambda l: 
                 not l.parent_mo_id and l.mo_id.id not in parent_mo_ids)

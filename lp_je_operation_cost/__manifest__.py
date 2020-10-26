@@ -9,7 +9,7 @@
     'version': '13.0.1.0.0',
 
     'depends': [
-        'mrp',
+        'mrp_account',
         'stock_account',
     ],
 

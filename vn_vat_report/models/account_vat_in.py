@@ -57,6 +57,7 @@ class vat_in_report(models.AbstractModel):
         company_id = self.env.user.company_id
         date_from = options['date']['date_from']
         date_to = options['date']['date_to']
+        company_cond = 'aml.'+self._multi_company_cond()
         inv_cond = self._get_inv_cond(options)
         partner_cond = self._get_partner_cond(options)
         vatp_cond = self._get_vatp_cond(options)
@@ -85,6 +86,7 @@ class vat_in_report(models.AbstractModel):
                         AND aml.vat_in_config_id = {vat_categ.id} 
                         AND (aml.date <= '{date_to}')
                         AND aml.company_id = {company_id.id}
+                        AND {company_cond}
                         {aml_cond} {partner_cond} {inv_cond} {vatp_cond}
                         AND am.state = 'posted'
                   ORDER BY aml.date, am.name"""

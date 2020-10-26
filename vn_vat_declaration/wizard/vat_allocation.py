@@ -166,9 +166,16 @@ class VatAllocation(models.TransientModel):
             'email': default_company.email
         }
         return company_data
+    
+    def _multi_company_cond(self):
+        condition = ''
+        company_ids = ','.join([str(id) for id in self.env.companies.ids])
+        condition  = f"company_id IN ({company_ids})"
+        return condition
 
     def invoice_before_tax(self, start_date, end_date):
         dict_name = 'invoice_before_tax'
+        company_cond = 'account_move.'+self._multi_company_cond()
 
         # query = """
         #     SELECT sum(amount_untaxed) """ + dict_name + """
@@ -180,7 +187,7 @@ class VatAllocation(models.TransientModel):
         query = f"""SELECT sum(amount_untaxed_signed) {dict_name}
                     FROM account_move
                     WHERE (account_move.date BETWEEN '{start_date}' AND '{end_date}')
-                          AND account_move.type in ('out_invoice','out_refund') AND account_move.state='posted'"""
+                          AND account_move.type in ('out_invoice','out_refund') AND account_move.state='posted' AND {company_cond}"""
 
         self.env.cr.execute(query)
         query_result = self.env.cr.dictfetchall()
@@ -190,7 +197,7 @@ class VatAllocation(models.TransientModel):
 
     def taxed_invoice_before_tax(self, start_date, end_date):
         dict_name = 'taxed_invoice_before_tax'
-
+        company_cond = 'am.'+self._multi_company_cond()
         
 
         query = f"""SELECT -sum(aml.balance) {dict_name}
@@ -200,6 +207,7 @@ class VatAllocation(models.TransientModel):
                     WHERE (am.date BETWEEN '{start_date}' AND '{end_date}')
                         AND am.type in ('out_invoice','out_refund')
                         AND am.state = 'posted'
+                        AND {company_cond}
                         AND aml_tax.account_tax_id in (SELECT id
                                                    FROM account_tax
                                                    WHERE name='Thuế GTGT phải nộp 0%'
@@ -227,15 +235,17 @@ class VatAllocation(models.TransientModel):
 
         vat_in = self.env.ref('vn_vat_report.default_vat_in_config_03')
 
-        account_1331 = self.env['account.account'].search([('code','=','1331')])
+        account_1331 = self.env['account.account'].search([('code','=','1331')], limit=1).id or 'NULL'
+        company_cond = 'aml.'+self._multi_company_cond()
 
         query = f"""SELECT sum(aml.balance) {dict_name}
                     FROM account_move_line aml
                          LEFT JOIN account_move_line_account_tax_rel aml_tax ON aml_tax.account_move_line_id = aml.id
                     WHERE (aml.date BETWEEN '{start_date}' AND '{end_date}')
+                          AND {company_cond}
                           AND aml.vat_in_config_id = {vat_in.id}
                           AND aml.parent_state='posted'
-                          AND aml.account_id = {account_1331.id}"""
+                          AND aml.account_id = {account_1331}"""
 
         self.env.cr.execute(query)
         query_result = self.env.cr.dictfetchall()
@@ -258,7 +268,8 @@ class VatAllocation(models.TransientModel):
 
         vat_in_1 = self.env.ref('vn_vat_report.default_vat_in_config_01')
         vat_in_4 = self.env.ref('vn_vat_report.default_vat_in_config_04')
-        account_1331 = self.env['account.account'].search([('code','=','1331')])
+        account_1331 = self.env['account.account'].search([('code','=','1331')], limit=1).id or 'NULL'
+        company_cond = 'aml.'+self._multi_company_cond()
 
         query = f"""SELECT sum(aml.balance) {dict_name}
                     FROM account_move_line aml
@@ -266,8 +277,9 @@ class VatAllocation(models.TransientModel):
                             ON aml_tax.account_move_line_id = aml.id
                     WHERE (aml.date BETWEEN '{start_date}' AND '{end_date}')
                           AND aml.vat_in_config_id in ({vat_in_1.id}, {vat_in_4.id})
-                          AND aml.account_id = {account_1331.id}
+                          AND aml.account_id = {account_1331}
                           AND aml.parent_state='posted'
+                          AND {company_cond}
                 """
 
         self.env.cr.execute(query)

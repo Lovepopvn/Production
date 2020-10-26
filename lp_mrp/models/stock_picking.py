@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 
 class StockPicking(models.Model):
@@ -9,6 +9,25 @@ class StockPicking(models.Model):
 
     wave_id = fields.Many2one('picking.wave', 'Picking Wave', copy="False")
     deliver_document_update = fields.Boolean()
+
+    def remove_do(self):
+        for pick in self:
+            view = self.env.ref('lp_mrp.do_remove_wave_wizard_view')
+            desc = "Reset will bring the DO and its product lot to ready to shipped stage, \nDo you want to continue?"
+            wiz = self.env['do.remove.wave'].create({'picking_id': pick.id,
+                                                    'description': desc})
+            return {
+                'name': _('Delivery Order Remove Confirmation'),
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'do.remove.wave',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+                'res_id': wiz.id,
+                'context': self.env.context,
+            }
 
 class StockMove(models.Model):
     _inherit = 'stock.move'

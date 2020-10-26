@@ -238,6 +238,9 @@
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
                                     After summarizing calculated labor cost and inputting the actual labor cost, use the Compute Allocation button to create lines here.
                                 </p>
+                                <group attrs="{'invisible': [('allocation_line_ids', '==', [])]}">
+                                    <field name="allocation_rounding_difference"/>
+                                </group>
                             </page>
                         </notebook>
                     </sheet>
@@ -371,6 +374,9 @@
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
                                     After generating click charge lines and inputting the actual values, use the Compute Allocation button to create lines here.
                                 </p>
+                                <group attrs="{'invisible': [('allocation_line_ids', '==', [])]}">
+                                    <field name="allocation_rounding_difference"/>
+                                </group>
                             </page>
                         </notebook>
                     </sheet>
@@ -492,6 +498,9 @@
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
                                     After filling in the overhead cost lines, use the Compute Allocation button to create lines here.
                                 </p>
+                                <group attrs="{'invisible': [('allocation_line_ids', '==', [])]}">
+                                    <field name="allocation_rounding_difference"/>
+                                </group>
                             </page>
                         </notebook>
                     </sheet>
