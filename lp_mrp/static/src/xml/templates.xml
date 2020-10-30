@@ -1,8 +1,0 @@
-<odoo>
-	<template id="product_lot_assets" inherit_id="web.assets_backend">
-		<xpath expr="." position="inside">
-			<script type="text/javascript" src="/lp_mrp/static/src/js/barcode_events.js"/>
-			<script type="text/javascript" src="/lp_mrp/static/src/js/stock_barcode.js"/>
-		</xpath>
-	</template>
-</odoo>

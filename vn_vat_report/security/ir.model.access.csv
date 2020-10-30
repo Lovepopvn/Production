@@ -1,6 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vat_declaration,access.vat.declaration,vn_vat_report.model_vat_declaration,,1,1,1,1
-access_vat_in_configuration_advisor,access.vat.in.configuration.advisor,vn_vat_report.model_vat_in_configuration,account.group_account_manager,1,0,0,0
-access_vat_in_configuration_billing,access.vat.in.configuration.billing,vn_vat_report.model_vat_in_configuration,account.group_account_invoice,1,0,0,0
-access_vat_in_configuration_accountant,access.vat.in.configuration.accountant,vn_vat_report.model_vat_in_configuration,account.group_account_user,1,0,0,0
-access_vat_in_configuration_admin,access.vat.in.configuration.admin,vn_vat_report.model_vat_in_configuration,base.user_admin,1,1,1,1

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <template id="account_reports_backend" inherit_id="web.assets_backend" active="True">
-        <xpath expr="." position="inside">
-            <script type="text/javascript" src="/vn_vat_report/static/src/js/account_reports.js"/>
-<!--            <script type="text/javascript" src="/vn_vat_report/static/src/js/vat_report_filter.js"/>-->
-        </xpath>
-    </template>
-</odoo>

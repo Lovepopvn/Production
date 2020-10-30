@@ -1,3 +1,0 @@
-
-v13.0.0.1 :
---> When no of rows exceed 50000, the remaining data will be written in new sheet.
