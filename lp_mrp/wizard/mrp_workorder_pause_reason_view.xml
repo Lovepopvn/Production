@@ -5,9 +5,11 @@
 		<field name="model">workorder.pause.reason</field>
 		<field name="arch" type="xml">
 			<form>
-				<field name="name"/>
-                <field name="workorder_id"/>
-                <field name="wo_productivity_id"/>
+				<div>
+					<field name="name" string="Reason"/>
+					<field name="workorder_id" invisible="1"/>
+					<field name="wo_productivity_id" string="Productivity"/>
+				</div>
 				<footer>
 					<button name="action_save" type="object" string="Save" class="btn-primary"/>
 					<button string="Close" class="btn-default" special="cancel"/>
@@ -17,7 +19,7 @@
 	</record>
 	
 	<record id="act_workorder_pause_reason" model="ir.actions.act_window">
-	    <field name="name">Reason for Workorder Paus</field>
+	    <field name="name">Reason for Workorder Pause</field>
 	    <field name="type">ir.actions.act_window</field>
 	    <field name="res_model">workorder.pause.reason</field>
 	    <field name="view_mode">form</field>

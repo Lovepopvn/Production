@@ -16,7 +16,7 @@ class PickingWave(models.Model):
         ('very_urgent', 'Very Urgent'),
         ('urgent', 'Urgent'),
         ('priority', 'Priority'),
-        ('standard', 'Standard (for the MO)')
+        ('standard', 'Standard')
         ], string='Priority', tracking=True, copy=False)
     carrier_id = fields.Many2one("delivery.carrier", string="Carrier/Service")
     tracking_number = fields.Char('Tracking Number')
@@ -64,8 +64,11 @@ class PickingWave(models.Model):
     @api.depends('tracking_number')
     def _compute_carrier_tracking_url(self):
         for wave in self:
-            carrier_id = wave.product_lot_ids[0].carrier_id
-            wave.carrier_tracking_url = carrier_id.fedex_wave_get_tracking_link(wave) if carrier_id and wave.tracking_number else False
+            if wave.product_lot_ids:
+                carrier_id = wave.product_lot_ids[0].carrier_id
+                wave.carrier_tracking_url = carrier_id.fedex_wave_get_tracking_link(wave) if carrier_id and wave.tracking_number else False
+            else:
+                wave.carrier_tracking_url = False
 
     def button_confirm(self):
         for wave in self:

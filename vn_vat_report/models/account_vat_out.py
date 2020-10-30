@@ -61,10 +61,14 @@ class vat_out_report(models.AbstractModel):
         """ Get account.move.line ids based from tax_id """
         if tax_ids:
             tax_ids_str = ','.join([str(_id) for _id in tax_ids.ids])
+            company_cond = self._multi_company_cond()
             sql = f"""SELECT account_move_line_account_tax_rel.account_move_line_id
                       FROM account_move_line_account_tax_rel
                            INNER JOIN account_tax ON account_move_line_account_tax_rel.account_tax_id = account_tax.id
-                      WHERE account_tax.id IN ({tax_ids_str})"""
+                      WHERE 
+                        account_tax.id IN ({tax_ids_str})
+                        AND account_tax.{company_cond}
+                    """
             self._cr.execute(sql)
             amls = self._cr.dictfetchall()
             list_aml = [aml.get('account_move_line_id') for aml in amls]
@@ -97,11 +101,18 @@ class vat_out_report(models.AbstractModel):
             aml_ids_str = ','.join([str(aml_id) for aml_id in list_aml])
             aml_cond = f"AND aml.id IN ({aml_ids_str})"
         return aml_cond
+    
+    def _multi_company_cond(self):
+        condition = ''
+        company_ids = ','.join([str(id) for id in self.env.companies.ids])
+        condition  = f"company_id IN ({company_ids})"
+        return condition
+
 
     def _get_aml_by_tax(self, options, tax_id):
-        company_id = self.env.user.company_id
         date_from = options['date']['date_from']
         date_to = options['date']['date_to']
+        company_cond = 'aml.'+self._multi_company_cond()
         inv_cond = self._get_inv_cond(options)
         partner_cond = self._get_partner_cond(options)
         vatp_cond = self._get_vatp_cond(options)
@@ -126,7 +137,7 @@ class vat_out_report(models.AbstractModel):
                        LEFT JOIN res_partner rp on rp.id = aml.partner_id
                   WHERE (aml.date >= '{date_from}')
                         AND (aml.date <= '{date_to}')
-                        AND aml.company_id = {company_id.id}
+                        AND {company_cond}
                         {aml_cond} {partner_cond} {inv_cond} {vatp_cond}
                         AND am.state = 'posted'
                   ORDER BY aml.date, am.name"""
@@ -136,7 +147,7 @@ class vat_out_report(models.AbstractModel):
         return vat_report_results
 
     def _get_tax_domain(self, options, type='purchase'):
-        domain = [('type_tax_use', '=', type), ('active', '=', True)]
+        domain = [('type_tax_use', '=', type), ('active', '=', True), ('company_id', 'in', self.env.companies.ids)]
         if options.get('tax_name'):
             domain.append(('name', 'ilike', options['tax_name']))
         return domain
@@ -172,7 +183,10 @@ class vat_out_report(models.AbstractModel):
         tax_ids = self.env['account.tax'].sudo().search(tax_domain)
 
         if line_id and not self.env.context.get('print_mode'):
-            tax_ids = self.env['account.tax'].sudo().search([('id', '=', line_id)])
+            tax_ids = self.env['account.tax'].sudo().search([
+                ('id', '=', line_id),
+                ('company_id', 'in', self.env.companies.ids),
+            ])
 
         context = self.env.context
         base_domain = [('date', '<=', context['date_to']), ('company_id', 'in', context['company_ids'])]

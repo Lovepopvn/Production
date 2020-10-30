@@ -270,10 +270,10 @@ class StockValuationCategory(models.AbstractModel):
 
         to_check = self.env['product.product'].browse(product_id)
         stock_value = to_check.with_context(to_date=inventory_date, force_company=company_id).value_svl
-        return round(float(stock_value) / float(ending_inventory), 2)
+        return round(float(stock_value) / float(ending_inventory), 4)
 
     def _get_subtotal_cost(self, cost, ending_inv, current_record):
-        subtotal_cost = cost and ending_inv and round((cost * ending_inv), 2) or 0.0
+        subtotal_cost = cost and ending_inv and round((cost * ending_inv), 4) or 0.0
         current_record.update({'subtotal_cost': subtotal_cost})
         return subtotal_cost
 
