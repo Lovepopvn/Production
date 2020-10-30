@@ -1,0 +1,32 @@
+<odoo>
+    <!-- Define the action -->
+    <record id="action_vat_declaration" model="ir.actions.act_window">
+        <field name="name">VAT Declaration Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vat.declaration.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Define the menu -->
+    <menuitem id="vat_declaration_report" 
+                action="action_vat_declaration"
+                parent="account.menu_finance_reports" 
+                sequence="11" />
+
+
+    <!-- Define the action -->
+    <record id="action_vat_allocation" model="ir.actions.act_window">
+        <field name="name">VAT Allocation Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vat.allocation.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Define the menu -->
+    <menuitem id="vat_allocation_report" 
+                action="action_vat_allocation"
+                parent="l10n_vn.account_reports_vn_statements_menu" />
+
+</odoo>

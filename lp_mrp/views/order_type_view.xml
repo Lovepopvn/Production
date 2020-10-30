@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="order_type_tree_view" model="ir.ui.view">
+        <field name="name">order.type.tree</field>
+        <field name="model">order.type</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="order_type_search_view" model="ir.ui.view">
+        <field name="name">order.type.search</field>
+        <field name="model">order.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <group>
+                	<filter name="order_type" string="Order Type" context="{'group_by': 'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_order_type" model="ir.actions.act_window">
+        <field name="name">Order Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">order.type</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="lp_mrp.order_type_tree_view"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first Order Type
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_order_type"
+        name="Order Type"
+        action="lp_mrp.action_order_type"
+        parent="sale.menu_sales_config"
+        sequence="10"/>
+</odoo>

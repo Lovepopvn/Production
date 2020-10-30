@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="factory_constants_lp_product_routing_tree_view" model="ir.ui.view">
+        <field name="name">factory.constants.lp.product.routing.tree</field>
+        <field name="model">factory.constants.lp.product.routing</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="routing_profile_id" context="{'show_routing_profile': True}"/>
+                <field name="routing_id"/>
+                <field name="factory_constants_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="factory_constants_lp_product_routing_search_view" model="ir.ui.view">
+        <field name="name">factory.constants.lp.product.routing.search</field>
+        <field name="model">factory.constants.lp.product.routing</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="routing_profile_id" context="{'show_routing_profile': True}"/>
+                <field name="routing_id"/>
+                <field name="factory_constants_id"/>
+                <group>
+                    <filter name="routing_profile" string="Routing Profile" context="{'group_by': 'routing_profile_id'}"/>
+                	<filter name="routing" string="Routing" context="{'group_by': 'routing_id'}"/>
+                	<filter name="factory_constants" string="Factory Constants" context="{'group_by': 'factory_constants_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_factory_constants_lp_product_routing" model="ir.actions.act_window">
+        <field name="name">Factory Constants LP Product Routing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">factory.constants.lp.product.routing</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="lp_mrp.factory_constants_lp_product_routing_tree_view"/>
+        <field name="context">{'show_routing_profile': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first Factory Constants LP Product Routing
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_factory_constants_lp_product_routing"
+        name="Factory Constants LP Product Routing"
+        action="lp_mrp.action_factory_constants_lp_product_routing"
+        parent="mrp.menu_mrp_configuration"
+        sequence="14"/>
+</odoo>

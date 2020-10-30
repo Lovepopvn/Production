@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- Journal Items -->
+		<record id="move_line_form_inherit_view" model="ir.ui.view">
+			<field name="name">account.move.line.form</field>
+			<field name="model">account.move.line</field>
+			<field name="inherit_id" ref="account.view_move_line_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//page[last()]" position="after">
+					<page id="counterparts" string="Counterparts"
+						groups="account.group_account_user">
+						<group>
+							<group>
+								<field name="ctp_account_ids" widget="many2many_tags" />
+								<field name="countered_amt" />
+								<field name="countered_amt_currency" />
+							</group>
+							<group>
+								<field name="countered_status" />
+							</group>
+						</group>
+						<div id="cr_ctp_ids" attrs="{'invisible':[('credit','>',0)]}">
+							<label for="cr_ctp_ids" />
+							<field name="cr_ctp_ids" readonly="1">
+								<tree id="cr_ctp_ids" editable="bottom">
+									<field name="cr_aml_id" />
+									<field name="cr_aml_credit" />
+									<field name="countered_amt" />
+									<field name="countered_amt_currency" />
+									<field name="company_currency_id" invisible="1" />
+									<field name="currency_id" invisible="1" />
+								</tree>
+							</field>
+						</div>
+						<div id="dr_ctp_ids" attrs="{'invisible':[('debit','>',0)]}">
+							<label for="dr_ctp_ids" />
+							<field name="dr_ctp_ids" readonly="1">
+								<tree id="dr_ctp_ids" editable="bottom">
+									<field name="dr_aml_id" />
+									<field name="dr_aml_debit" />
+									<field name="countered_amt" />
+									<field name="countered_amt_currency" />
+									<field name="company_currency_id" invisible="1" />
+									<field name="currency_id" invisible="1" />
+								</tree>
+							</field>
+						</div>
+						<div id="ctp_aml_ids">
+							<label for="ctp_aml_ids" />
+							<field name="ctp_aml_ids" />
+						</div>
+					</page>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_move_line_tree" model="ir.ui.view">
+			<field name="name">account.move.line.tree</field>
+			<field name="model">account.move.line</field>
+			<field name="inherit_id" ref="account.view_move_line_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='account_id']" position="after">
+					<field name="ctp_account_ids" widget="many2many_tags" />
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_account_move_line_filter" model="ir.ui.view">
+			<field name="name">Journal Items</field>
+			<field name="model">account.move.line</field>
+			<field name="inherit_id"
+				ref="account.view_account_move_line_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='tax_ids']" position="after">
+					<separator />
+					<field name="ctp_account_ids" />
+					<field name="ctp_aml_ids" />
+				</xpath>
+				<xpath expr="//filter[@name='posted']" position="after">
+					<separator />
+					<filter string="Not Countered"
+						domain="[('countered_status', '=', 'none')]"
+						help="Show Journal items that have no counterpart"
+						name="not_countered" />
+					<filter string="Partially Countered"
+						domain="[('countered_status', '=', 'partially')]"
+						help="Show Journal items that have counterpart(s) but not fully countered yet"
+						name="partially_countered" />
+					<filter string="Fully Countered"
+						domain="[('countered_status', '=', 'fully')]"
+						help="Show Journal items that have fully countered"
+						name="fully_countered" />
+				</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

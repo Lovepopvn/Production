@@ -1,0 +1,54 @@
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.nrp</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="mrp.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='quality_control']" position="after">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Minimum Duration</span>
+                                <div class="text-muted">
+                                    Mimimum Duration for Pieces in Work Order
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-lg-1"/>
+                                        <field name="minimum_duration" nolabel="1"/>
+                                        <span class="col-lg-2">Sec</span>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="res_config_settings_view_form_stock" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.stock</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//div[@id='delivery']" position="before"> -->
+                <xpath expr="//div[@id='warning_info']" position="after">
+                <!-- <div id="delivery" position="after"> -->
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <label for="pricelist_id"/>
+                            <div class="text-muted">
+                                Pricelist for shipping wave
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="pricelist_id" class="o_light_label"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- </div> -->
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

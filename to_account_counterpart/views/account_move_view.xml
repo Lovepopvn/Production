@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- Journal Entries -->
+		<record id="view_move_form" model="ir.ui.view">
+			<field name="name">account.move.form</field>
+			<field name="model">account.move</field>
+			<field name="inherit_id" ref="account.view_move_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//button[@name='action_post']" position="before">
+					<button name="action_delete_counterpart"
+						string="Remove Counterparts" type="object"
+						groups="account.group_account_user"
+						attrs="{'invisible':[('countered_status','=','none')]}" />
+					<button name="action_smart_create_counterpart"
+						string="Create Counterparts" type="object" class="oe_highlight"
+						groups="account.group_account_user"
+						attrs="{'invisible':[('countered_status','=','fully')]}">
+					</button>
+				</xpath>
+				<xpath expr="//page[last()]" position="after">
+					<page id="counterparts" string="Counterparts Mapping"
+						groups="account.group_account_user">
+						<group>
+							<group>
+								<field name="countered_status" />
+							</group>
+						</group>
+						<div id="ctp_ids">
+							<label for="ctp_ids" />
+							<field name="ctp_ids">
+								<tree id="dr_ctp_ids" editable="bottom">
+									<field name="dr_aml_id" />
+									<field name="dr_aml_debit" />
+									<field name="cr_aml_id" />
+									<field name="cr_aml_credit" />
+									<field name="countered_amt" />
+									<field name="countered_amt_currency" />
+									<field name="company_currency_id" invisible="1" />
+								</tree>
+							</field>
+						</div>
+					</page>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_account_move_filter" model="ir.ui.view">
+			<field name="name">account.move.select</field>
+			<field name="model">account.move</field>
+			<field name="inherit_id" ref="account.view_account_move_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='date']" position="after">
+					<filter string="Not Countered"
+						domain="[('countered_status', '=', 'none')]"
+						help="Show Journal entries that have no counterpart"
+						name="not_countered" />
+					<filter string="Partially Countered"
+						domain="[('countered_status', '=', 'partially')]"
+						help="Show Journal entries that have counterpart(s) but not fully countered yet"
+						name="partially_countered" />
+					<filter string="Fully Countered"
+						domain="[('countered_status', '=', 'fully')]"
+						help="Show Journal entries that have fully countered"
+						name="fully_countered" />
+					<separator />
+				</xpath>
+			</field>
+		</record>
+
+		<record id="action_server_delete_counterparts"
+			model="ir.actions.server">
+			<field name="name">Delete Counterparts</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_account_move" />
+			<field name="binding_model_id" ref="model_account_move" />
+			<field name="state">code</field>
+			<field name="code">records.action_delete_counterpart()</field>
+		</record>
+
+		<record id="action_server_create_counterparts"
+			model="ir.actions.server">
+			<field name="name">Generate Counterparts</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_account_move" />
+			<field name="binding_model_id" ref="model_account_move" />
+			<field name="state">code</field>
+			<field name="code">records.action_smart_create_counterpart()</field>
+		</record>
+	</data>
+</odoo>

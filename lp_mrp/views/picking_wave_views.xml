@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="picking_wave_tree_view" model="ir.ui.view">
+        <field name="name">picking.wave.tree</field>
+        <field name="model">picking.wave</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="carrier_id"/>
+                <field name="priority"/>
+                <field name="master_tracking_reference"/>
+                <field name="shipment_method"/>
+                <field name="state"/>
+                <field name="create_date"/>
+                <field name="shipping_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="picking_wave_form_view" model="ir.ui.view">
+        <field name="name">picking.wave.form</field>
+        <field name="model">picking.wave</field>
+        <field name="arch" type="xml">
+            <form string="Picking Wave">
+                <header>
+                    <button name="button_confirm" attrs="{'invisible': [('state', '!=', 'draft')]}" string="Confirm" type="object" class="oe_highlight"/>
+                    <button name="button_validate" attrs="{'invisible': [('state', 'not in', ('confirmed','progress'))]}" string="Validate" type="object" class="oe_highlight"/>
+                    <!-- <field name="shipping_status" widget="statusbar" statusbar_visible="draft,confirmed,partially_available,assigned,done"/> -->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="open_website_url" class="oe_stat_button" icon='fa-truck' string="Tracking"
+                            attrs="{'invisible': [('tracking_number','=',False)]}" />
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" required="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="priority"/>
+                            <field name="shipping_status"/>
+                            <field name="master_tracking_reference"/>
+                            <field name="total_product_lot"/>
+                            <field name="company_id" readonly="1"/>
+                            <!-- <field name="company_id" readonly="1" groups="base.group_multi_company"/> -->
+                        </group>
+                        <group>
+                            <field name="carrier_id"/>
+                            <field name="tracking_number"/>
+                            <!-- <field name="commercial_invoice"/> -->
+                            <field name="carrier_tracking_url" widget="url" invisible="1"/>
+                            <field name="custom_declaration"/>
+                            <field name="weight" readonly="1"/>
+                            <field name="carrier_price" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detail of Product Lot">
+                            <field name="product_lot_ids" widget="one2many">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="product_id"/>
+                                    <field name="sequence_number"/>
+                                    <field name="shipper_reference"/>
+                                    <field name="picking_wave_id"/>
+                                    <field name="unit_price"/>
+                                    <field name="unit_weight"/>
+                                    <field name="number_of_inner"/>
+                                    <field name="delivery_order_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Detail of Delivery Order">
+                            <field name="delivery_order_ids" widget="one2many" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="picking_type_id"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="origin"/>
+                                    <field name="state"/>
+                                    <field name="carrier_id"/>
+                                    <field name="carrier_tracking_ref"/>
+                                    <button name="remove_do" string="Remove DO" type="object" icon="fa-trash-o"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="picking_wave_search_view" model="ir.ui.view">
+        <field name="name">product.lot.search</field>
+        <field name="model">picking.wave</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_picking_wave" model="ir.actions.act_window">
+        <field name="name">Shipping Wave</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">picking.wave</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="lp_mrp.picking_wave_tree_view"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the new Picking Wave
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_picking_wave"
+        name="Shipping Wave"
+        action="lp_mrp.action_picking_wave"
+        parent="stock.menu_stock_warehouse_mgmt"
+        sequence="10"/>
+</odoo>

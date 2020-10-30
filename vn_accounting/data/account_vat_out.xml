@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="search_template_inv">
+            <a type="button" class="dropdown-toggle account_inv_filter" data-toggle="dropdown">
+                <span class="fa fa-folder-open"/> Invoice Number
+            </a>
+            <ul class="dropdown-menu o_filters_menu" role="menu" style="padding: 10px 20px;min-width: 15rem;">
+                <label for="invoice_number">Invoice Number :</label><br />
+                <input type="text" id="invoice_number" name="invoice_number" t-att-value="options['invoice_number']"/><br />
+                <button type="button" data-filter="invoice_number" class="btn btn-primary js_account_report_inv_number_filter">Apply</button>
+            </ul>
+        </template>
+        <template id="search_template" inherit_id="account_reports.search_template">
+            <xpath expr="." position="inside">
+                <div class="btn-group o_dropdown o_account_reports_filter_inv" t-if="options.get('display_invoice_number')">
+                    <t t-call="vn_accounting.search_template_inv"/>
+                </div>
+            </xpath>
+        </template>
+
+        <!-- MENU ITEM -->
+        <record id="action_account_vat_out_report" model="ir.actions.client">
+            <field name="name">Sales VAT Report</field>
+            <field name="tag">account_report</field>
+            <field name="context" eval="{'model': 'account.vat.out.report'}" />
+        </record>
+          
+        <menuitem id="menu_account_vat_out"
+            action="action_account_vat_out_report"
+            parent="l10n_vn.account_reports_vn_statements_menu"/>
+        <record id="action_account_vat_in_report" model="ir.actions.client">
+            <field name="name">Purchase VAT Report</field>
+            <field name="tag">account_report</field>
+            <field name="context" eval="{'model': 'account.vat.in.report'}" />
+        </record>
+          
+        <menuitem id="menu_account_vat_in"
+            action="action_account_vat_in_report"
+            parent="l10n_vn.account_reports_vn_statements_menu"/>
+
+        <!-- <record id="account_vat_out_report" model="account.financial.html.report">
+            <field name='generated_menu_id' ref="menu_account_vat_out"/>
+        </record> -->
+
+    </data>
+</odoo>

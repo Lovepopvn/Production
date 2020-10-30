@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_account_financial_report_line" model="ir.actions.act_window">
+            <field name="name">Financial Reports Line</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.financial.html.report.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'account_reports.usr_created': True}</field>
+        </record>
+        <menuitem id="menu_account_financial_report_line" name="Financial Reports Line" parent="account.account_management_menu" action="action_account_financial_report_line" groups="base.group_no_one"/>
+        <function model="account.financial.html.report" name="_update_vietnam_report_menu"/>
+        
+        <template id="search_template_partner_inherit" inherit_id="account_reports.search_template_partner">
+            <xpath expr="//ul" position="inside">
+                <t t-if="options.get('report_vat_in_out') == 'vat_in'">
+                    <li class="o_account_report_search js_account_partner_string">
+                        <p style="font-weight:bold;">VAT Vendor</p>
+                        <input type="text" name="vat_number" t-att-value="options['vat_number']" id="vat_number"/><br/>
+                        <button type="button" class="btn btn-primary js_account_report_vat_customer_filter">Apply</button>
+                    </li>
+                </t>
+                <t t-if="options.get('report_vat_in_out') == 'vat_out'">
+                    <li class="o_account_report_search js_account_partner_string">
+                        <p style="font-weight:bold;">VAT Customer</p>
+                        <input type="text" name="vat_number" t-att-value="options['vat_number']" id="vat_number"/><br/>
+                        <button type="button" class="btn btn-primary js_account_report_vat_customer_filter">Apply</button>
+                    </li>
+                </t>
+            </xpath>
+        </template>
+        <template id="line_caret_options_inherit" inherit_id="account_reports.line_caret_options">
+            <xpath expr="//li" position="after">
+                <li t-if="line['caret_options'] == 'account.move'">
+                  <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" t-att-data-action-context="line.get('action_context')" data-object="account.move" action="open_document" class="dropdown-item" >View Journal Entries</a>
+                </li>
+            </xpath>
+        </template>
+    </data>
+</odoo>

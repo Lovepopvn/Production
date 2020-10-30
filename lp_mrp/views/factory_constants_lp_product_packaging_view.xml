@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="factory_constants_lp_product_packaging_tree_view" model="ir.ui.view">
+        <field name="name">factory.constants.lp.product.packaging.tree</field>
+        <field name="model">factory.constants.lp.product.packaging</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="lpus_product_type_id"/>
+                <field name="lpus_category_id"/>
+                <field name="product_id" domain="[('type', 'in', ['consu', 'product'])]"/>
+                <field name="quantity"/>
+                <field name="card_unit"/>
+                <field name="packaging_data_removable"/>
+                <field name="factory_constants_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="factory_constants_lp_product_packaging_search_view" model="ir.ui.view">
+        <field name="name">factory.constants.lp.product.packaging.search</field>
+        <field name="model">factory.constants.lp.product.packaging</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="lpus_category_id"/>
+                <field name="lpus_product_type_id"/>
+                <field name="factory_constants_id"/>
+                <group>
+                    <filter name="lpus_product_type" string="LPUS Product Type" context="{'group_by': 'lpus_product_type_id'}"/>
+                	<filter name="lpus_category" string="LPUS Category" context="{'group_by': 'lpus_category_id'}"/>
+                	<filter name="product" string="Product" context="{'group_by': 'product_id'}"/>
+                	<filter name="factory_constants" string="Factory Constants" context="{'group_by': 'factory_constants_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_factory_constants_lp_product_packaging" model="ir.actions.act_window">
+        <field name="name">Factory Constants LP Product Packaging</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">factory.constants.lp.product.packaging</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="lp_mrp.factory_constants_lp_product_packaging_tree_view"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first Factory Constants LP Product Packaging
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_factory_constants_lp_product_packaging"
+        name="Factory Constants LP Product Packaging"
+        action="lp_mrp.action_factory_constants_lp_product_packaging"
+        parent="mrp.menu_mrp_configuration"
+        sequence="13"/>
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="mrp_cost_structure" inherit_id="mrp_account_enterprise.mrp_cost_structure">
+        <xpath expr="//div[hasclass('row')]" position="before">
+            <!-- Cost of Printing table -->
+            <t t-set="printcost" t-value="0.0"/>
+            <t t-if="line['printing_cost']">
+                <h3 class="o_mrp_header o_mrp_table_header">Cost of Printing</h3>
+                <table class="table table-sm o_mrp_report_table">
+                    <thead>
+                        <tr class="o_mrp_report_header">
+                            <th class="o_mrp_report_line_header"><span>Total Printed Sides</span></th>
+                            <th class="o_mrp_report_line_header"><span>Average Click Charge</span></th>
+                            <th class="text-right o_mrp_report_line_header"><span>Total Cost</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="row" t-value="line['printing_cost']"/>
+                        <tr class="o_mrp_data">
+                            <td>
+                                <span t-esc="row[0]"/>
+                            </td>
+                            <td>
+                                <!-- <span class="o_mrp_reports_web_action" t-att-res-id="row[1]" res-model="factory.constants" view-type="form" t-esc="row[2]" t-options='{"widget": "monetary", "display_currency": currency}'/> -->
+                                <span t-esc="row[1]" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                            </td>
+                            <td class="text-right">
+                                <span t-esc="row[2]" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                            </td>
+
+                            <!-- opcost was used for summing operation costs before this block; here it is being incremented to affect the overall total without changing the computation, because opcost is already being added to the total cost in mrp_account_enterprise.mrp_cost_structure -->
+                            <t t-set="opcost" t-value="opcost + row[2]"/>
+                            <t t-set="printcost" t-value="printcost + row[2]"/>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-right">
+                                <strong>Total Cost of Printing</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-esc="printcost" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_packaging_data_tree_view" model="ir.ui.view">
+        <field name="name">mrp.packaging.data.tree</field>
+        <field name="model">mrp.packaging.data</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="unit_package"/>
+                <field name="bom_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="mrp_packaging_data_search_view" model="ir.ui.view">
+        <field name="name">mrp.packaging.data.search</field>
+        <field name="model">mrp.packaging.data</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="unit_package"/>
+                <field name="bom_id"/>
+                <!-- <group>
+                    <filter name="" string="" context="{'group_by': ''}"/>
+                	<filter name="" string="" context="{'group_by': ''}"/>
+                </group> -->
+            </search>
+        </field>
+    </record>
+
+    <record id="action_mrp_packaging_data" model="ir.actions.act_window">
+        <field name="name">packaging Data</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.packaging.data</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="lp_mrp.mrp_packaging_data_tree_view"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first packaging Data
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_mrp_packaging_data"
+        name="packaging Data"
+        action="lp_mrp.action_mrp_packaging_data"
+        parent="mrp.menu_mrp_bom"
+        sequence="9"/>
+</odoo>

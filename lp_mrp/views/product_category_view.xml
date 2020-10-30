@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_category_form_view" model="ir.ui.view">
+        <field name="name">product.category.form.view</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+            	<field name="production_information"/>
+                <field name="require_for_mo"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="lp_product_brand_tree_view" model="ir.ui.view">
+        <field name="name">lp.product.brand.tree</field>
+        <field name="model">lp.product.brand</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="lp_product_brand_search_view" model="ir.ui.view">
+        <field name="name">lp.product.brand.search</field>
+        <field name="model">lp.product.brand</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_lp_product_brand" model="ir.actions.act_window">
+        <field name="name">LP Product Brand</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">lp.product.brand</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="lp_mrp.lp_product_brand_tree_view"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first Product Brand
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_lp_product_brand"
+        name="Product Brand"
+        action="lp_mrp.action_lp_product_brand"
+        parent="stock.menu_stock_inventory_control"
+        sequence="15"/>
+
+</odoo>

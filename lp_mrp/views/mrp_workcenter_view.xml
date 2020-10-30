@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="mrp_workcenter_view" model="ir.ui.view">
+	    <field name="name">mrp.workcenter.form</field>
+	    <field name="model">mrp.workcenter</field>
+	    <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
+	    <field name="arch" type="xml">
+            <field name="alternative_workcenter_ids" position="after">
+                <field name="default_operation"/>
+				<field name="used_scan_process"/>
+				<field name="default_operation_pick"/>
+            </field>
+		</field>
+	</record>
+</odoo>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_picking_inherit" inherit_id="stock.report_picking">
+        <xpath expr="//div[hasclass('page')]/table/tbody/t/t/tr/td[1]" position="replace">
+            <td>
+                <span t-field="ml.product_id.display_name"/><br/>
+                <span t-field="ml.product_id.description_picking"/>
+                <t t-if="ml.product_id.fsc_group_id or ml.product_id.fsc_status_id">
+                    <t t-if="ml.product_id.fsc_group_id and ml.product_id.fsc_status_id">
+                        - 
+                        <span t-field="ml.product_id.fsc_group_id"/> 
+                        <span t-field="ml.product_id.fsc_status_id"/> 
+                    </t>
+                    <t t-if="ml.product_id.fsc_group_id and not ml.product_id.fsc_status_id">
+                        -
+                        <span t-field="ml.product_id.fsc_group_id"/> 
+                    </t>
+                    <t t-if="ml.product_id.fsc_status_id and not ml.product_id.fsc_group_id">
+                        -
+                        <span t-field="ml.product_id.fsc_status_id"/>
+                    </t>
+                </t>
+            </td>
+        </xpath>
+    </template>
+
+    <template id="report_delivery_document_inherit" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[hasclass('page')]/table/tbody/tr/td[1]" position="replace">
+            <td>
+                <span t-field="move.product_id"/>
+                <t t-if="move.product_id.fsc_group_id or move.product_id.fsc_status_id">
+                    <t t-if="move.product_id.fsc_group_id and move.product_id.fsc_status_id">
+                        - 
+                        <span t-field="move.product_id.fsc_group_id"/> 
+                        <span t-field="move.product_id.fsc_status_id"/> 
+                    </t>
+                    <t t-if="move.product_id.fsc_group_id and not move.product_id.fsc_status_id">
+                        -
+                        <span t-field="move.product_id.fsc_group_id"/> 
+                    </t>
+                    <t t-if="move.product_id.fsc_status_id and not move.product_id.fsc_group_id">
+                        -
+                        <span t-field="move.product_id.fsc_status_id"/>
+                    </t>
+                </t>
+                <p t-if="o.picking_type_code == 'outgoing'">
+                    <span t-field="move.product_id.sudo().description_pickingout"/>
+                </p>
+                <p t-if="o.picking_type_code == 'incoming'">
+                    <span t-field="move.product_id.sudo().description_pickingin"/>
+                </p>
+            </td>
+        </xpath>
+    </template>
+</odoo>
