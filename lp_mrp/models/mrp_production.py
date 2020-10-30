@@ -16,7 +16,7 @@ class MrpProduction(models.Model):
         ('very_urgent', 'Very Urgent'),
         ('urgent', 'Urgent'),
         ('priority', 'Priority'),
-        ('standard', 'Standard (for the MO)')
+        ('standard', 'Standard')
         ], string='Urgency', copy=False)
     follower_sheets_ids = fields.One2many(
         comodel_name='follower.sheet', inverse_name='mo_id',
@@ -28,7 +28,85 @@ class MrpProduction(models.Model):
     mo_for_samples = fields.Boolean('MO for Samples')
     expected_ship_date = fields.Datetime('Expected Ship Date')
 
+    @api.depends('move_raw_ids.state', 'move_finished_ids.state', 'workorder_ids', 'workorder_ids.state', 'qty_produced', 'move_raw_ids.quantity_done', 'product_qty')
+    def _compute_state(self):
+        # Replace function to set state only done when all WO is done
+        """ Compute the production state. It use the same process than stock
+        picking. It exists 3 extra steps for production:
+        - planned: Workorder has been launched (workorders only)
+        - progress: At least one item is produced.
+        - to_close: The quantity produced is greater than the quantity to
+        produce and all work orders has been finished.
+        """
+
+        # Manually track "state" and "reservation_state" since tracking doesn't work with computed
+        # fields.
+        tracking = not self._context.get("mail_notrack") and not self._context.get("tracking_disable")
+        initial_values = {}
+        if tracking:
+            initial_values = dict(
+                (production.id, {"state": production.state, "reservation_state": production.reservation_state})
+                for production in self
+            )
+
+        # TODO: duplicated code with stock_picking.py
+        for production in self:
+            if not production.move_raw_ids:
+                production.state = 'draft'
+            elif all(move.state == 'draft' for move in production.move_raw_ids):
+                production.state = 'draft'
+            elif all(move.state == 'cancel' for move in production.move_raw_ids):
+                production.state = 'cancel'
+            elif all(move.state in ['cancel', 'done'] for move in production.move_raw_ids):
+                if (
+                    production.bom_id.consumption == 'flexible'
+                    and float_compare(production.qty_produced, production.product_qty, precision_rounding=production.product_uom_id.rounding) == -1
+                ):
+                    production.state = 'progress'
+                # else:
+                #     production.state = 'done'
+            elif production.workorder_ids and any(wo_state in ('progress') for wo_state in production.workorder_ids.mapped('state')):
+                production.state = 'progress'
+            elif production.move_finished_ids.filtered(lambda m: m.state not in ('cancel', 'done') and m.product_id.id == production.product_id.id)\
+                 and (production.qty_produced >= production.product_qty)\
+                 and (not production.routing_id or all(wo_state in ('cancel', 'done') for wo_state in production.workorder_ids.mapped('state'))):
+                production.state = 'to_close'
+            elif production.workorder_ids and any(wo_state in ('progress') for wo_state in production.workorder_ids.mapped('state'))\
+                 or production.qty_produced > 0 and production.qty_produced < production.product_qty:
+                production.state = 'progress'
+            elif production.workorder_ids and all(wo_state not in ('progress', 'cancel', 'done') for wo_state in production.workorder_ids.mapped('state')):
+                production.state = 'planned'
+            elif production.workorder_ids and (all(wo_state in ('cancel', 'done') for wo_state in production.workorder_ids.mapped('state'))\
+                 or all(finish_state == 'done' for finish_state in production.move_finished_ids.mapped('state'))):
+                production.state = 'done'
+            else:
+                if not production.workorder_ids:
+                    production.state = 'confirmed'
+            
+            # Compute reservation state
+            # State where the reservation does not matter.
+            # Compute reservation state according to its component's moves.
+            if production.state not in ('draft', 'planned', 'done', 'cancel', 'progress'):
+                production.reservation_state = False
+                relevant_move_state = production.move_raw_ids._get_relevant_state_among_moves()
+                if relevant_move_state == 'partially_available':
+                    if production.routing_id and production.routing_id.operation_ids and production.bom_id.ready_to_produce == 'asap':
+                        production.reservation_state = production._get_ready_to_produce_state()
+                    else:
+                        production.reservation_state = 'confirmed'
+                elif relevant_move_state != 'draft':
+                    production.reservation_state = relevant_move_state
+
+        if tracking and initial_values:
+            self.message_track(self.fields_get(["state", "reservation_state"]), initial_values)
+
     def button_plan(self):
+        for order in self:
+            if not all(line.product_uom_qty == line.reserved_availability for line in order.move_raw_ids.filtered(
+                    lambda x: x.product_id.categ_id.require_for_mo == True)):
+                raise UserError(_('To consume & Reserver should be same for specific product category'))
+            # if all(line.statement_id for line in line.payment_id.move_line_ids.filtered(
+            #             lambda r: r.id != line.id and r.account_id.internal_type == 'liquidity')):
         res = super(MrpProduction, self).button_plan()
         for order in self:
             if order.expected_ship_date: 

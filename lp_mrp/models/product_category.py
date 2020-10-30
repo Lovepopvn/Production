@@ -24,3 +24,4 @@ class ProductCategory(models.Model):
     _inherit = 'product.category'
 
     production_information = fields.Boolean(string='Production information')
+    require_for_mo = fields.Boolean(string='Require for MO Plan')

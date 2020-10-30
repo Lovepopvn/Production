@@ -61,11 +61,9 @@ def _convert_curr_iso_fdx(code):
 class ProviderFedex(models.Model):
     _inherit = 'delivery.carrier'
 
-    fedex_duty_payment = fields.Selection([
-                                        ('SENDER', 'Sender'),
-                                        ('RECIPIENT', 'Recipient'),
-                                        ('THIRD_PARTY', 'Third Party')],
-                                        required=True, default="THIRD_PARTY")
+    fedex_duty_payment = fields.Selection(
+        selection_add=[ ('THIRD_PARTY', 'Third Party')],
+        required=True, default="THIRD_PARTY")
     fedex_bill_account_number = fields.Char(string="Billing Account Number",
                                         groups="base.group_system")
     

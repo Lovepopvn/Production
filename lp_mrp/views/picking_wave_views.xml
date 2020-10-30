@@ -74,7 +74,7 @@
                             </field>
                         </page>
                         <page string="Detail of Delivery Order">
-                            <field name="delivery_order_ids" widget="one2many">
+                            <field name="delivery_order_ids" widget="one2many" readonly="1">
                                 <tree>
                                     <field name="name"/>
                                     <field name="partner_id"/>
@@ -84,6 +84,7 @@
                                     <field name="state"/>
                                     <field name="carrier_id"/>
                                     <field name="carrier_tracking_ref"/>
+                                    <button name="remove_do" string="Remove DO" type="object" icon="fa-trash-o"/>
                                 </tree>
                             </field>
                         </page>
