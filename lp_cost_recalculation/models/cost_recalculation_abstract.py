@@ -88,7 +88,7 @@ class AbstractCostRecalculation(models.AbstractModel):
     month = fields.Selection(MONTHS, default=_default_month)
     date_from = fields.Datetime(compute='_compute_date_range', store=True)
     date_to = fields.Datetime(compute='_compute_date_range', store=True)
-    journal_id = fields.Many2one('account.journal', 'Journal')
+    journal_id = fields.Many2one('account.journal', 'Journal', required=True)
     company_id = fields.Many2one('res.company', 'Company', related='journal_id.company_id')
     currency_id = fields.Many2one('res.currency', string='Currency', required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.company.currency_id.id)
     allocation_lines_xlsx = fields.Binary('Allocation Lines XLSX', readonly=True, copy=False)
@@ -144,8 +144,8 @@ class AbstractCostRecalculation(models.AbstractModel):
     def button_draft(self):
         self._validate_state(1)
         self.write({
-            'delta_line_ids': (5, 0, 0),
-            'allocation_line_ids': (5, 0, 0),
+            'delta_line_ids': [(5, 0, 0)],
+            'allocation_line_ids': [(5, 0, 0)],
             'state': 'draft',
             'allocation_lines_xlsx': False,
         })
@@ -243,7 +243,7 @@ class AbstractCostRecalculation(models.AbstractModel):
 
     @api.model
     def _get_allocation_line_vals(self, manufacturing_order, process_ceq=False):
-        ''' Prepares lines for common allocation lines model from provided Manufacturing Order '''
+        ''' Prepares values for allocation line from provided Manufacturing Order '''
         lp_product = manufacturing_order.product_id
         mo_id = manufacturing_order.id
         parent_mo = manufacturing_order.parent_mo_id

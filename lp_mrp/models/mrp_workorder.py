@@ -96,6 +96,7 @@ class MrpWorkOrder(models.Model):
                     productivity_ids = productivity_obj.search([('code_id', '=', code_id.id),
                                                             ('workorder_id', '=', workorder_id)])
                     if productivity_ids:
+                        created = False
                         for productivity in productivity_ids:
                             if not productivity.date_end:
                                 '''Pause'''
@@ -116,21 +117,23 @@ class MrpWorkOrder(models.Model):
                                     self.production_id.write({
                                         'date_start': datetime.now(),
                                     })
-                                timeline_id = timeline.create({
-                                    'code_id': code_id.id,
-                                    'workorder_id': workorder_id,
-                                    'workcenter_id': self.workcenter_id.id,
-                                    'description': _('Time Tracking: ')+self.env.user.name,
-                                    'loss_id': loss_id[0].id,
-                                    'state': 'in_progress',
-                                    'date_start': datetime.now(),
-                                    'user_id': self.env.user.id,  # FIXME sle: can be inconsistent with company_id
-                                    'company_id': self.company_id.id,
-                                })
-                                self.time_progress_ids = timeline_id
-                                self.refresh()
-                                self.is_user_working = True
-                                self.state = 'progress'
+                                if not created:
+                                    timeline_id = timeline.create({
+                                        'code_id': code_id.id,
+                                        'workorder_id': workorder_id,
+                                        'workcenter_id': self.workcenter_id.id,
+                                        'description': _('Time Tracking: ')+self.env.user.name,
+                                        'loss_id': loss_id[0].id,
+                                        'state': 'in_progress',
+                                        'date_start': datetime.now(),
+                                        'user_id': self.env.user.id,  # FIXME sle: can be inconsistent with company_id
+                                        'company_id': self.company_id.id,
+                                    })
+                                    self.time_progress_ids = timeline_id
+                                    self.refresh()
+                                    self.is_user_working = True
+                                    self.state = 'progress'
+                                    created = True
                             else:
                                 raise UserError(_("you cannot scan a completed piece for this work order."))
                     else:
@@ -248,9 +251,7 @@ class MrpWorkOrder(models.Model):
                                         self.production_id.name,mo.name,str(int(mo.product_qty)),mo.product_id.default_code,mo.product_id.name)
                         raise Warning(warn)
                 self.production_id.button_mark_done()
-            else:
-                if self.production_id.state in ('confirmed','planned','done'):
-                    self.production_id.write({'state': 'progress'})
+                self.production_id.write({'state': 'done'})
         return res
 
     def _compute_working_users(self):
@@ -277,6 +278,7 @@ class MrpWorkCenterProductivity(models.Model):
                                             'workorder_id': False,
                                             'wo_productivity_id': self.id})
         return {
+            'name': _('Pieces Pause Reason'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'workorder.pause.reason',

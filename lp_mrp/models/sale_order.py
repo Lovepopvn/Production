@@ -42,7 +42,7 @@ class SaleOrder(models.Model):
     manufacturing_order = fields.Char('Manufacturing Order', copy=False)
     mo_ids = fields.One2many(
         comodel_name='mrp.production', inverse_name='sale_id',
-        string='Manufacturing Order', copy=False)
+        string='Manufacturing Order link', copy=False)
     contain_mo = fields.Boolean(copy=False)
 
     def action_confirm(self):
