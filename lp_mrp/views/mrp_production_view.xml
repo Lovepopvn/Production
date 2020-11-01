@@ -75,6 +75,7 @@
                 <field name="parent_mo_id"/>
             </field>
             <field name="date_planned_start" position="after">
+                <field name="expected_ship_date"/>
                 <field name="picking_date"/>
                 <field name="urgency"/>
             </field>
