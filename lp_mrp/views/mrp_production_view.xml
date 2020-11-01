@@ -78,6 +78,12 @@
                 <field name="picking_date"/>
                 <field name="urgency"/>
             </field>
+            <field name="product_uom_id" position="before">
+                <field name="delivery_address"/>
+            </field>
+            <field name="product_uom_id" position="after">
+                <field name="shipment_method"/>
+            </field>
         </field>
     </record>
 
