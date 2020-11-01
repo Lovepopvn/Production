@@ -8,6 +8,9 @@
             <form position="inside">
                 <field name="_barcode_scanned" widget="barcode_handler"/>
             </form>
+            <field name="user_id" position="before">
+                <field name="picking_date" attrs="{'readonly': [('state', 'not in', ['draft', 'confirmed', 'planned'])]}"/>
+            </field>
             <field name="user_id" position="after">
                 <field name="urgency"/>
                 <field name="sale_id" readonly="1"/>
@@ -70,6 +73,16 @@
 	    <field name="arch" type="xml">
             <field name="origin" position="after">
                 <field name="parent_mo_id"/>
+            </field>
+            <field name="date_planned_start" position="after">
+                <field name="picking_date"/>
+                <field name="urgency"/>
+            </field>
+            <field name="product_uom_id" position="before">
+                <field name="delivery_address"/>
+            </field>
+            <field name="product_uom_id" position="after">
+                <field name="shipment_method"/>
             </field>
         </field>
     </record>

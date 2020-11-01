@@ -27,6 +27,9 @@ class MrpProduction(models.Model):
     parent_mo_id = fields.Many2one('mrp.production','Parent MO')
     mo_for_samples = fields.Boolean('MO for Samples')
     expected_ship_date = fields.Datetime('Expected Ship Date')
+    picking_date = fields.Date()
+    delivery_address = fields.Char('Delivery Address', related='sale_id.partner_shipping_id.name')
+    shipment_method = fields.Selection(related='sale_id.shipment_method')
 
     @api.depends('move_raw_ids.state', 'move_finished_ids.state', 'workorder_ids', 'workorder_ids.state', 'qty_produced', 'move_raw_ids.quantity_done', 'product_qty')
     def _compute_state(self):

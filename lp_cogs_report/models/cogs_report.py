@@ -174,14 +174,32 @@ class COGSReport(models.Model):
 
     def _validate_allocations(self):
         ''' Validates that the selected allocations are in the Posted state '''
-        errors = []
+        errors = {
+            'states': [],
+            'companies': [],
+        }
         for record in self:
+            companies = []
             for allocation in ('material_loss_id', 'labor_cost_id', 'click_charge_id', 'overhead_cost_id'):
                 if record[allocation] and record[allocation].state != 'posted':
-                    errors.append(record[allocation].name_get()[0][1])
-        if errors:
-            wrong_allocations = '\n'.join(errors)
-            raise ValidationError(_('Allocations not in Posted state:') + '\n\n' + wrong_allocations)
+                    errors['states'].append(record[allocation].name_get()[0][1])
+                if record[allocation] and record[allocation].company_id \
+                    and record[allocation].company_id.id != record.company_id.id:
+                    companies.append((record[allocation].name_get()[0][1], record[allocation].company_id.name_get()[0][1]))
+            if companies:
+                errors['companies'].append((record.name_get()[0][1], record.company_id.name_get()[0][1], companies))
+        error_msg = ''
+        if errors['states']:
+            wrong_allocations = '\n'.join(errors['states'])
+            error_msg += _('Allocations not in Posted state:') + '\n\n' + wrong_allocations + '\n\n'
+        for error in errors['companies']:
+            wrong_allocations = '\n'.join(['%s (%s)' % e for e in error[2]])
+            error_msg += _('Allocations must belong to the same company as this report.') \
+                + '\n\n' + _('Report "%s" (company "%s"):') % (error[0], error[1]) + '\n' \
+                + _('Allocations belonging to different companies:') \
+                + '\n' + wrong_allocations
+        if error_msg:
+            raise ValidationError(error_msg)
 
 
     def _validate_state(self, states=[0]):
