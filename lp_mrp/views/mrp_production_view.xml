@@ -8,6 +8,9 @@
             <form position="inside">
                 <field name="_barcode_scanned" widget="barcode_handler"/>
             </form>
+            <field name="user_id" position="before">
+                <field name="picking_date" attrs="{'readonly': [('state', 'not in', ['draft', 'confirmed', 'planned'])]}"/>
+            </field>
             <field name="user_id" position="after">
                 <field name="urgency"/>
                 <field name="sale_id" readonly="1"/>
