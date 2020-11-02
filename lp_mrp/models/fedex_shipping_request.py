@@ -155,8 +155,7 @@ class FedexRequest():
             assert recipient_partner.vat is None  # pre
 
         self.RequestedShipment.Recipient.Tins = [taxpayer_identification, ]
-        self.RequestedShipment.Recipient.Contact.CompanyName = recipient_partner.name
-        self.RequestedShipment.Recipient.Contact.PersonName = recipient_partner.name
+        self.RequestedShipment.Recipient.Contact = Contact
         self.RequestedShipment.Recipient.Contact.PhoneNumber = recipient_partner.phone
 
         self.RequestedShipment.Recipient.Address.StreetLines = [recipient_partner.street, ]

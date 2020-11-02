@@ -3,10 +3,12 @@
 
 {
     'name': 'Custom Manufacturing LovePop',
-    'version': '13.0.1.1.0',
+    'version': '13.0.1.1.1',
     'category': 'Manufacturing',
     'summary': 'Custom Manufacturing process',
     'description': """
+    v.13.0.1.1.1 \n
+    - Fix paper shipping label \n
     """,
     'website': 'https://www.portcities.net',
     'author': 'Portcities Ltd.',
