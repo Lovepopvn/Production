@@ -193,6 +193,9 @@ class StockValuationDateReport(models.TransientModel,
         other_tstyle_grandc = xls_format.font_style(position='center', fontos='purple_ega', bold=1,border=1, font_height=180, color='grey')
         other_tstyle_grandr = xls_format.font_style(position='right', fontos='purple_ega', bold=1,border=1, font_height=180, color='grey')
 
+        for style in (other_tstyle_cr, other_tstyle_r, other_tstyle_grandc, other_tstyle_grandr):
+                style.num_format_str = '#,##0.0000'
+
         datas = {
                  'form':
                     {
@@ -315,32 +318,32 @@ class StockValuationDateReport(models.TransientModel,
                     sheet.write(
                             row,
                             1,
-                            "%.2f" % total_beginning_inventory,
+                            total_beginning_inventory,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             2,
-                            "%.2f" % total_qty_in,
+                            total_qty_in,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             3,
-                            "%.2f" % total_qty_out,
+                            total_qty_out,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             4,
-                            "%.2f" % total_product_qty_adjustment,
+                            total_product_qty_adjustment,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             5,
-                            "%.2f" % total_ending_inventory,
+                            total_ending_inventory,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             6,
-                            "%.2f" % total_subtotal_cost,
+                            total_subtotal_cost,
                             other_tstyle_r)
                     row += 1
 
@@ -352,32 +355,32 @@ class StockValuationDateReport(models.TransientModel,
                 sheet.write(
                         row,
                         1,
-                        "%.2f" % grand_total_beginning_inventory,
+                        grand_total_beginning_inventory,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         2,
-                        "%.2f" % grand_total_qty_in,
+                        grand_total_qty_in,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         3,
-                        "%.2f" % grand_total_qty_out,
+                        grand_total_qty_out,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         4,
-                        "%.2f" % grand_total_product_qty_adjustment,
+                        grand_total_product_qty_adjustment,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         5,
-                        "%.2f" % grand_total_ending_inventory,
+                        grand_total_ending_inventory,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         6,
-                        "%.2f" % grand_total_subtotal_cost,
+                        grand_total_subtotal_cost,
                         other_tstyle_grandr)
             else:
                 header_row_start = 8
@@ -394,15 +397,15 @@ class StockValuationDateReport(models.TransientModel,
                 sheet.write(header_row_start, 5, 'Received', header_tstyle_c)
                 sheet.col(5).width = 256 * 20
                 sheet.write(header_row_start, 6, 'Sales', header_tstyle_c)
-                sheet.col(7).width = 256 * 20
+                sheet.col(6).width = 256 * 20
                 sheet.write(header_row_start, 7, 'Adjustments', header_tstyle_c)
-                sheet.col(8).width = 256 * 20
+                sheet.col(7).width = 256 * 20
                 sheet.write(header_row_start, 8, 'Ending', header_tstyle_c)
-                sheet.col(9).width = 256 * 20
+                sheet.col(8).width = 256 * 20
                 sheet.write(header_row_start, 9, 'Cost', header_tstyle_c)
-                sheet.col(10).width = 256 * 20
+                sheet.col(9).width = 256 * 20
                 sheet.write(header_row_start, 10, 'Total Value', header_tstyle_c)
-                sheet.col(11).width = 256 * 20
+                sheet.col(10).width = 256 * 25
                 row = 9
                 grand_total_qty_in, grand_total_qty_out, \
                     grand_total_product_qty_adjustment, \
@@ -476,37 +479,37 @@ class StockValuationDateReport(models.TransientModel,
                             sheet.write(
                                     row,
                                     4,
-                                    "%.2f" % beginning_inventory,
+                                    beginning_inventory,
                                     other_tstyle_r)
                             sheet.write(
                                     row,
                                     5,
-                                    "%.2f" % product_qty_in,
+                                    product_qty_in,
                                     other_tstyle_r)
                             sheet.write(
                                     row,
                                     6,
-                                    "%.2f" % product_qty_out,
+                                    product_qty_out,
                                     other_tstyle_r)
                             sheet.write(
                                     row,
                                     7,
-                                    "%.2f" % product_qty_adjustment,
+                                    product_qty_adjustment,
                                     other_tstyle_r)
                             sheet.write(
                                     row,
                                     8,
-                                    "%.2f" % ending_inventory,
+                                    ending_inventory,
                                     other_tstyle_r)
                             sheet.write(
                                     row,
                                     9,
-                                    "%.2f" % unit_cost,
+                                    unit_cost,
                                     other_tstyle_r)
                             sheet.write(
                                     row,
                                     10,
-                                    "%.2f" % subtotal_cost,
+                                    subtotal_cost,
                                     other_tstyle_r)
                             row += 1
 
@@ -518,27 +521,27 @@ class StockValuationDateReport(models.TransientModel,
                 sheet.write(
                         row,
                         4,
-                        "%.2f" % grand_total_beginning_inventory,
+                        grand_total_beginning_inventory,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         5,
-                        "%.2f" % grand_total_qty_in,
+                        grand_total_qty_in,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         6,
-                        "%.2f" % grand_total_qty_out,
+                        grand_total_qty_out,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         7,
-                        "%.2f" % grand_total_product_qty_adjustment,
+                        grand_total_product_qty_adjustment,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         8,
-                        "%.2f" % grand_total_ending_inventory,
+                        grand_total_ending_inventory,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
@@ -548,7 +551,7 @@ class StockValuationDateReport(models.TransientModel,
                 sheet.write(
                         row,
                         10,
-                        "%.2f" % grand_total_subtotal_cost,
+                        grand_total_subtotal_cost,
                         other_tstyle_grandr)
 
         stream = BytesIO()
