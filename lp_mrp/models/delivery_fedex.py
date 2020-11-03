@@ -3,8 +3,13 @@
 import logging
 import time
 import math
+import io
+import itertools
+import functools
 
+from PyPDF2.pdf import PdfFileReader, PdfFileWriter, PageObject
 from odoo import api, models, fields, _, tools
+from contracts import contract
 from odoo.exceptions import UserError
 from odoo.tools import pdf
 
@@ -66,6 +71,26 @@ class ProviderFedex(models.Model):
         required=True, default="THIRD_PARTY")
     fedex_bill_account_number = fields.Char(string="Billing Account Number",
                                         groups="base.group_system")
+    
+    @staticmethod
+    @contract(page=PageObject, returns=PageObject)
+    def __convert_page_to_correct_paper_size(page):
+        """
+            Returns a new page from the given L{page} with its content shifted from the top of the page (to
+            account for the custom paper the fedex printer uses).
+        """
+        margin_top, crop_bottom = -64., 80
+        new_page = PageObject.createBlankPage(None,
+                page.mediaBox.getWidth(),
+                page.mediaBox.getHeight() - crop_bottom,  # cropping the page
+                                        )
+        new_page.mergeScaledTranslatedPage(
+                                            page,
+                                            1.,  # keeping the scale of the page the same
+                                            0,
+                                            margin_top - crop_bottom,  # moving the content down after cropping
+                                            )
+        return new_page
     
     def _get_real_price_currency(self, lot, product, rule_id, qty, uom, pricelist_id):
         """Retrieve the price before applying the pricelist
@@ -407,11 +432,33 @@ class ProviderFedex(models.Model):
                             logmessage = _("Shipment created into Fedex<br/>"
                                            "<b>Tracking Numbers:</b> %s<br/>"
                                            "<b>Packages:</b> %s") % (carrier_tracking_ref, ','.join([pl[0] for pl in lot_labels]))
+                            lot_label_data = [pl[1] for pl in lot_labels]
+                            labels_iterator = iter(map(io.BytesIO, lot_label_data))
+                            first_label = next(labels_iterator)
+                            writer = PdfFileWriter()
+                            new_reader = functools.partial(PdfFileReader, strict=False, overwriteWarnings=False)
+                            for reader in map(new_reader, labels_iterator):
+                                for n in range(reader.getNumPages()):
+                                    page = reader.getPage(n)
+                                    new_page = self.__convert_page_to_correct_paper_size(page)
+                                    writer.addPage(new_page)
+                            first_label_reader = new_reader(first_label)
+
+                            for idx in itertools.chain(reversed((0,)), range(1, 5,),):
+                                page = first_label_reader.getPage(idx)
+                                new_page = self.__convert_page_to_correct_paper_size(page)
+                                writer.insertPage(page, 0)
+                            
+                            output_stream = io.BytesIO()
+                            writer.write(output_stream)
+                            attachment = []
+                            attachment.append(output_stream.getvalue())
+                            
                             if self.fedex_label_file_type != 'PDF':
                                 attachments = [('LabelFedex-%s.%s' % (pl[0], self.fedex_label_file_type), pl[1]) for pl in lot_labels]
                             if self.fedex_label_file_type == 'PDF':
                                 ship_label_name = "Shipping Label %s.pdf" % shipping.name
-                                attachments = [(ship_label_name, pdf.merge_pdf([pl[1] for pl in lot_labels]))]
+                                attachments = [(ship_label_name, pdf.merge_pdf(attachment))]
                             shipping.message_post(body=logmessage, attachments=attachments)
                             for pick in shipping.delivery_order_ids:
                                 pick.message_post(body=logmessage, attachments=attachments)

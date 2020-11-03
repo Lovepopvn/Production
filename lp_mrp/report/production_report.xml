@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<data>
+    <data>
     <template id="report_production_document">
         <t t-call="web.html_container">
-    	<t t-call="web.basic_layout">
+        <t t-call="web.basic_layout">
             <t t-foreach="docs" t-as="o">
 
                 <div class="page">
@@ -11,36 +11,36 @@
                         <tr>
                             <td style="width:75%; text-align:left; vertical-align: middle; border-top: none;">
                                 <table width="100%">
-	                                <tr>
-	                                    <td width="40%" colspan="2" style="font-size: 45px;text-align:left; vertical-align: middle;">
-	                                        <span t-field="o.name"/>
-	                                    </td>
-	                                    <td width="60%" style="text-align:right; vertical-align: middle;">
-	                                        <span style="font-size:40px;">
-	                                            <t t-esc="int(o.product_qty)"/> x <t t-esc="o.product_id.default_code"/>
-	                                        </span>
-	                                    </td>
-	                                </tr>
+                                    <tr>
+                                        <td width="40%" colspan="2" style="font-size: 45px;text-align:left; vertical-align: middle;">
+                                            <span t-field="o.name"/>
+                                        </td>
+                                        <td width="60%" style="text-align:right; vertical-align: middle;">
+                                            <span style="font-size:40px;">
+                                                <t t-esc="int(o.product_qty)"/> x <t t-esc="o.product_id.default_code"/>
+                                            </span>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td width="20%" style="text-align:left; vertical-align: middle;">
                                             <t t-if="o.urgency == 'very_urgent'">
-	                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.urgent_file}}" style="max-height: 45px;max-width: 45px;"/>
-	                                        </t>
-	                                        <t t-if="o.urgency == 'urgent'">
-	                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.priority_file}}" style="max-height: 45px;max-width: 45px;"/>
-	                                        </t>
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.urgent_file}}" style="max-height: 45px;max-width: 45px;"/>
+                                            </t>
+                                            <t t-if="o.urgency == 'urgent'">
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.priority_file}}" style="max-height: 45px;max-width: 45px;"/>
+                                            </t>
                                         </td>
                                         <td width="80%" colspan="2" rowspan="2" style="text-align:right;">
                                             <span t-field="o.product_id.name"/>
                                             <t t-if="o.product_id.fsc_group_id or o.product_id.fsc_status_id">
                                                 <t t-if="o.product_id.fsc_group_id and o.product_id.fsc_status_id">
-                                                    - 
-                                                    <span t-field="o.product_id.fsc_status_id"/> 
-                                                    <span t-field="o.product_id.fsc_group_id"/> 
+                                                    -
+                                                    <span t-field="o.product_id.fsc_status_id"/>
+                                                    <span t-field="o.product_id.fsc_group_id"/>
                                                 </t>
                                                 <t t-if="o.product_id.fsc_group_id and not o.product_id.fsc_status_id">
                                                     -
-                                                    <span t-field="o.product_id.fsc_group_id"/> 
+                                                    <span t-field="o.product_id.fsc_group_id"/>
                                                 </t>
                                                 <t t-if="o.product_id.fsc_status_id and not o.product_id.fsc_group_id">
                                                     -
@@ -50,10 +50,10 @@
                                             Order Type :
                                             <!-- Order type: <span t-field="o.order_type"/> -->
                                             <t t-if="o.sale_id">
-                                            	<br/>
-                                            	Ship to: <span t-field="o.sale_id.partner_shipping_id"/>
+                                                <br/>
+                                                Ship to: <span t-field="o.sale_id.partner_shipping_id"/>
                                             </t>
-	                                    </td>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="text-align:left; vertical-align: middle;">
@@ -64,16 +64,16 @@
                                 </table>
                             </td>
                             <td style="width:25%; text-align:center; vertical-align: top;">
-                            	<img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 400, 100)" style="margin-top:15px; margin-left:-60px;position: absolute;clip: rect(0px,390px,1000px,60px);" alt="Barcode"/>
+                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 400, 100)" style="margin-top:15px; margin-left:-60px;position: absolute;clip: rect(0px,390px,1000px,60px);" alt="Barcode"/>
                             </td>
                         </tr>
                         <tr>
-                        	<td colspan="2" style="padding:0px">
-                        		<b>Parent MO:</b>&#160;<span t-field="o.parent_mo_id.name"/>&#160;&#160;&#160;<b>Parent Item:</b>&#160;<span t-field="o.parent_mo_id.product_id.name"/>
-                        	</td>
+                            <td colspan="2" style="padding:0px">
+                                <b>Parent MO:</b>&#160;<span t-field="o.parent_mo_id.name"/>&#160;&#160;&#160;<b>Parent Item:</b>&#160;<span t-field="o.parent_mo_id.product_id.name"/>
+                            </td>
                         </tr>
                     </table>
-                    
+
                     <t t-if="len(o.follower_sheets_ids) &gt; 0">
                         <table class="table table-bordered table-condensed" style="table-layout: fixed; margin-bottom: 40;">
                             <caption style="caption-side: top;text-align:center; font-size: 20px; border: black solid 1px; color: black"><b>Paper (Giấy)</b></caption>
@@ -127,13 +127,13 @@
                                         <span style="font-size:14px" t-field="lines.product_id.name"/>
                                         <t t-if="lines.product_id.fsc_group_id or lines.product_id.fsc_status_id">
                                             <t t-if="lines.product_id.fsc_group_id and lines.product_id.fsc_status_id">
-                                                - 
-                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_status_id"/> 
-                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                -
+                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_status_id"/>
+                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_group_id and not lines.product_id.fsc_status_id">
                                                 -
-                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_status_id and not lines.product_id.fsc_group_id">
                                                 -
@@ -147,7 +147,7 @@
 
                                     <td style="text-align:center; vertical-align: text-bottom; border: black solid 1px; padding:3px 1px;">
                                         <span style="font-size:18px" t-field="lines.cards_per_sheet"/>
-                                    </td>                    
+                                    </td>
 
 
                                     <td style="text-align:center; vertical-align: text-bottom; border: black solid 1px; padding:3px 1px;">
@@ -170,42 +170,42 @@
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'L'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'F'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'X'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'P'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'N'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'DL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
@@ -247,7 +247,7 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                     <td t-if="lines.machine_flow_id.code == 'FDL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
@@ -258,7 +258,7 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                     <td t-if="lines.machine_flow_id.code == 'PDL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
@@ -269,7 +269,7 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                     <td t-if="lines.machine_flow_id.code == 'PFL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
@@ -378,18 +378,19 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                 </tr>
                             </t>
                         </table>
                     </t>
 
                     <div>
-                        <table class="table table-bordered table-condensed" style="width:1100px; float:left;">
+                        <!-- <table class="table table-bordered table-condensed" style="width:1100px; float:left;"> -->
+                        <table class="table table-bordered table-condensed" style="width:1100px;">
                             <tr>
-                            	<th colspan="6" style="text-align:center; font-size: 20px; border: black solid 1px; color: black">
-                            		Packaging (Đóng Gói)
-                            	</th>
+                                <th colspan="6" style="text-align:center; font-size: 20px; border: black solid 1px; color: black">
+                                    Packaging (Đóng Gói)
+                                </th>
                             </tr>
                             <tr style="font-size: 12px;">
                                 <th style="width:150px; text-align:center; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
@@ -412,7 +413,7 @@
                                 </th>
                             </tr>
 
-                            
+
                             <t t-set="packaging_exists" t-value="0"/>
 
                             <t t-foreach="o.move_raw_ids.sorted(key=lambda r: r.product_id.default_code)" t-as="lines">
@@ -424,13 +425,13 @@
                                         <span style="font-size:20px; margin-bottom:10px" t-field="lines.product_id.name"/>
                                         <t t-if="lines.product_id.fsc_group_id or lines.product_id.fsc_status_id">
                                             <t t-if="lines.product_id.fsc_group_id and lines.product_id.fsc_status_id">
-                                                - 
-                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_status_id"/> 
-                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                -
+                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_status_id"/>
+                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_group_id and not lines.product_id.fsc_status_id">
                                                 -
-                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_status_id and not lines.product_id.fsc_group_id">
                                                 -
@@ -509,42 +510,42 @@
                     </div>
                     <p style="page-break-after:always;"/>
                 </div>
-                
+
                 <div class="page">
                     <table width="100%" style="margin-bottom:10px;font-size: 22px;">
                         <tr>
                             <td style="width:75%; text-align:left; vertical-align: middle; border-top: none;">
                                 <table width="100%">
-	                                <tr>
-	                                    <td width="40%" colspan="2" style="font-size: 45px;text-align:left; vertical-align: middle;">
-	                                        <span t-field="o.name"/>
-	                                    </td>
-	                                    <td width="60%" style="text-align:right; vertical-align: middle;">
-	                                        <span style="font-size:40px;">
-	                                            <t t-esc="int(o.product_qty)"/> x <t t-esc="o.product_id.default_code"/>
-	                                        </span>
-	                                    </td>
-	                                </tr>
+                                    <tr>
+                                        <td width="40%" colspan="2" style="font-size: 45px;text-align:left; vertical-align: middle;">
+                                            <span t-field="o.name"/>
+                                        </td>
+                                        <td width="60%" style="text-align:right; vertical-align: middle;">
+                                            <span style="font-size:40px;">
+                                                <t t-esc="int(o.product_qty)"/> x <t t-esc="o.product_id.default_code"/>
+                                            </span>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td width="20%" style="text-align:left; vertical-align: middle;">
                                             <t t-if="o.urgency == 'very_urgent'">
-	                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.urgent_file}}" style="max-height: 45px;max-width: 45px;"/>
-	                                        </t>
-	                                        <t t-if="o.urgency == 'urgent'">
-	                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.priority_file}}" style="max-height: 45px;max-width: 45px;"/>
-	                                        </t>
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.urgent_file}}" style="max-height: 45px;max-width: 45px;"/>
+                                            </t>
+                                            <t t-if="o.urgency == 'urgent'">
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.priority_file}}" style="max-height: 45px;max-width: 45px;"/>
+                                            </t>
                                         </td>
                                         <td width="80%" colspan="2" rowspan="2" style="text-align:right;">
                                             <span t-field="o.product_id.name"/>
                                             <t t-if="o.product_id.fsc_group_id or o.product_id.fsc_status_id">
                                                 <t t-if="o.product_id.fsc_group_id and o.product_id.fsc_status_id">
-                                                    - 
-                                                    <span t-field="o.product_id.fsc_status_id"/> 
-                                                    <span t-field="o.product_id.fsc_group_id"/> 
+                                                    -
+                                                    <span t-field="o.product_id.fsc_status_id"/>
+                                                    <span t-field="o.product_id.fsc_group_id"/>
                                                 </t>
                                                 <t t-if="o.product_id.fsc_group_id and not o.product_id.fsc_status_id">
                                                     -
-                                                    <span t-field="o.product_id.fsc_group_id"/> 
+                                                    <span t-field="o.product_id.fsc_group_id"/>
                                                 </t>
                                                 <t t-if="o.product_id.fsc_status_id and not o.product_id.fsc_group_id">
                                                     -
@@ -554,10 +555,10 @@
                                             Order Type :
                                             <!-- Order type: <span t-field="o.order_type"/> -->
                                             <t t-if="o.sale_id">
-                                            	<br/>
-                                            	Ship to: <span t-field="o.sale_id.partner_shipping_id"/>
+                                                <br/>
+                                                Ship to: <span t-field="o.sale_id.partner_shipping_id"/>
                                             </t>
-	                                    </td>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="text-align:left; vertical-align: middle;">
@@ -568,16 +569,16 @@
                                 </table>
                             </td>
                             <td style="width:25%; text-align:center; vertical-align: top;">
-                            	<img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 400, 100)" style="margin-top:15px; margin-left:-60px;position: absolute;clip: rect(0px,390px,1000px,60px);" alt="Barcode"/>
+                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 400, 100)" style="margin-top:15px; margin-left:-60px;position: absolute;clip: rect(0px,390px,1000px,60px);" alt="Barcode"/>
                             </td>
                         </tr>
                         <tr>
-                        	<td colspan="2" style="padding:0px">
-                        		<b>Parent MO:</b>&#160;<span t-field="o.parent_mo_id.name"/>&#160;&#160;&#160;<b>Parent Item:</b>&#160;<span t-field="o.parent_mo_id.product_id.name"/>
-                        	</td>
+                            <td colspan="2" style="padding:0px">
+                                <b>Parent MO:</b>&#160;<span t-field="o.parent_mo_id.name"/>&#160;&#160;&#160;<b>Parent Item:</b>&#160;<span t-field="o.parent_mo_id.product_id.name"/>
+                            </td>
                         </tr>
                     </table>
-                    
+
                     <t t-if="len(o.follower_sheets_ids) &gt; 0">
                         <table class="table table-bordered table-condensed" style="table-layout: fixed; margin-bottom: 40;">
                             <caption style="caption-side: top;text-align:center; font-size: 20px; border: black solid 1px; color: black"><b>Paper (Giấy)</b></caption>
@@ -631,13 +632,13 @@
                                         <span style="font-size:14px" t-field="lines.product_id.name"/>
                                         <t t-if="lines.product_id.fsc_group_id or lines.product_id.fsc_status_id">
                                             <t t-if="lines.product_id.fsc_group_id and lines.product_id.fsc_status_id">
-                                                - 
-                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_status_id"/> 
-                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                -
+                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_status_id"/>
+                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_group_id and not lines.product_id.fsc_status_id">
                                                 -
-                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                <span style="font-size: 14px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_status_id and not lines.product_id.fsc_group_id">
                                                 -
@@ -651,7 +652,7 @@
 
                                     <td style="text-align:center; vertical-align: text-bottom; border: black solid 1px; padding:3px 1px;">
                                         <span style="font-size:18px" t-field="lines.cards_per_sheet"/>
-                                    </td>                    
+                                    </td>
 
 
                                     <td style="text-align:center; vertical-align: text-bottom; border: black solid 1px; padding:3px 1px;">
@@ -674,42 +675,42 @@
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'L'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'F'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'X'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'P'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'N'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
-                                        
+
                                     </td>
                                     <td t-if="lines.machine_flow_id.code == 'DL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
@@ -751,7 +752,7 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                     <td t-if="lines.machine_flow_id.code == 'FDL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
@@ -762,7 +763,7 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                     <td t-if="lines.machine_flow_id.code == 'PDL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
@@ -773,7 +774,7 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                     <td t-if="lines.machine_flow_id.code == 'PFL'" style="text-align:left; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
                                         &#160;
                                         <span style="font-size:30px;">
@@ -882,18 +883,19 @@
                                             <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 34px;max-width: 50px;"/>
                                         </span>
                                     </td>
-                                    
+
                                 </tr>
                             </t>
                         </table>
                     </t>
 
                     <div>
-                        <table class="table table-bordered table-condensed" style="width:1100px; float:left;">
+                        <!-- <table class="table table-bordered table-condensed" style="width:1100px; float:left;"> -->
+                        <table class="table table-bordered table-condensed" style="width:1100px;">
                             <tr>
-                            	<th colspan="6" style="text-align:center; font-size: 20px; border: black solid 1px; color: black">
-                            		Packaging (Đóng Gói)
-                            	</th>
+                                <th colspan="6" style="text-align:center; font-size: 20px; border: black solid 1px; color: black">
+                                    Packaging (Đóng Gói)
+                                </th>
                             </tr>
                             <tr style="font-size: 12px;">
                                 <th style="width:150px; text-align:center; vertical-align: middle; border: black solid 1px; padding:3px 1px;">
@@ -916,7 +918,7 @@
                                 </th>
                             </tr>
 
-                            
+
                             <t t-set="packaging_exists" t-value="0"/>
 
                             <t t-foreach="o.move_raw_ids.sorted(key=lambda r: r.product_id.default_code)" t-as="lines">
@@ -928,13 +930,13 @@
                                         <span style="font-size:20px; margin-bottom:10px" t-field="lines.product_id.name"/>
                                         <t t-if="lines.product_id.fsc_group_id or lines.product_id.fsc_status_id">
                                             <t t-if="lines.product_id.fsc_group_id and lines.product_id.fsc_status_id">
-                                                - 
-                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_status_id"/> 
-                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                -
+                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_status_id"/>
+                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_group_id and not lines.product_id.fsc_status_id">
                                                 -
-                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/> 
+                                                <span style="font-size: 20px; margin-bottom: 10px;" t-field="lines.product_id.fsc_group_id"/>
                                             </t>
                                             <t t-if="lines.product_id.fsc_status_id and not lines.product_id.fsc_group_id">
                                                 -
@@ -1014,9 +1016,9 @@
                     <p style="page-break-after:always;"/>
                 </div>
 
-                
-                
-                
+
+
+
 
                 <t t-foreach="o.follower_sheets_ids.sorted(key=lambda r: r.code_id.name)" t-as="lines">
                     <t t-if="lines.machine_flow_id.code == 'a'">
@@ -1033,13 +1035,13 @@
                                                 <span style="float:right; font-size:18px; margin-right:10px;" t-esc="o.product_id.name"/>
                                                 <t t-if="o.product_id.fsc_group_id or o.product_id.fsc_status_id">
                                                     <t t-if="o.product_id.fsc_group_id and o.product_id.fsc_status_id">
-                                                        - 
-                                                        <span style="float:right; font-size: 18px;" t-field="o.product_id.fsc_status_id"/> 
-                                                        <span style="float:right; font-size: 18px;" t-field="o.product_id.fsc_group_id"/> 
+                                                        -
+                                                        <span style="float:right; font-size: 18px;" t-field="o.product_id.fsc_status_id"/>
+                                                        <span style="float:right; font-size: 18px;" t-field="o.product_id.fsc_group_id"/>
                                                     </t>
                                                     <t t-if="o.product_id.fsc_group_id and not o.product_id.fsc_status_id">
                                                         -
-                                                        <span style="float:right; font-size: 18px;" t-field="o.product_id.fsc_group_id"/> 
+                                                        <span style="float:right; font-size: 18px;" t-field="o.product_id.fsc_group_id"/>
                                                     </t>
                                                     <t t-if="o.product_id.fsc_status_id and not o.product_id.fsc_group_id">
                                                         -
@@ -1055,13 +1057,13 @@
                                                 <span style="float:left; font-size:30px; margin-left:-20px;">
                                                     <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 600, 1000)" style="width:280px;height:80px;position:absolute; clip: rect(0px,240px,200px,30px);"/>
                                                 </span>
-            
+
                                             </div>
-            
+
                                         </div>
-            
-            
-            
+
+
+
                                         <table class="table table-condensed" style="table-layout: fixed; margin-bottom:-20px; margin-top:-20px">
                                             <tr style="font-size: 28px;">
                                                 <!--Additional condition for machine flow-->
@@ -1184,7 +1186,7 @@
                                                     <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
                                                 </td>
 
-                                                
+
                                                 <td t-if="lines.machine_flow_id.code == 'PFXL'" style="text-align:left; vertical-align: middle; border-top: none;">
                                                     &#160;&#160;
                                                     <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
@@ -1225,8 +1227,8 @@
                                                     &#160;&#xf105;&#160;
                                                     <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
                                                 </td>
-                                                
-            
+
+
                                             </tr>
                                         </table>
                                         <table class="table table-condensed" style="table-layout: fixed; margin-bottom:-15px; margin-top:8px">
@@ -1258,7 +1260,7 @@
                                         </table>
                                         <table class="table table-condensed" style="table-layout: fixed; margin-bottom:0px;">
                                             <tr style="font-size: 15px;">
-                                                <td style="text-align:rigth; vertical-align: middle; border-top: none;">
+                                                <td style="text-align:right; vertical-align: middle; border-top: none;">
                                                     <span>
                                                         <span t-field="lines.product_id.name"/> | <span t-field="lines.product_id.paper_description"/>
                                                     </span>
@@ -1273,625 +1275,648 @@
                     </t>
                 </t>
 
-                
-                <t t-if="len(o.follower_sheets_ids) != 0">
-                    <div class="page">
-                        <t t-foreach="o.follower_sheets_ids.sorted(key=lambda r: r.code_id.name)" t-as="lines">
-                            <t t-if="'p' in lines.machine_flow_id.code">
-                                <div style="width: 518px; height:815px; border: black solid 1px; float:left; margin-bottom: 18px; margin-right: 12px;">
-                                    <table style="width: 518px;margin:0px;padding:0px">
-        								<tr>
-        									<td style="width: 259px;vertical-align: middle;">
-        										<span style="font-size:32px; margin-left:5px;" t-field="o.name"/>
-        									</td>
-        									<td class="text-right" style="width: 259px;text-align:rigth; vertical-align: middle;">
-        										<span style="font-size:32px;" t-esc="int(o.product_qty)"/> X
-                                    			<span style="font-size:32px; margin-right:10px;" t-esc="o.product_id.default_code"/>
-        									</td>
-        								</tr>
-        								<tr>
-        									<td colspan="2" class="text-right" style="text-align:rigth; vertical-align: middle;">
-        										<span style="float:right; font-size:24px; margin-right:10px; margin-bottom:20px" t-esc="o.product_id.name"/>
-        									</td>
-        								</tr>
-        							</table>
-                                    <div style="clear: both; margin-bottom:50px">
-                                        <div>
-                                            &#160;&#160;&#160;&#160;&#160;&#160;
-                                            <span style="margin-left:5px;font-size:30px;">MO</span>
-                                        </div>
-                                        <div>
-                                            <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left"> 
-                                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 2000, 1000)" style="width:400px;height:80px;"/>
-                                            </span>
-        
-                                        </div>
+                <style>
+                    .follower-sheet-page {
+                        page-break-before: always;
+                        page-break-after: always;
+                        width: calc(2*(518px + 12px));
+                    }
+                    .follower-sheet-line {
+                        border: black solid 1px;
+                        page-break-inside: avoid !important;
+                        width: 518px;
+                        height: 815px;
+                        margin-bottom: 18px;
+                        display: inline-block;
+                    }
+                    .follower-sheet-line:nth-child(odd) {
+                        margin-right: 12px;
+                    }
+                    .follower-sheet-line:nth-child(4n-1), .follower-sheet-line:nth-child(4n) {
+                        margin-bottom: 0;
+                    }
+                </style>
+                <t t-set="lines_print" t-value="o.follower_sheets_ids.filtered(lambda l: 'P' in l.machine_flow_id.code)"/>
+                <t t-set="lines_without_print" t-value="o.follower_sheets_ids.filtered(lambda l: 'P' not in l.machine_flow_id.code)"/>
+                <t t-if="lines_print">
+                    <div class="page follower-sheet-page">
+                        <t t-foreach="lines_print.sorted(key=lambda r: r.code_id.name)" t-as="lines">
+                            <!-- <t t-if="'p' in lines.machine_flow_id.code"> -->
+                            <!-- <div style="width: 518px; height:815px; border: black solid 1px; float:left; margin-bottom: 18px; margin-right: 12px;"> -->
+                            <div class="follower-sheet-line">
+                                <!-- <table style="width: 518px;margin:0px;padding:0px"> -->
+                                <table style="width: 100%; margin: 0px; padding: 0px;">
+                                    <tr>
+                                        <td style="width: 259px;vertical-align: middle;">
+                                            <span style="font-size:32px; margin-left:5px;" t-field="o.name"/>
+                                        </td>
+                                        <td class="text-right" style="width: 259px;text-align:right; vertical-align: middle;">
+                                            <span style="font-size:32px;" t-esc="int(o.product_qty)"/> X
+                                            <span style="font-size:32px; margin-right:10px;" t-esc="o.product_id.default_code"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right" style="text-align:right; vertical-align: middle;">
+                                            <span style="float:right; font-size:24px; margin-right:10px; margin-bottom:20px" t-esc="o.product_id.name"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div style="clear: both; margin-bottom:50px">
+                                    <div>
+                                        &#160;&#160;&#160;&#160;&#160;&#160;
+                                        <span style="margin-left:5px;font-size:30px;">MO</span>
                                     </div>
-                                    <div style="clear: both; margin-bottom:50px">
-                                        <div>
-                                            &#160;&#160;&#160;&#160;&#160;&#160;
-                                            <span style="margin-left:5px;font-size:30px;">Start/Pause</span>
-                                        </div>
-                                        <div>
-                                            <t t-set="product_code" t-value="lines.code_id.name +'_start'"/>
-                                            <b><span style="float:right; font-size:42px; margin-right:10px;" t-field="lines.code_id.name"/></b>
-                                            <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left"> 
-                                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
-                                            </span>
-        
-                                        </div>
-                                    </div>
-                                     <div style="clear: both; margin-bottom:50px">
-                                        <div>
-                                            &#160;&#160;&#160;&#160;&#160;&#160;
-                                            <span style="margin-left:5px;font-size:30px;">End</span>
-                                        </div>
-                                        <div>
-                                            <t t-set="product_code" t-value="lines.code_id.name +'_end'"/>
-                                            <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left"> 
-                                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
-                                            </span>
-        
-                                        </div>
-                                    </div>
-                                    
-        
-        
-                                    <table class="table table-condensed" style="table-layout: fixed; margin-bottom:20px; margin-top:-30px">
-                                        <tr style="font-size: 32px;">
+                                    <div>
+                                        <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 2000, 1000)" style="width:400px;height:80px;"/>
+                                        </span>
 
-                                            <!-- Additional condition for machine flow-->
-                                            <td t-if="lines.machine_flow_id.code == 'L'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'P'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'D'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'F'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'X'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'N'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'DL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 34px;max-width: 50px;"/>
-                                                    &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                        &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                        &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'FD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
-                                                    &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'FL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
-                                                    &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PDL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'FDL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PXL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PND'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PNL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PXD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-
-                                                
-                                                <td t-if="lines.machine_flow_id.code == 'PFXL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFDL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFND'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFNL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamnation_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-        
-                                            
-                                        </tr>
-                                    </table>
-                                    <table class="table table-condensed" style="table-layout: fixed; margin-bottom:-5px; margin-top:15px">
-                                        <tr style="font-size: 28px;">
-                                            <td style="text-align:left; vertical-align: middle; border-top: none;">
-                                                <span>
-                                                    <t t-if="lines.machine_flow_id.code in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
-                                                        <t t-set="cards_per_sheet" t-value="'wisely'"/>
-                                                    </t>
-                                                    <t t-if="lines.machine_flow_id.code not in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
-                                                        <t t-set="cards_per_sheet" t-value="'gbos'"/>
-                                                    </t>
-                                                    <span t-field="lines.product_id.default_code"/>
-                                                    &#xf101;
-                                                    <i class="fa fa-file-o"/>
-                                                    <span t-field="lines.sheets_required"/>
-                                                    x
-                                                    <i class="fa fa-th"/>
-                                                    <span t-field="lines.cards_per_sheet"/>
-                                                    <!-- <t t-if="cards_per_sheet == 'gbos'">
-                                                        <span t-field="lines.cards_per_sheet_gbos"/>
-                                                    </t>
-                                                    <t t-if="cards_per_sheet == 'wisely'">
-                                                        <span t-field="lines.cards_per_sheet_wisely"/>
-                                                    </t> -->
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <table class="table table-condensed" style="table-layout: fixed; margin-bottom:5px;">
-                                        <tr style="font-size: 15px;">
-                                            <td style="text-align:rigth; vertical-align: middle; border-top: none;">
-                                                <span>
-                                                    <span t-field="lines.product_id.name"/> | <span t-field="lines.product_id.paper_description"/>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <!-- <table class="table table-bordered table-condensed" style="float: left; table-layout: fixed; width:510px; margin-left:5px; margin-bottom:-10px; margin-top:3px">
-                                        <caption style="float:left; text-align:center; font-size: 20px; width: 200px; border: black solid 1px; color: black"><b>Printing </b></caption>
-                                        <caption style="float:right; text-align:center; font-size: 20px; width:300px; border: black solid 1px; color: black"><b>Wisely/Die-Cut </b></caption>
-                                        <tr style="font-size: 16px;">
-                                            <td style="text-align:left; vertical-align: middle; border-top: none;">
-        
-                                                <p style="margin-bottom: 10px; margin-top: 10px">
-                                                    MSNV:.............................      MSNV1:........................Máy:...........SL:..........    
-                                                </p>
-                                                <p style="margin-bottom: 10px">
-                                                    SL: ..............................A3    MSNV2:........................Máy:...........SL:..........
-                                                </p>
-                                                <p style="margin-bottom: 10px">
-                                                    Máy: ................................   MSNV3:........................Máy:...........SL:..........
-                                                </p>
-                                                <p style="margin-bottom: 10px">
-                                                    TGTH: ...........h................      MSNV4:........................Máy:...........SL:..........
-                                                </p>
-                                                <p style="margin-bottom: -1px">
-                                                    Ngày: ...............................   Ngày:..............................................................
-                                                </p>
-                                            </td>
-                                        
-                                        </tr>
-                                    </table> -->
+                                    </div>
                                 </div>
-                                <p style="page-break-after:always"/>
-                            </t>
+                                <div style="clear: both; margin-bottom:50px">
+                                    <div>
+                                        &#160;&#160;&#160;&#160;&#160;&#160;
+                                        <span style="margin-left:5px;font-size:30px;">Start/Pause</span>
+                                    </div>
+                                    <div>
+                                        <t t-set="product_code" t-value="lines.code_id.name +'_start'"/>
+                                        <b><span style="float:right; font-size:42px; margin-right:10px;" t-field="lines.code_id.name"/></b>
+                                        <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
+                                        </span>
+
+                                    </div>
+                                </div>
+                                    <div style="clear: both; margin-bottom:50px">
+                                    <div>
+                                        &#160;&#160;&#160;&#160;&#160;&#160;
+                                        <span style="margin-left:5px;font-size:30px;">End</span>
+                                    </div>
+                                    <div>
+                                        <t t-set="product_code" t-value="lines.code_id.name +'_end'"/>
+                                        <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
+                                        </span>
+
+                                    </div>
+                                </div>
+
+
+
+                                <table class="table table-condensed" style="table-layout: fixed; margin-bottom:20px; margin-top:-30px">
+                                    <tr style="font-size: 32px;">
+
+                                        <!-- Additional condition for machine flow-->
+                                        <td t-if="lines.machine_flow_id.code == 'L'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                                <td t-if="lines.machine_flow_id.code == 'P'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                                <td t-if="lines.machine_flow_id.code == 'D'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                                <td t-if="lines.machine_flow_id.code == 'F'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                                <td t-if="lines.machine_flow_id.code == 'X'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                                <td t-if="lines.machine_flow_id.code == 'N'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'DL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 34px;max-width: 50px;"/>
+                                                &#160;&gt;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                    &#160;&gt;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                    &#160;&gt;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'FD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
+                                                &#160;&gt;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'FL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
+                                                &#160;&gt;&#160;
+                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PDL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'FDL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PFL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PFD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PXL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PND'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PNL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PXD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+
+
+                                            <td t-if="lines.machine_flow_id.code == 'PFXL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PFDL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PFND'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+                                            <td t-if="lines.machine_flow_id.code == 'PFNL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                                &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamnation_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&#xf105;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            </td>
+
+
+                                    </tr>
+                                </table>
+                                <table class="table table-condensed" style="table-layout: fixed; margin-bottom:-5px; margin-top:15px">
+                                    <tr style="font-size: 28px;">
+                                        <td style="text-align:left; vertical-align: middle; border-top: none;">
+                                            <span>
+                                                <t t-if="lines.machine_flow_id.code in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
+                                                    <t t-set="cards_per_sheet" t-value="'wisely'"/>
+                                                </t>
+                                                <t t-if="lines.machine_flow_id.code not in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
+                                                    <t t-set="cards_per_sheet" t-value="'gbos'"/>
+                                                </t>
+                                                <span t-field="lines.product_id.default_code"/>
+                                                &#xf101;
+                                                <i class="fa fa-file-o"/>
+                                                <span t-field="lines.sheets_required"/>
+                                                x
+                                                <i class="fa fa-th"/>
+                                                <span t-field="lines.cards_per_sheet"/>
+                                                <!-- <t t-if="cards_per_sheet == 'gbos'">
+                                                    <span t-field="lines.cards_per_sheet_gbos"/>
+                                                </t>
+                                                <t t-if="cards_per_sheet == 'wisely'">
+                                                    <span t-field="lines.cards_per_sheet_wisely"/>
+                                                </t> -->
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-condensed" style="table-layout: fixed; margin-bottom:5px;">
+                                    <tr style="font-size: 15px;">
+                                        <td style="text-align:right; vertical-align: middle; border-top: none;">
+                                            <span>
+                                                <span t-field="lines.product_id.name"/> | <span t-field="lines.product_id.paper_description"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- <table class="table table-bordered table-condensed" style="float: left; table-layout: fixed; width:510px; margin-left:5px; margin-bottom:-10px; margin-top:3px">
+                                    <caption style="float:left; text-align:center; font-size: 20px; width: 200px; border: black solid 1px; color: black"><b>Printing </b></caption>
+                                    <caption style="float:right; text-align:center; font-size: 20px; width:300px; border: black solid 1px; color: black"><b>Wisely/Die-Cut </b></caption>
+                                    <tr style="font-size: 16px;">
+                                        <td style="text-align:left; vertical-align: middle; border-top: none;">
+
+                                            <p style="margin-bottom: 10px; margin-top: 10px">
+                                                MSNV:.............................      MSNV1:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: 10px">
+                                                SL: ..............................A3    MSNV2:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: 10px">
+                                                Máy: ................................   MSNV3:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: 10px">
+                                                TGTH: ...........h................      MSNV4:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: -1px">
+                                                Ngày: ...............................   Ngày:..............................................................
+                                            </p>
+                                        </td>
+
+                                    </tr>
+                                </table> -->
+                            </div>
+                            <!-- </t> -->
                         </t>
                     </div>
-                        
+
                 </t>
-                                <!-- dikerjakan Sampai sini -->
-                
-                <t t-if="len(o.follower_sheets_ids) != 0">
-                    <div class="page">
-                        <t t-foreach="o.follower_sheets_ids.sorted(key=lambda r: r.code_id.name)" t-as="lines">
-                            <t t-if="'p' not in lines.machine_flow_id.code">
-                                <div style="width: 518px; height:808px; border: black solid 1px; float:left; margin-bottom: 18px; margin-right: 12px;">
-                                    <table style="width: 518px;margin:0px;padding:0px;">
-        								<tr>
-        									<td style="width: 259px;vertical-align: middle;">
-        										<span style="font-size:32px; margin-left:5px;" t-field="o.name"/>
-        									</td>
-        									<td class="text-right" style="width: 259px;text-align:rigth; vertical-align: middle;">
-        										<span style="font-size:32px;" t-esc="int(o.product_qty)"/> X
-                                    			<span style="font-size:32px; margin-right:10px;" t-esc="o.product_id.default_code"/>
-        									</td>
-        								</tr>
-        								<tr>
-        									<td colspan="2" class="text-right" style="text-align:rigth; vertical-align: middle;">
-        										<span style="float:right; font-size:24px; margin-right:10px; margin-bottom:20px" t-esc="o.product_id.name"/>
-        									</td>
-        								</tr>
-        							</table>
-                                    <div style="clear: both; margin-bottom:50px">
-                                        <div>
-                                            &#160;&#160;&#160;&#160;&#160;&#160;
-                                            <span style="margin-left:5px;font-size:30px;">MO</span>
-                                        </div>
-                                        <div>
-                                            <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left"> 
-                                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 2000, 1000)" style="width:400px;height:80px;"/>
-                                            </span>
-        
-                                        </div>
-                                    </div>
-                                    <div style="clear: both; margin-bottom:50px">
-                                        <div>
-                                            &#160;&#160;&#160;&#160;&#160;&#160;
-                                            <span style="margin-left:5px;font-size:30px;">Start/Pause</span>
-                                        </div>
-                                        <div>
-                                            <t t-set="product_code" t-value="lines.code_id.name +'_start'"/>
-                                            <b><span style="float:right; font-size:42px; margin-right:10px;" t-field="lines.code_id.name"/></b>
-                                            <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left"> 
-                                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
-                                            </span>
-        
-                                        </div>
-                                    </div>
-                                     <div style="clear: both; margin-bottom:50px">
-                                        <div>
-                                            &#160;&#160;&#160;&#160;&#160;&#160;
-                                            <span style="margin-left:5px;font-size:30px;">End</span>
-                                        </div>
-                                        <div>
-                                            <t t-set="product_code" t-value="lines.code_id.name +'_end'"/>
-                                            <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left"> 
-                                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
-                                            </span>
-        
-                                        </div>
-                                    </div>
-                                    
-        
-        
-        
-                                    <table class="table table-condensed" style="table-layout: fixed; margin-bottom:20px; margin-top:-30px">
-                                        <tr style="font-size: 32px;">
 
-                                            <!-- Add new condition for machine flow -->
-                                            <td t-if="lines.machine_flow_id.code == 'L'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'P'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'D'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'F'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'X'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                 <td t-if="lines.machine_flow_id.code == 'N'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'DL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 34px;max-width: 50px;"/>
-                                                    &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                        &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                        &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'FD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
-                                                    &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'FL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
-                                                    &#160;&gt;&#160;
-                                                        <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PDL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'FDL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PXL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PND'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PNL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PXD'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
+                <t t-if="lines_without_print">
+                    <div class="page follower-sheet-page">
+                        <t t-foreach="lines_without_print.sorted(key=lambda r: r.code_id.name)" t-as="lines">
+                            <!-- <t t-if="'P' not in lines.machine_flow_id.code"> <!- - Original code for non-printing lines -->
+                            <!-- <div style="width: 518px; height:808px; border: black solid 1px; float:left; margin-bottom: 18px; margin-right: 12px;"> -->
+                            <div class="follower-sheet-line">
+                                <!-- <table style="width: 518px;margin:0px;padding:0px;"> -->
+                                <table style="width: 100%; margin: 0px; padding: 0px;">
+                                    <tr>
+                                        <td style="width: 259px;vertical-align: middle;">
+                                            <span style="font-size:32px; margin-left:5px;" t-field="o.name"/>
+                                        </td>
+                                        <td class="text-right" style="width: 259px;text-align:right; vertical-align: middle;">
+                                            <span style="font-size:32px;" t-esc="int(o.product_qty)"/> X
+                                            <span style="font-size:32px; margin-right:10px;" t-esc="o.product_id.default_code"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right" style="text-align:right; vertical-align: middle;">
+                                            <span style="float:right; font-size:24px; margin-right:10px; margin-bottom:20px" t-esc="o.product_id.name"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div style="clear: both; margin-bottom:50px">
+                                    <div>
+                                        &#160;&#160;&#160;&#160;&#160;&#160;
+                                        <span style="margin-left:5px;font-size:30px;">MO</span>
+                                    </div>
+                                    <div>
+                                        <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 2000, 1000)" style="width:400px;height:80px;"/>
+                                        </span>
 
-                                                
-                                                <td t-if="lines.machine_flow_id.code == 'PFXL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFDL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFND'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-                                                <td t-if="lines.machine_flow_id.code == 'PFNL'" style="text-align:left; vertical-align: middle; border-top: none;">
-                                                    &#160;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamnation_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                    &#160;&#xf105;&#160;
-                                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
-                                                </td>
-        
-                                            
-                                        </tr>
-                                    </table>
-                                    <!-- <div style="clear: both;">
-                                        <div>
-                                            <t t-set="product_code" t-value="o.name+'\t'+ o.product_id.default_code+'\t'+lines.code_id.name +'\t'"/>
-                                            <b><span style="float:right; font-size:42px; margin-right:10px;" t-field="lines.code_id.name"/></b>
-                                            <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px"> 
-                                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
-                                            </span>
-        
-                                        </div>
-        
-                                    </div> -->
-                                    <table class="table table-condensed" style="table-layout: fixed; margin-bottom:-5px; margin-top:15px">
-                                        <tr style="font-size: 28px;">
-                                            <td style="text-align:left; vertical-align: middle; border-top: none;">
-                                                <span>
-                                                    <t t-if="lines.machine_flow_id.code in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
-                                                        <t t-set="cards_per_sheet" t-value="'wisely'"/>
-                                                    </t>
-                                                    <t t-if="lines.machine_flow_id.code not in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
-                                                        <t t-set="cards_per_sheet" t-value="'gbos'"/>
-                                                    </t>
-                                                    <span t-field="lines.product_id.default_code"/>
-                                                    &#xf101;
-                                                    <i class="fa fa-file-o"/>
-                                                    <span t-field="lines.sheets_required"/>
-                                                    x
-                                                    <i class="fa fa-th"/>
-                                                    <span t-field="lines.cards_per_sheet"/>
-                                                    <!-- <t t-if="cards_per_sheet == 'gbos'">
-                                                        <span t-field="lines.cards_per_sheet_gbos"/>
-                                                    </t>
-                                                    <t t-if="cards_per_sheet == 'wisely'">
-                                                        <span t-field="lines.cards_per_sheet_wisely"/>
-                                                    </t> -->
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <table class="table table-condensed" style="table-layout: fixed; margin-bottom:5px;">
-                                        <tr style="font-size: 20px;">
-                                            <td style="text-align:rigth; vertical-align: middle; border-top: none;">
-                                                <span>
-                                                    <span t-field="lines.product_id.name"/> | <span t-field="lines.product_id.paper_description"/>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <!-- <table class="table table-bordered table-condensed" style="float: left; table-layout: fixed; width:510px; margin-left:5px; margin-bottom:-10px; margin-top:3px">
-                                        <caption style="float:left; text-align:center; font-size: 20px; width: 200px; border: black solid 1px; color: black"><b>Printing </b></caption>
-                                        <caption style="float:right; text-align:center; font-size: 20px; width:300px; border: black solid 1px; color: black"><b>Wisely/Die-Cut </b></caption>
-                                        <tr style="font-size: 16px;">
-                                            <td style="text-align:left; vertical-align: middle; border-top: none;">
-        
-                                                <p style="margin-bottom: 10px; margin-top: 10px">
-                                                    MSNV:.............................      MSNV1:........................Máy:...........SL:..........    
-                                                </p>
-                                                <p style="margin-bottom: 10px">
-                                                    SL: ..............................A3    MSNV2:........................Máy:...........SL:..........
-                                                </p>
-                                                <p style="margin-bottom: 10px">
-                                                    Máy: ................................   MSNV3:........................Máy:...........SL:..........
-                                                </p>
-                                                <p style="margin-bottom: 10px">
-                                                    TGTH: ...........h................      MSNV4:........................Máy:...........SL:..........
-                                                </p>
-                                                <p style="margin-bottom: -1px">
-                                                    Ngày: ...............................   Ngày:..............................................................
-                                                </p>
-                                            </td>
-                                        
-                                        </tr>
-                                    </table> -->
+                                    </div>
                                 </div>
-                            </t>
+                                <div style="clear: both; margin-bottom:50px">
+                                    <div>
+                                        &#160;&#160;&#160;&#160;&#160;&#160;
+                                        <span style="margin-left:5px;font-size:30px;">Start/Pause</span>
+                                    </div>
+                                    <div>
+                                        <t t-set="product_code" t-value="lines.code_id.name +'_start'"/>
+                                        <b><span style="float:right; font-size:42px; margin-right:10px;" t-field="lines.code_id.name"/></b>
+                                        <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
+                                        </span>
+
+                                    </div>
+                                </div>
+                                <div style="clear: both; margin-bottom:50px">
+                                    <div>
+                                        &#160;&#160;&#160;&#160;&#160;&#160;
+                                        <span style="margin-left:5px;font-size:30px;">End</span>
+                                    </div>
+                                    <div>
+                                        <t t-set="product_code" t-value="lines.code_id.name +'_end'"/>
+                                        <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px; horizontal-align:left">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
+                                        </span>
+
+                                    </div>
+                                </div>
+
+
+
+
+                                <table class="table table-condensed" style="table-layout: fixed; margin-bottom:20px; margin-top:-30px">
+                                    <tr style="font-size: 32px;">
+
+                                        <!-- Add new condition for machine flow -->
+                                        <td t-if="lines.machine_flow_id.code == 'L'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'P'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'D'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'F'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'X'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'N'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'DL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 34px;max-width: 50px;"/>
+                                            &#160;&gt;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&gt;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                                &#160;&gt;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'FD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
+                                            &#160;&gt;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'FL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 34px;max-width: 50px;"/>
+                                            &#160;&gt;&#160;
+                                                <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PDL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'FDL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PFL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PFD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PXL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PND'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PNL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PXD'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+
+
+                                        <td t-if="lines.machine_flow_id.code == 'PFXL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.duplexing_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PFDL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PFND'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamination_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.die_cut_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+                                        <td t-if="lines.machine_flow_id.code == 'PFNL'" style="text-align:left; vertical-align: middle; border-top: none;">
+                                            &#160;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.print_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.foil_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.lamnation_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                            &#160;&#xf105;&#160;
+                                            <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.laser_file}}" style="max-height: 50px;max-width: 50px;"/>
+                                        </td>
+
+
+                                    </tr>
+                                </table>
+                                <!-- <div style="clear: both;">
+                                    <div>
+                                        <t t-set="product_code" t-value="o.name+'\t'+ o.product_id.default_code+'\t'+lines.code_id.name +'\t'"/>
+                                        <b><span style="float:right; font-size:42px; margin-right:10px;" t-field="lines.code_id.name"/></b>
+                                        <span style="font-size:40px; margin-left:5px; margin-top:10px; margin-bottom:10px">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product_code, 2000, 1000)" style="width:400px;height:80px;"/>
+                                        </span>
+
+                                    </div>
+
+                                </div> -->
+                                <table class="table table-condensed" style="table-layout: fixed; margin-bottom:-5px; margin-top:15px">
+                                    <tr style="font-size: 28px;">
+                                        <td style="text-align:left; vertical-align: middle; border-top: none;">
+                                            <span>
+                                                <t t-if="lines.machine_flow_id.code in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
+                                                    <t t-set="cards_per_sheet" t-value="'wisely'"/>
+                                                </t>
+                                                <t t-if="lines.machine_flow_id.code not in ['cw','cwr','cpw','cdw','cpdw','cpcw','cfgw']">
+                                                    <t t-set="cards_per_sheet" t-value="'gbos'"/>
+                                                </t>
+                                                <span t-field="lines.product_id.default_code"/>
+                                                &#xf101;
+                                                <i class="fa fa-file-o"/>
+                                                <span t-field="lines.sheets_required"/>
+                                                x
+                                                <i class="fa fa-th"/>
+                                                <span t-field="lines.cards_per_sheet"/>
+                                                <!-- <t t-if="cards_per_sheet == 'gbos'">
+                                                    <span t-field="lines.cards_per_sheet_gbos"/>
+                                                </t>
+                                                <t t-if="cards_per_sheet == 'wisely'">
+                                                    <span t-field="lines.cards_per_sheet_wisely"/>
+                                                </t> -->
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-condensed" style="table-layout: fixed; margin-bottom:5px;">
+                                    <tr style="font-size: 20px;">
+                                        <td style="text-align:right; vertical-align: middle; border-top: none;">
+                                            <span>
+                                                <span t-field="lines.product_id.name"/> | <span t-field="lines.product_id.paper_description"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- <table class="table table-bordered table-condensed" style="float: left; table-layout: fixed; width:510px; margin-left:5px; margin-bottom:-10px; margin-top:3px">
+                                    <caption style="float:left; text-align:center; font-size: 20px; width: 200px; border: black solid 1px; color: black"><b>Printing </b></caption>
+                                    <caption style="float:right; text-align:center; font-size: 20px; width:300px; border: black solid 1px; color: black"><b>Wisely/Die-Cut </b></caption>
+                                    <tr style="font-size: 16px;">
+                                        <td style="text-align:left; vertical-align: middle; border-top: none;">
+
+                                            <p style="margin-bottom: 10px; margin-top: 10px">
+                                                MSNV:.............................      MSNV1:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: 10px">
+                                                SL: ..............................A3    MSNV2:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: 10px">
+                                                Máy: ................................   MSNV3:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: 10px">
+                                                TGTH: ...........h................      MSNV4:........................Máy:...........SL:..........
+                                            </p>
+                                            <p style="margin-bottom: -1px">
+                                                Ngày: ...............................   Ngày:..............................................................
+                                            </p>
+                                        </td>
+
+                                    </tr>
+                                </table> -->
+                            </div>
+                            <!-- </t> -->
                         </t>
                     </div>
                 </t>
-                                <!-- dikerjakan Sampai sini -->
 
             </t>
         </t></t>
     </template>
 
     <record id="paperformat_a4_custom" model="report.paperformat">
-        	<field name="name">A4 Portrait (Custom)</field>
+            <field name="name">A4 Portrait (Custom)</field>
             <field name="format">A4</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">15</field>
@@ -1910,6 +1935,7 @@
         report_type="qweb-pdf"
         name="lp_mrp.report_production_document"
         file="lp_mrp.report_production_document"
+        print_report_name = "((object.name or '') + ' - Production Document')"
         paperformat="lp_mrp.paperformat_a4_custom"
         menu="True"
         />
