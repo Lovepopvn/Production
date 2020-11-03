@@ -21,6 +21,7 @@ Q4 = ['October', 'November', 'December']
 
 class VatAllocation(models.TransientModel):
     _name = 'vat.allocation.report'
+    _description = 'VAT Allocation Report'
 
     start_date = fields.Date('Start')
     end_date = fields.Date('End')

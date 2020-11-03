@@ -1,6 +1,6 @@
 {
     'name': 'Vietnam - Accounting VAT Report',
-    'version': '13.0.1.0.0',
+    'version': '13.0.1.0.1',
     'summary': 'Additional feature VAT report for vietnamese accounting standard',
     'description': """
 - Sales VAT Report
