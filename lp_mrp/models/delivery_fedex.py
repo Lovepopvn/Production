@@ -209,7 +209,7 @@ class ProviderFedex(models.Model):
 
                 product_lots = []
                 for lot in shipping.product_lot_ids:
-                    com_desc = lot.product_id.name
+                    com_desc = "[%s] %s" % (lot.product_id.default_code, lot.product_id.name)
                     if lot.product_id.fsc_group_id or lot.product_id.fsc_status_id:
                         if lot.product_id.fsc_group_id and lot.product_id.fsc_status_id:
                             com_desc += ' - ' + lot.product_id.fsc_group_id.name + ' ' + lot.product_id.fsc_status_id.name
@@ -228,7 +228,8 @@ class ProviderFedex(models.Model):
                                         if ovals['commodity_description'] == \
                                         com_desc]
                     if head:
-                        weight_value = self._fedex_convert_weight(lot.loaded_container_weight, self.fedex_weight_unit)
+                        weight_value = lot.product_id.weight * lot.number_of_items
+                        weight_value = self._fedex_convert_weight(weight_value, self.fedex_weight_unit)
                         total_commodities_amount = head[0]['total_commodities_amount'] + total_commodities_amount
                         commodity_number_of_piece = head[0]['commodity_number_of_piece'] + 1
                         commodity_weight_value = head[0]['commodity_weight_value'] + weight_value
@@ -241,14 +242,15 @@ class ProviderFedex(models.Model):
                                 })
                     else:
                         # Sum the no of packages; no of unit; net weight, total value
-
+                        weight_value = lot.product_id.weight * lot.number_of_items
+                        weight_value = self._fedex_convert_weight(weight_value, self.fedex_weight_unit)
                         product_lots.append({
                             'commodity_amount' : commodity_amount,
                             'total_commodities_amount' : total_commodities_amount,
                             'commodity_description' : com_desc,
                             'commodity_number_of_piece' : 1,
                             'commodity_weight_units' : self.fedex_weight_unit,
-                            'commodity_weight_value' : self._fedex_convert_weight(lot.loaded_container_weight, self.fedex_weight_unit),
+                            'commodity_weight_value' : weight_value,
                             'commodity_quantity' : lot.number_of_items,
                             'commodity_quantity_units' : 'EA',
                             'commodity_harmonized_code' : lot.product_id.hs_code or '',
@@ -331,7 +333,7 @@ class ProviderFedex(models.Model):
                         dept_number=dept_number,
                         # reference=lots.shipper_reference,
                         inv_number=shipping.name,
-                        reference=shipping.name,
+                        reference=lots.name,
                     )
                     srm.set_master_package(net_weight, lots_count, master_tracking_id=master_tracking_id)
                     request = srm.process_shipment()
@@ -496,7 +498,7 @@ class ProviderFedex(models.Model):
                     dept_number=dept_number,
                     # reference=lots.shipper_reference,
                     inv_number=shipping.name,
-                    reference=shipping.name,
+                    reference=lots.name,
                 )
                 srm.set_master_package(net_weight, 1)
 
