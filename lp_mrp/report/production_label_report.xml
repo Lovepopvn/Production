@@ -51,7 +51,7 @@
                             </tr>
                         </table>
                     </div>
-                    <t t-set='separated_lot' t-value='o.get_separated_product_lot_ids()'/>
+                    <t t-set="separated_lot" t-value="o.get_separated_product_lot_ids()"/>
                     <t t-if="separated_lot">
                 	<t t-foreach="separated_lot" t-as="outer_ids">
                 		<div class="row" style="margin-bottom: 10px;page-break-inside: avoid;">
@@ -98,29 +98,29 @@
 		                    			<tr>
 		                    				<td class="text-center" width="100%">
 		                    					<img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.product_id.default_code, 1000, 1000)" style="width:420px;height:100px; margin-top:-5px;"/>
-                                    			<p style="text-align: center; font-size:28px; margin-bottom:5px; margin-top:-5px;" t-esc="o.product_id.default_code"></p>
+                                    			<p style="text-align: center; font-size:28px; margin-bottom:5px; margin-top:-5px;" t-esc="o.product_id.default_code"/>
 		                    				</td>
 		                    			</tr>
 		                    			<tr>
 		                    				<td class="text-center" width="100%">
 		                    					<img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', outer.name, 1000, 1000)" style="width:420px;height:100px; margin-top:-5px;;"/>
-			                                    <p style="text-align: center; font-size:28px; margin-bottom:5px; margin-top:-5px;" t-esc="outer.name"></p>
+			                                    <p style="text-align: center; font-size:28px; margin-bottom:5px; margin-top:-5px;" t-esc="outer.name"/>
 		                    				</td>
 		                    			</tr>
 		                    			<tr>
 		                    				<td class="text-right" width="100%">
-		                    					<span style="float:right; font-size:18px; margin-right:5px; margin-top: -20px;" t-esc="o.name" />
+		                    					<span style="float:right; font-size:18px; margin-right:5px; margin-top: -20px;" t-esc="o.name"/>
 		                    				</td>
 		                    			</tr>
 		                    			<tr>
 		                    				<td width="100%" style="vertical-align: middle;border:1px solid black">
-		                    					<t t-if="outer.shipment_method == 'SEA'">
+		                    					<t t-if="outer.shipment_method != 'AIR'">
 				                                    <span style="float:left; font-size:36px; margin-top: 5px; margin-left:5px; margin-bottom:5px;" t-esc="outer.picking_wave_id.name"/>
 				                                    <span style="float:right; font-size:36px; margin-top: -5px;margin-right:5px; margin-bottom:5px; font-weight:bold;">
 				                                       <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.ship_file}}" style="max-height: 60px;max-width: 120px;position:relative; top:5px;"/>
 				                                    </span>
 				                                </t>
-				                                <t t-if="outer.shipment_method != 'SEA'">
+				                                <t t-if="outer.shipment_method == 'AIR'">
 				                                    <span style="float:right; font-size:36px; margin-top: -5px;margin-right:5px; margin-bottom:10px; font-weight:bold;">
 				                                       <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.airplane_file}}" style="max-height: 60px;max-width: 120px;position:relative; top:5px;"/>
 				                                    </span>
@@ -148,7 +148,7 @@
                 			<div class="col-6" style="float:left; height:800; page-break-inside: avoid; padding: -1px; margin-right: 10px;">
                 				<div> 
 	                                <span style="float:left; font-size:70px; margin-left:10px;" t-esc="o.product_id.default_code"/>
-	                                <span style="float:right; font-size:24px; margin-right:5px; margin-top: 5px;" t-esc="o.name" />
+	                                <span style="float:right; font-size:24px; margin-right:5px; margin-top: 5px;" t-esc="o.name"/>
 	                            </div>
 	                            
 	                            <div style="clear:both;"> 
@@ -172,7 +172,7 @@
 	                            
 	                            <div style="clear:both; margin-top: 50px;"> 
 	                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', outer.name, 1000, 1000)" style="width:560px;height:120px; margin-top:-5px; margin-left:10px;"/>
-	                                <p style="text-align: center; font-size:36px; margin-bottom:15px; margin-top:-5px;" t-esc="outer.name"></p>
+	                                <p style="text-align: center; font-size:36px; margin-bottom:15px; margin-top:-5px;" t-esc="outer.name"/>
 	                            </div>
 	                                
 	
@@ -183,10 +183,10 @@
                 			</div>
                 		</div>
                 	</t>
-                	<div style="page-break-after:always;"></div>
+                	<div style="page-break-after:always;"/>
                 	<t t-foreach="o.product_lot_ids" t-as="outer">
 	                    <div t-if="outer.inner_type == 'standard'" class="page">
-	                        <t t-set='cards_left' t-value='outer.number_of_items'/>
+	                        <t t-set="cards_left" t-value="outer.number_of_items"/>
 	                        <t t-foreach="range(outer.number_of_inner)" t-as="inner_id">
 	                            <div style="border: black solid 1px; float:left; width:480px; height:240px; page-break-inside: avoid; padding: -1px; float:left; margin-bottom: 12px; margin-right: 15px;">
 	                            	<table style="width:480px; height:240px;margin:0px;padding:0px;">
@@ -205,7 +205,7 @@
 	                            			<td rowspan="2" width="35%" style="padding-left:10px;">
 	                            				<t t-if="outer.items_per_inner_carton &lt; cards_left" t-set="cardsperthisinner" t-value="outer.items_per_inner_carton"/>
 			                                    <t t-if="outer.items_per_inner_carton &gt;= cards_left" t-set="cardsperthisinner" t-value="cards_left"/>
-			                                    <t t-set='cards_left' t-value='cards_left - cardsperthisinner'/>
+			                                    <t t-set="cards_left" t-value="cards_left - cardsperthisinner"/>
 			                                    <img t-attf-src="data:image/*;base64,{{o.company_id.factory_constants_id.card_file}}" style="max-height: 80px;max-width: 80px; position:relative; right:0px; top:0px; left:0px;"/>
 		                                        <span style="font-size:42px; line-height: 80px; vertical-align: middle;" t-esc="int(cardsperthisinner)"/>
 	                            			</td>
@@ -215,7 +215,7 @@
 	                            		</tr>
 	                            		<tr>
 	                            			<td class="text-right" style="vertical-align: bottom;">
-	                            				<span style="font-size:12px; margin-right:5px;" t-esc="o.name" />
+	                            				<span style="font-size:12px; margin-right:5px;" t-esc="o.name"/>
 	                            			</td>
 	                            		</tr>
 	                            	</table>

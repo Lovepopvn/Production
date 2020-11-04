@@ -27,6 +27,9 @@ class MrpProduction(models.Model):
     parent_mo_id = fields.Many2one('mrp.production','Parent MO')
     mo_for_samples = fields.Boolean('MO for Samples')
     expected_ship_date = fields.Datetime('Expected Ship Date')
+    picking_date = fields.Date()
+    delivery_address = fields.Char('Delivery Address', related='sale_id.partner_shipping_id.name')
+    shipment_method = fields.Selection(related='sale_id.shipment_method')
 
     @api.depends('move_raw_ids.state', 'move_finished_ids.state', 'workorder_ids', 'workorder_ids.state', 'qty_produced', 'move_raw_ids.quantity_done', 'product_qty')
     def _compute_state(self):
@@ -396,7 +399,7 @@ class MrpProduction(models.Model):
                         (weight of inner carton (material where carton_type = inner)  x  qty of inner carton (in packaging data)) +
                         (weight of outer carton (material where carton_type = outer))'''
                     mo_product_weight_cal = (product_weight*number_of_item)
-                    inner_weight_cal = (inner_carton_weight*inner_carton_qty)
+                    inner_weight_cal = (inner_carton_weight*mo.product_id.number_of_inner)
                     outer_weight_cal = (outer_carton_weight)
                     loaded_container_weight = mo_product_weight_cal + inner_weight_cal + outer_weight_cal
                     carrier = False

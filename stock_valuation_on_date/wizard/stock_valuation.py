@@ -193,6 +193,9 @@ class StockValuationDateReport(models.TransientModel,
         other_tstyle_grandc = xls_format.font_style(position='center', fontos='purple_ega', bold=1,border=1, font_height=180, color='grey')
         other_tstyle_grandr = xls_format.font_style(position='right', fontos='purple_ega', bold=1,border=1, font_height=180, color='grey')
 
+        for style in (other_tstyle_cr, other_tstyle_r, other_tstyle_grandc, other_tstyle_grandr):
+                style.num_format_str = '#,##0.0000'
+
         datas = {
                  'form':
                     {
@@ -272,17 +275,17 @@ class StockValuationDateReport(models.TransientModel,
                         product_qty_adjustment = line.get('product_qty_adjustment', 0.0) or 0.0
                         beginning_inventory = line.get('begining_qty', 0.0) or 0.0
                         ending_inventory = line.get('ending_qty', 0.0) or 0.0
-#                         beginning_inventory = self._get_beginning_inventory(
-#                                       datas,
-#                                       company,
-#                                       line.get('product_id', '') or '',
-#                                       line
-#                                       )
-#                         ending_inventory = self._get_ending_inventory(
-#                           product_qty_in,
-#                           product_qty_out,
-#                           product_qty_adjustment,
-#                           )
+                        # beginning_inventory = self._get_beginning_inventory(
+                        #               datas,
+                        #               company,
+                        #               line.get('product_id', '') or '',
+                        #               line
+                        #               )
+                        # ending_inventory = self._get_ending_inventory(
+                        #   product_qty_in,
+                        #   product_qty_out,
+                        #   product_qty_adjustment,
+                        #   )
                         unit_cost = self._get_cost(
                           company,
                           line.get('product_id', '') or '',
@@ -315,32 +318,32 @@ class StockValuationDateReport(models.TransientModel,
                     sheet.write(
                             row,
                             1,
-                            "%.2f" % total_beginning_inventory,
+                            total_beginning_inventory,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             2,
-                            "%.2f" % total_qty_in,
+                            total_qty_in,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             3,
-                            "%.2f" % total_qty_out,
+                            total_qty_out,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             4,
-                            "%.2f" % total_product_qty_adjustment,
+                            total_product_qty_adjustment,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             5,
-                            "%.2f" % total_ending_inventory,
+                            total_ending_inventory,
                             other_tstyle_r)
                     sheet.write(
                             row,
                             6,
-                            "%.2f" % total_subtotal_cost,
+                            total_subtotal_cost,
                             other_tstyle_r)
                     row += 1
 
@@ -352,81 +355,70 @@ class StockValuationDateReport(models.TransientModel,
                 sheet.write(
                         row,
                         1,
-                        "%.2f" % grand_total_beginning_inventory,
+                        grand_total_beginning_inventory,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         2,
-                        "%.2f" % grand_total_qty_in,
+                        grand_total_qty_in,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         3,
-                        "%.2f" % grand_total_qty_out,
+                        grand_total_qty_out,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         4,
-                        "%.2f" % grand_total_product_qty_adjustment,
+                        grand_total_product_qty_adjustment,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         5,
-                        "%.2f" % grand_total_ending_inventory,
+                        grand_total_ending_inventory,
                         other_tstyle_grandr)
                 sheet.write(
                         row,
                         6,
-                        "%.2f" % grand_total_subtotal_cost,
+                        grand_total_subtotal_cost,
                         other_tstyle_grandr)
             else:
                 header_row_start = 8
-                sheet.write(header_row_start, 0, 'Category Name ', header_tstyle_c)
-                sheet.col(0).width = 256 * 20
-                sheet.write(header_row_start, 1, 'Product Name ', header_tstyle_c)
-                sheet.col(1).width = 256 * 40
-                sheet.write(header_row_start, 2, 'Product Barcode ', header_tstyle_c)
-                sheet.col(2).width = 256 * 20
-                sheet.write(header_row_start, 3, 'Default Code ', header_tstyle_c)
-                sheet.col(3).width = 256 * 20
-                sheet.write(header_row_start, 4, 'Beginning', header_tstyle_c)
-                sheet.col(4).width = 256 * 20
-                sheet.write(header_row_start, 5, 'Received', header_tstyle_c)
-                sheet.col(5).width = 256 * 20
-                sheet.write(header_row_start, 6, 'Sales', header_tstyle_c)
-                sheet.col(7).width = 256 * 20
-                sheet.write(header_row_start, 7, 'Adjustments', header_tstyle_c)
-                sheet.col(8).width = 256 * 20
-                sheet.write(header_row_start, 8, 'Ending', header_tstyle_c)
-                sheet.col(9).width = 256 * 20
-                sheet.write(header_row_start, 9, 'Cost', header_tstyle_c)
-                sheet.col(10).width = 256 * 20
-                sheet.write(header_row_start, 10, 'Total Value', header_tstyle_c)
-                sheet.col(11).width = 256 * 20
+                headers = [
+                    ('Category Name', 20),
+                    ('Product Name', 40),
+                    ('Product Barcode', 20),
+                    ('Default Code', 20),
+                    ('Beginning', 20),
+                    ('Received', 20),
+                    ('Received Value', 25),
+                    ('Sales', 20),
+                    ('Stock Out Value', 25),
+                    ('Adjustments', 20),
+                    ('Ending', 20),
+                    ('Cost', 20),
+                    ('Total Value', 25),
+                ]
+                column = 0
+                for value, width in headers:
+                    sheet.write(header_row_start, column, value, header_tstyle_c)
+                    sheet.col(column).width = 256 * width
+                    column += 1
                 row = 9
-                grand_total_qty_in, grand_total_qty_out, \
-                    grand_total_product_qty_adjustment, \
-                    grand_total_beginning_inventory,\
-                    grand_total_ending_inventory, grand_total_subtotal_cost = 0.0, \
-                    0.0, 0.0, 0.0, 0.0, 0.0
+                grand_total_qty_in = grand_total_value_in = \
+                    grand_total_qty_out = grand_total_value_out = \
+                    grand_total_product_qty_adjustment = grand_total_beginning_inventory = \
+                    grand_total_ending_inventory = grand_total_subtotal_cost \
+                     = 0.0
                 for values in total_lines.values():
                     for line in values:
                         product_qty_in = line.get('product_qty_in', 0.0) or 0.0
+                        product_value_in = line.get('product_value_in', 0.0) or 0.0
                         product_qty_out = line.get('product_qty_out', 0.0) or 0.0
+                        product_value_out = line.get('product_value_out', 0.0) or 0.0
                         product_qty_adjustment = line.get('product_qty_adjustment', 0.0) or 0.0
                         beginning_inventory = line.get('begining_qty', 0.0) or 0.0
                         ending_inventory = line.get('ending_qty', 0.0) or 0.0
-#                         beginning_inventory = self._get_beginning_inventory(
-#                                       datas,
-#                                       company,
-#                                       line.get('product_id', '') or '',
-#                                       line
-#                                       )
-#                         ending_inventory = self._get_ending_inventory(
-#                           product_qty_in,
-#                           product_qty_out,
-#                           product_qty_adjustment,
-#                           )
                         unit_cost = self._get_cost(
                           company,
                           line.get('product_id', '') or '',
@@ -442,7 +434,9 @@ class StockValuationDateReport(models.TransientModel,
                             self._product_detail(line.get('product_id', '') or '')
                         grand_total_beginning_inventory += beginning_inventory
                         grand_total_qty_in += product_qty_in
+                        grand_total_value_in += product_value_in
                         grand_total_qty_out += product_qty_out
+                        grand_total_value_out += product_value_out
                         grand_total_product_qty_adjustment += product_qty_adjustment
                         grand_total_ending_inventory += ending_inventory
                         grand_total_subtotal_cost += subtotal_cost
@@ -453,117 +447,57 @@ class StockValuationDateReport(models.TransientModel,
                                           product_qty_adjustment,
                                           ending_inventory
                                           ):
-                            sheet.write(
-                                    row,
-                                    0,
-                                    self._get_categ(line.get('categ_id', '') or ''),
-                                    other_tstyle_c)
-                            sheet.write(
-                                    row,
-                                    1,
-                                    product_name or '',
-                                    other_tstyle_c)
-                            sheet.write(
-                                    row,
-                                    2,
-                                    product_barcode or '',
-                                    other_tstyle_c)
-                            sheet.write(
-                                    row,
-                                    3,
-                                    product_code or '',
-                                    other_tstyle_c)
-                            sheet.write(
-                                    row,
-                                    4,
-                                    "%.2f" % beginning_inventory,
-                                    other_tstyle_r)
-                            sheet.write(
-                                    row,
-                                    5,
-                                    "%.2f" % product_qty_in,
-                                    other_tstyle_r)
-                            sheet.write(
-                                    row,
-                                    6,
-                                    "%.2f" % product_qty_out,
-                                    other_tstyle_r)
-                            sheet.write(
-                                    row,
-                                    7,
-                                    "%.2f" % product_qty_adjustment,
-                                    other_tstyle_r)
-                            sheet.write(
-                                    row,
-                                    8,
-                                    "%.2f" % ending_inventory,
-                                    other_tstyle_r)
-                            sheet.write(
-                                    row,
-                                    9,
-                                    "%.2f" % unit_cost,
-                                    other_tstyle_r)
-                            sheet.write(
-                                    row,
-                                    10,
-                                    "%.2f" % subtotal_cost,
-                                    other_tstyle_r)
+                            column = 0
+                            data_pairs = [
+                                (self._get_categ(line.get('categ_id', '') or ''), other_tstyle_c),
+                                (product_name or '', other_tstyle_c),
+                                (product_barcode or '', other_tstyle_c),
+                                (product_code or '', other_tstyle_c),
+                                (beginning_inventory, other_tstyle_r),
+                                (product_qty_in, other_tstyle_r),
+                                (product_value_in, other_tstyle_r),
+                                (product_qty_out, other_tstyle_r),
+                                (product_value_out, other_tstyle_r),
+                                (product_qty_adjustment, other_tstyle_r),
+                                (ending_inventory, other_tstyle_r),
+                                (unit_cost, other_tstyle_r),
+                                (subtotal_cost, other_tstyle_r),
+                            ]
+                            for value, style in data_pairs:
+                                sheet.write(row, column, value, style)
+                                column += 1
                             row += 1
 
-                sheet.write(
-                        row,
-                        3,
-                        "Grand Total",
-                        other_tstyle_grandc)
-                sheet.write(
-                        row,
-                        4,
-                        "%.2f" % grand_total_beginning_inventory,
-                        other_tstyle_grandr)
-                sheet.write(
-                        row,
-                        5,
-                        "%.2f" % grand_total_qty_in,
-                        other_tstyle_grandr)
-                sheet.write(
-                        row,
-                        6,
-                        "%.2f" % grand_total_qty_out,
-                        other_tstyle_grandr)
-                sheet.write(
-                        row,
-                        7,
-                        "%.2f" % grand_total_product_qty_adjustment,
-                        other_tstyle_grandr)
-                sheet.write(
-                        row,
-                        8,
-                        "%.2f" % grand_total_ending_inventory,
-                        other_tstyle_grandr)
-                sheet.write(
-                        row,
-                        9,
-                        "-",
-                        other_tstyle_grandr)
-                sheet.write(
-                        row,
-                        10,
-                        "%.2f" % grand_total_subtotal_cost,
-                        other_tstyle_grandr)
+                totals = [
+                    ("Grand Total", other_tstyle_grandc),
+                    (grand_total_beginning_inventory, other_tstyle_grandr),
+                    (grand_total_qty_in, other_tstyle_grandr),
+                    (grand_total_value_in, other_tstyle_grandr),
+                    (grand_total_qty_out, other_tstyle_grandr),
+                    (grand_total_value_out, other_tstyle_grandr),
+                    (grand_total_product_qty_adjustment, other_tstyle_grandr),
+                    (grand_total_ending_inventory, other_tstyle_grandr),
+                    ("-", other_tstyle_grandr),
+                    (grand_total_subtotal_cost, other_tstyle_grandr),
+                ]
+                column = 3
+                for value, style in totals:
+                    sheet.write(row, column, value, style)
+                    column += 1
 
         stream = BytesIO()
         workbook.save(stream)
 
         export_obj = self.env['stock.valuation.success.box']
         res_id = export_obj.create({
-                'file': base64.encodestring(stream.getvalue()),
-                'fname': "Stock Valuation Report.xls"
-                })
+            'file': base64.encodestring(stream.getvalue()),
+            'fname': "Stock Valuation Report.xls"
+        })
         return {
-             'type': 'ir.actions.act_url',
-             'url': '/web/binary/download_document?model=stock.valuation.success.box&field=file&id=%s&filename=Stock Valuation Report.xls'%(res_id.id),
-             'target': 'new',
-             }
+            'type': 'ir.actions.act_url',
+            'url': '/web/binary/download_document?model=stock.valuation.success.box&field=file&id=%s&filename=Stock Valuation Report.xls'%(res_id.id),
+            'target': 'new',
+        }
 
 
 class StockValuationSuccessBox(models.TransientModel):

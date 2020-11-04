@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 
 class VatDeclaration(models.TransientModel):
     _name = 'vat.declaration.report'
+    _description = 'VAT Declaration Report'
 
     report_type = fields.Selection([
         ('period', 'Period'),

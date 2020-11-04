@@ -174,20 +174,24 @@ class MrpWorkOrder(models.Model):
                                                             # ('date_end', '=', False)
                                                             ])
                     minimum_duration = self.env.user.company_id.minimum_duration
-                    start_date = productivity_ids[0].date_start
-                    end_date = datetime.now()
-                    duration = (end_date - start_date).total_seconds()
                     pieces_to_done += 1
                     self.write({'pieces_done': pieces_to_done})
-                    if duration < minimum_duration:
-                        raise UserError(_("The working duration is too short, please check again"))
                     if productivity_ids:
+                        check = False
                         for line in productivity_ids:
                             if not line.date_end:
+                                check = True
+                                start_date = line.date_start
+                                end_date = datetime.now()
+                                duration = (end_date - start_date).total_seconds()
+                                if duration < minimum_duration:
+                                    raise UserError(_("The working duration is too short, please check again"))
                                 line.write({'date_end': datetime.now(),
                                             'state': 'done'})
                             else:
                                 line.write({'state': 'done'})
+                        if not check:
+                            raise UserError(_("You cannot end piece that is being paused, please try again"))
                         self.refresh()
                         self.is_user_working = True
                     pieces_scanned = []
@@ -195,10 +199,19 @@ class MrpWorkOrder(models.Model):
                         if scanned.code_id.id not in pieces_scanned:
                             pieces_scanned.append(scanned.code_id.id)
                     if len(pieces_done) == len(pieces_scanned):
-                        wo = self.search([('id', '=', workorder_id)])
-                        wo_form = Form(wo)
-                        wo = wo_form.save()
-                        wo.do_finish()
+                        query = f"""SELECT id FROM mrp_workcenter_productivity
+                                WHERE code_id != {code_id.id} AND
+                                workorder_id = {workorder_id} AND
+                                state = 'in_progress'
+                        """ 
+                        productivity_ids = self._cr.execute(query)
+                        productivity_ids = self._cr.fetchall()
+                        # check if there is other pieces still on In Progress, if not set done Workorder
+                        if not productivity_ids:
+                            wo = self.search([('id', '=', workorder_id)])
+                            wo_form = Form(wo)
+                            wo = wo_form.save()
+                            wo.do_finish()
     
     def do_finish(self):
         # res = super(MrpWorkOrder, self).do_finish()
@@ -305,7 +318,6 @@ class MrpAbstractWorkorder(models.AbstractModel):
         workorder line in order to match the new quantity to consume for each
         component and their reserved quantity.
         """
-        print("#############",self.qty_producing, self.workcenter_id.used_scan_process)
         if not self.workcenter_id.used_scan_process:
             if self.qty_producing <= 0:
                 raise UserError(_('You have to produce at least one %s.') % self.product_uom_id.name)
