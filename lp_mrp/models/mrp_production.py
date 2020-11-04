@@ -399,7 +399,7 @@ class MrpProduction(models.Model):
                         (weight of inner carton (material where carton_type = inner)  x  qty of inner carton (in packaging data)) +
                         (weight of outer carton (material where carton_type = outer))'''
                     mo_product_weight_cal = (product_weight*number_of_item)
-                    inner_weight_cal = (inner_carton_weight*inner_carton_qty)
+                    inner_weight_cal = (inner_carton_weight*mo.product_id.number_of_inner)
                     outer_weight_cal = (outer_carton_weight)
                     loaded_container_weight = mo_product_weight_cal + inner_weight_cal + outer_weight_cal
                     carrier = False

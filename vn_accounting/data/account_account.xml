@@ -1,5 +1,0 @@
-<odoo>
-    <!-- <function model="account.account" name="check_vn_account" /> -->
-
-    <function model="account.account" name="translate_vn_accounting" />
-</odoo>

@@ -3,12 +3,18 @@
 
 {
     'name': 'Custom Manufacturing LovePop',
-    'version': '13.0.1.1.2',
+    'version': '13.0.1.1.4',
     'category': 'Manufacturing',
     'summary': 'Custom Manufacturing process',
     'description': """
     v.13.0.1.1.1 \n
     - Fix paper shipping label \n
+    v.13.0.1.1.2 \n
+    - Fix MO production document \n
+    v.13.0.1.1.3 \n
+    - Fix issue when pause item didn't yet end, WO should be can't done \n
+    v.13.0.1.1.4 \n
+    - update commercial invoice and AWB Fedex \n
     """,
     'website': 'https://www.portcities.net',
     'author': 'Portcities Ltd.',

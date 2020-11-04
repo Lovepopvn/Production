@@ -1,7 +1,7 @@
 
 {
     'name': 'VAT Declaration Report',
-    'version': '12.0.1.0.0',
+    'version': '13.0.1.0.1',
     'summary': 'Generate VAT Declaration report in PDF and XLSX',
     'description': """
     v.1.0 (Ahmad) \n

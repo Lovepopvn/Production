@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <!-- Balance Sheet (B01-DN) -->
-    <record id="account_financial_report_b01" model="account.financial.html.report">
-        <field name="name">Balance Sheet (B01-DN)</field>
-        <field name="tax_report" eval="1"/>
-        <field name="parent_id" ref="l10n_vn.account_reports_vn_statements_menu"/>
-    </record>
-</odoo>
