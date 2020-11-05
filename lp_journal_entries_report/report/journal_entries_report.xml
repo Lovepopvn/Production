@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_je_document">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="doc">
+				<t t-call="web.external_layout">
+					<div class="page">
+						<!-- title -->
+						<style>
+							.table-style-base{
+								width: 100%; 
+								font-size: 14px;
+							}
+
+							.tbody-style-content{
+								padding-left:3px;
+								padding-right:3px;
+								font-size: 14px;
+							}
+						</style>
+
+						<table class="table-style-base">
+							<tr>
+								<td>
+									Công Ty TNHH LOVEPOP VIỆT NAM
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Lô X9-1,đường số 14B và đường số 11B, KCN Hòa Khánh mở rộng,P.Hòa Khánh Bắc, Q.Liên Chiểu, Tp.Đà Nẵng
+								</td>
+							</tr>
+						</table>
+						<br></br>
+						<!-- header -->
+						<table class="table-style-base">
+							<tr>
+								<td colspan='11' style="text-align: center; font-size: 20px; font-weight: bold; height: 50px;">
+									CHỨNG TỪ HẠCH TOÁN
+								</td>
+							</tr>
+							<tr>
+								<td style="width: 8%;">
+									<strong>Số chứng từ</strong>
+								</td>
+								<td style="width: 1%;">
+									:
+								</td>
+								<td style="width: 10%;">
+									<span t-field="doc.name"/>
+								</td>
+								<td style="width: 2%;"></td>
+
+								<td style="width: 8%;">
+									<strong>Ngày chứng từ</strong>
+								</td>
+								<td style="width: 1%;">
+									:
+								</td>
+								<td style="width: 12%;">
+									<span t-field="doc.invoice_date"/>
+								</td>
+								<td style="width: 2%;"></td>
+
+								<td style="width: 8%;"> 
+									<strong>Ngày hạch toán</strong>
+								</td>
+								<td style="width: 1%;">
+									:
+								</td>
+								<td style="width: 12%;">
+									<span t-field="doc.date"/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<strong>Mã khách hàng</strong>
+								</td>
+								<td>
+									:
+								</td>
+								<td>
+									<span t-field="doc.partner_id.vat"/>
+								</td>
+								<td></td>
+
+								<td>
+									<strong>Tên khách hàng</strong>
+								</td>
+								<td>
+									:
+								</td>
+								<td>
+									<span t-field="doc.partner_id.name"/>
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>
+									<strong>Nội dung</strong>
+								</td>
+								<td>
+									:
+								</td>
+								<td>
+									<span t-field="doc.ref"/>
+								</td>
+								<td></td>
+							</tr>
+						</table>
+						<br></br>
+
+						<!-- body content-->
+						<table class="table table-sm">
+			                <thead>
+			                    <tr>
+			                        <th class="text-center">Tài khoản</th>
+			                        <th class="text-center">Tên tài khoản</th>
+			                        <th class="text-center">Nội dung</th>
+			                        <th class="text-center">Phát sinh nợ</th>
+			                        <th class="text-center">Phát sinh có</th>
+			                    </tr>
+			                </thead>
+			                <tbody class='tbody-style-content'>
+
+			                    <t t-set="total_debit" t-value="0"/>
+			                    <t t-set="total_credit" t-value="0"/>
+
+			                    <t t-foreach="doc.line_ids" t-as="line">
+			                    	<tr>
+			                    		<td class="text-left" style="width: 15%;">
+			                    			<span t-field="line.account_id.code"/>
+			                    		</td>
+			                    		<td class="text-left" style="width: 20%;">
+			                    			<span t-field="line.account_id.name"/>
+			                    		</td>
+			                    		<td class="text-left" style="width: 30%;"> 
+			                    			<span t-field="line.name"/>
+			                    		</td>
+			                    		<td class="text-right" style="width: 17%;">
+			                    			<span t-field="line.debit"/>
+			                    		</td>
+			                    		<td class="text-right" style="width: 17%;">
+			                    			<span t-field="line.credit"/>
+			                    		</td>
+			                    	</tr>
+			                        <t t-set="total_debit" t-value="total_debit + line.debit"/>
+			                        <t t-set="total_credit" t-value="total_credit + line.credit"/>
+	                    		</t>
+
+	                    		<tr>
+	                    			<td colspan='3' class="text-right" style="font-weight: bold; font-size: 16px;">
+	                    				Tổng cộng
+	                    			</td>
+	                    			<td class="text-right" style="font-weight: bold; font-size: 14px;">
+	                    				<span t-esc="total_debit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+	                    			</td>
+	                    			<td class="text-right" style="font-weight: bold; font-size: 14px;">
+	                    				<span t-esc="total_credit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+	                    			</td>
+	                    		</tr>
+                			</tbody>
+            			</table>
+
+            			<!-- body content footer -->
+            			<table class="table-style-base">
+            				<tr>
+            					<td style="width: 10%;">
+            						Bằng chữ :
+            					</td>
+            					<td style="width: 90%;">
+            						<span t-esc="doc.number_to_currency(total_debit)"/>
+            					</td>
+            				</tr>
+            			</table>
+
+            			<!-- footer -->
+            			<br></br>
+            			<table class="table-style-base">
+            				<tr style="height: 30px;">
+            					<td></td>
+            					<td></td>
+            					<td></td>
+            					<td class="text-center">
+            						Ngày........tháng........năm................
+            					</td>
+            				</tr>
+            				<tr>
+            					<td class="text-center" style="width: 25%;">
+            						NGƯỜI DUYỆT
+            					</td>
+            					<td class="text-center" style="width: 25%;">
+            						GIÁM ĐỐC
+            					</td>
+            					<td class="text-center" style="width: 25%;">
+            						KẾ TOÁN TRƯỞNG
+            					</td>
+            					<td class="text-center" style="width: 25%;">
+            						NGƯỜI LẬP
+            					</td>
+            				</tr>
+            				<tr style="height: 100px;">
+            					<td colspan='4'></td>
+            				</tr>
+            				<tr>
+            					<td class="text-center">
+            						(..........................)
+            					</td>
+            					<td class="text-center">
+            						(..........................)
+            					</td>
+            					<td class="text-center">
+            						(..........................)
+            					</td>
+            					<td class="text-center">
+            						(..........................)
+            					</td>
+            				</tr>
+            			</table>
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+	
+	<report 
+		id="action_report_je_document"
+		string="Journal Entries Document"
+		model="account.move"
+		report_type="qweb-pdf"
+		file="lp_journal_entries_report.report_je_document"
+		name="lp_journal_entries_report.report_je_document"
+		print_report_name="'Journal Entries Document - %s' % (object.name)"
+		menu="False"
+	/>
+</odoo>
