@@ -13,7 +13,6 @@
     """,
     "data": [
         'report/journal_entries_report.xml',
-        'views/account_move_view.xml',
     ],
     "demo":[],
     "auto_install": False,

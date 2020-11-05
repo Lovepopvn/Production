@@ -2,8 +2,24 @@
 <odoo>
 	<template id="report_je_document">
 		<t t-call="web.html_container">
+
+			<t t-if="not o" t-set="o" t-value="doc"/>
+
+	        <t t-if="not company">
+	            <!-- Multicompany -->
+	            <t t-if="company_id">
+	                <t t-set="company" t-value="company_id"/>
+	            </t>
+	            <t t-elif="o and 'company_id' in o">
+	                <t t-set="company" t-value="o.company_id.sudo()"/>
+	            </t>
+	            <t t-else="else">
+	                <t t-set="company" t-value="res_company"/>
+	            </t>
+	        </t>
+
 			<t t-foreach="docs" t-as="doc">
-				<t t-call="web.external_layout">
+				<t t-call="web.external_layout_background">
 					<div class="page">
 						<!-- title -->
 						<style>
@@ -18,7 +34,7 @@
 								font-size: 14px;
 							}
 						</style>
-
+						<!-- <br></br> -->
 						<table class="table-style-base">
 							<tr>
 								<td>
@@ -231,6 +247,5 @@
 		file="lp_journal_entries_report.report_je_document"
 		name="lp_journal_entries_report.report_je_document"
 		print_report_name="'Journal Entries Document - %s' % (object.name)"
-		menu="False"
 	/>
 </odoo>
