@@ -3,8 +3,13 @@
 import logging
 import time
 import math
+import io
+import itertools
+import functools
 
+from PyPDF2.pdf import PdfFileReader, PdfFileWriter, PageObject
 from odoo import api, models, fields, _, tools
+from contracts import contract
 from odoo.exceptions import UserError
 from odoo.tools import pdf
 
@@ -61,13 +66,31 @@ def _convert_curr_iso_fdx(code):
 class ProviderFedex(models.Model):
     _inherit = 'delivery.carrier'
 
-    fedex_duty_payment = fields.Selection([
-                                        ('SENDER', 'Sender'),
-                                        ('RECIPIENT', 'Recipient'),
-                                        ('THIRD_PARTY', 'Third Party')],
-                                        required=True, default="THIRD_PARTY")
+    fedex_duty_payment = fields.Selection(
+        selection_add=[ ('THIRD_PARTY', 'Third Party')],
+        required=True, default="THIRD_PARTY")
     fedex_bill_account_number = fields.Char(string="Billing Account Number",
                                         groups="base.group_system")
+    
+    @staticmethod
+    @contract(page=PageObject, returns=PageObject)
+    def __convert_page_to_correct_paper_size(page):
+        """
+            Returns a new page from the given L{page} with its content shifted from the top of the page (to
+            account for the custom paper the fedex printer uses).
+        """
+        margin_top, crop_bottom = -64., 80
+        new_page = PageObject.createBlankPage(None,
+                page.mediaBox.getWidth(),
+                page.mediaBox.getHeight() - crop_bottom,  # cropping the page
+                                        )
+        new_page.mergeScaledTranslatedPage(
+                                            page,
+                                            1.,  # keeping the scale of the page the same
+                                            0,
+                                            margin_top - crop_bottom,  # moving the content down after cropping
+                                            )
+        return new_page
     
     def _get_real_price_currency(self, lot, product, rule_id, qty, uom, pricelist_id):
         """Retrieve the price before applying the pricelist
@@ -186,7 +209,7 @@ class ProviderFedex(models.Model):
 
                 product_lots = []
                 for lot in shipping.product_lot_ids:
-                    com_desc = lot.product_id.name
+                    com_desc = "[%s] %s" % (lot.product_id.default_code, lot.product_id.name)
                     if lot.product_id.fsc_group_id or lot.product_id.fsc_status_id:
                         if lot.product_id.fsc_group_id and lot.product_id.fsc_status_id:
                             com_desc += ' - ' + lot.product_id.fsc_group_id.name + ' ' + lot.product_id.fsc_status_id.name
@@ -205,7 +228,8 @@ class ProviderFedex(models.Model):
                                         if ovals['commodity_description'] == \
                                         com_desc]
                     if head:
-                        weight_value = self._fedex_convert_weight(lot.loaded_container_weight, self.fedex_weight_unit)
+                        weight_value = lot.product_id.weight * lot.number_of_items
+                        weight_value = self._fedex_convert_weight(weight_value, self.fedex_weight_unit)
                         total_commodities_amount = head[0]['total_commodities_amount'] + total_commodities_amount
                         commodity_number_of_piece = head[0]['commodity_number_of_piece'] + 1
                         commodity_weight_value = head[0]['commodity_weight_value'] + weight_value
@@ -218,14 +242,15 @@ class ProviderFedex(models.Model):
                                 })
                     else:
                         # Sum the no of packages; no of unit; net weight, total value
-
+                        weight_value = lot.product_id.weight * lot.number_of_items
+                        weight_value = self._fedex_convert_weight(weight_value, self.fedex_weight_unit)
                         product_lots.append({
                             'commodity_amount' : commodity_amount,
                             'total_commodities_amount' : total_commodities_amount,
                             'commodity_description' : com_desc,
                             'commodity_number_of_piece' : 1,
                             'commodity_weight_units' : self.fedex_weight_unit,
-                            'commodity_weight_value' : self._fedex_convert_weight(lot.loaded_container_weight, self.fedex_weight_unit),
+                            'commodity_weight_value' : weight_value,
                             'commodity_quantity' : lot.number_of_items,
                             'commodity_quantity_units' : 'EA',
                             'commodity_harmonized_code' : lot.product_id.hs_code or '',
@@ -308,7 +333,7 @@ class ProviderFedex(models.Model):
                         dept_number=dept_number,
                         # reference=lots.shipper_reference,
                         inv_number=shipping.name,
-                        reference=shipping.name,
+                        reference=lots.name,
                     )
                     srm.set_master_package(net_weight, lots_count, master_tracking_id=master_tracking_id)
                     request = srm.process_shipment()
@@ -409,11 +434,33 @@ class ProviderFedex(models.Model):
                             logmessage = _("Shipment created into Fedex<br/>"
                                            "<b>Tracking Numbers:</b> %s<br/>"
                                            "<b>Packages:</b> %s") % (carrier_tracking_ref, ','.join([pl[0] for pl in lot_labels]))
+                            lot_label_data = [pl[1] for pl in lot_labels]
+                            labels_iterator = iter(map(io.BytesIO, lot_label_data))
+                            first_label = next(labels_iterator)
+                            writer = PdfFileWriter()
+                            new_reader = functools.partial(PdfFileReader, strict=False, overwriteWarnings=False)
+                            for reader in map(new_reader, labels_iterator):
+                                for n in range(reader.getNumPages()):
+                                    page = reader.getPage(n)
+                                    new_page = self.__convert_page_to_correct_paper_size(page)
+                                    writer.addPage(new_page)
+                            first_label_reader = new_reader(first_label)
+
+                            for idx in itertools.chain(reversed((0,)), range(1, 5,),):
+                                page = first_label_reader.getPage(idx)
+                                new_page = self.__convert_page_to_correct_paper_size(page)
+                                writer.insertPage(page, 0)
+                            
+                            output_stream = io.BytesIO()
+                            writer.write(output_stream)
+                            attachment = []
+                            attachment.append(output_stream.getvalue())
+                            
                             if self.fedex_label_file_type != 'PDF':
                                 attachments = [('LabelFedex-%s.%s' % (pl[0], self.fedex_label_file_type), pl[1]) for pl in lot_labels]
                             if self.fedex_label_file_type == 'PDF':
                                 ship_label_name = "Shipping Label %s.pdf" % shipping.name
-                                attachments = [(ship_label_name, pdf.merge_pdf([pl[1] for pl in lot_labels]))]
+                                attachments = [(ship_label_name, pdf.merge_pdf(attachment))]
                             shipping.message_post(body=logmessage, attachments=attachments)
                             for pick in shipping.delivery_order_ids:
                                 pick.message_post(body=logmessage, attachments=attachments)
@@ -451,7 +498,7 @@ class ProviderFedex(models.Model):
                     dept_number=dept_number,
                     # reference=lots.shipper_reference,
                     inv_number=shipping.name,
-                    reference=shipping.name,
+                    reference=lots.name,
                 )
                 srm.set_master_package(net_weight, 1)
 

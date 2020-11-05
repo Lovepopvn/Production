@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='parent_id']" position="after">
             	<field name="production_information"/>
+                <field name="require_for_mo"/>
             </xpath>
         </field>
     </record>

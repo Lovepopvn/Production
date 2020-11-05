@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 
 class VatDeclaration(models.TransientModel):
     _name = 'vat.declaration.report'
+    _description = 'VAT Declaration Report'
 
     report_type = fields.Selection([
         ('period', 'Period'),
@@ -209,10 +210,17 @@ class VatDeclaration(models.TransientModel):
             report_name += f'{month_name[self.start_date.month]} - {month_name[self.end_date.month]} {self.year}'
         return report_name
 
+    def _multi_company_cond(self):
+        condition = ''
+        company_ids = ','.join([str(id) for id in self.env.companies.ids])
+        condition  = f"company_id IN ({company_ids})"
+        return condition
+
     def tax_invoice(self, date_range, percentage, move_type='out_invoice'):
         start_date = date_range['start_date']
         end_date = date_range['end_date']
         dict_name = 'tax_invoice_total_' + percentage
+        company_cond = 'account_move.'+self._multi_company_cond()
 
         if type(move_type) in (list,tuple):
             move_type_val = """in """+str(tuple(move_type))
@@ -231,7 +239,8 @@ class VatDeclaration(models.TransientModel):
             WHERE (account_move.invoice_date BETWEEN '""" + start_date.strftime('%Y-%m-%d') + """' AND '""" + end_date.strftime('%Y-%m-%d') + """')
             AND account_move.type """+move_type_val+"""
             AND account_tax.name = 'Thuế GTGT phải nộp """ + percentage + """%'
-            AND account_move.state='posted';
+            AND account_move.state='posted'
+            AND """+company_cond+""";
         """
         self.env.cr.execute(query)
         query_result = self.env.cr.dictfetchall()
@@ -242,6 +251,7 @@ class VatDeclaration(models.TransientModel):
     def invoice_before_tax(self, date_range, percentage):
         start_date = date_range['start_date']
         end_date = date_range['end_date']
+        company_cond = 'account_move.'+self._multi_company_cond()
         no_tax = False
         if percentage == 'No Tax':
             tax_name = 'No Tax'
@@ -279,7 +289,8 @@ class VatDeclaration(models.TransientModel):
             WHERE (account_move.invoice_date BETWEEN '"""+start_date.strftime('%Y-%m-%d')+"""' AND '"""+end_date.strftime('%Y-%m-%d')+"""')
             AND account_move.type in ('out_invoice','out_refund')
             """+tax_condition+""" 
-            AND account_move.state='posted';
+            AND account_move.state='posted'
+            AND """+company_cond+""";
         """ 
 
         self.env.cr.execute(query)
@@ -292,6 +303,7 @@ class VatDeclaration(models.TransientModel):
         start_date = date_range['start_date']
         end_date = date_range['end_date']
         dict_name = 'bill_before_tax'
+        company_cond = 'account_move.'+self._multi_company_cond()
 
         query = """
             SELECT sum(account_move_line.balance) """ + dict_name + """
@@ -302,7 +314,8 @@ class VatDeclaration(models.TransientModel):
             AND account_move.type IN ('in_invoice','in_refund')
             AND account_move_line.vat_in_config_id IN (1, 2, 3, 4, 6)
             AND account_move_line.exclude_from_invoice_tab = False
-            AND account_move_line.move_id IS NOT NULL AND account_move.state='posted';
+            AND account_move_line.move_id IS NOT NULL AND account_move.state='posted'
+            AND """+company_cond+""";
         """
         self.env.cr.execute(query)
         query_result = self.env.cr.dictfetchall()
@@ -314,6 +327,7 @@ class VatDeclaration(models.TransientModel):
         start_date = date_range['start_date']
         end_date = date_range['end_date']
         dict_name = 'tax_bill_total_' + name
+        company_cond = 'account_move_line.'+self._multi_company_cond()
 
         query = """
             SELECT sum(account_move_line.balance) """ + dict_name + """
@@ -326,7 +340,8 @@ class VatDeclaration(models.TransientModel):
                 AND account_move.type IN ('in_invoice','in_refund')
 			    AND account_move_line.tax_line_id IS NOT NULL
                 AND (account_move.invoice_date BETWEEN '""" + start_date.strftime('%Y-%m-%d') + """' AND '""" + end_date.strftime('%Y-%m-%d') + """')
-                AND account_move.state='posted';
+                AND account_move.state='posted'
+                AND """+company_cond+""";
         """
         self.env.cr.execute(query, (tuple(vat_in_configs.ids),))
         query_result = self.env.cr.dictfetchall()

@@ -12,7 +12,7 @@ class ProductLot(models.Model):
     _inherit = ['barcodes.barcode_events_mixin']
     _description = 'Product Lot'
 
-    name = fields.Char('Product Lot')
+    name = fields.Char('Product Lot', default="/", copy=False)
     state = fields.Selection([
         ('not_received', 'Not Received'),
         ('received', 'Received'),
@@ -54,7 +54,7 @@ class ProductLot(models.Model):
         ('very_urgent', 'Very Urgent'),
         ('urgent', 'Urgent'),
         ('priority', 'Priority'),
-        ('standard', 'Standard (for the MO)')
+        ('standard', 'Standard')
         ], string='Urgency', copy=False)
     shipment_method = fields.Selection([
         ('AIR', 'Air'),
@@ -76,6 +76,12 @@ class ProductLot(models.Model):
     _sql_constraints = [
         ('name_company_uniq', 'unique (name, company_id)', 'Product Lot Reference must be unique per company!'),
     ]
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', '/') == '/':
+            vals['name'] = self.env['ir.sequence'].next_by_code('product.lot') or '/'
+        return super(ProductLot, self).create(vals)
 
     @api.onchange('mo_id')
     def _onchange_mo_id(self):

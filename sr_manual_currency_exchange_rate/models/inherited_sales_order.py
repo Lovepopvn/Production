@@ -26,7 +26,7 @@ class SalesOrder(models.Model):
     _inherit = 'sale.order'
 
     apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Currency Exchange')
-    company_currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
+    company_currency_id = fields.Many2one('res.currency', 'Company Currency', related='company_id.currency_id')
     manual_currency_exchange_rate_inverted = fields.Float(string='Inverted Manual Currency Exchange Rate', help='Input the amount in the company currency that is equal to 1 in the selected currency', digits=(12, 9))
     manual_currency_exchange_rate = fields.Float(string='Manual Currency Exchange Rate', compute='_compute_exchange_rate', digits=(12, 12))
     active_manual_currency_rate = fields.Boolean('active Manual Currency', default=False)

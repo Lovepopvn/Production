@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''Mrp Work Order'''
 from odoo import fields, models, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, Warning
 from datetime import datetime
 from odoo.tests.common import Form
 
@@ -96,6 +96,7 @@ class MrpWorkOrder(models.Model):
                     productivity_ids = productivity_obj.search([('code_id', '=', code_id.id),
                                                             ('workorder_id', '=', workorder_id)])
                     if productivity_ids:
+                        created = False
                         for productivity in productivity_ids:
                             if not productivity.date_end:
                                 '''Pause'''
@@ -116,21 +117,23 @@ class MrpWorkOrder(models.Model):
                                     self.production_id.write({
                                         'date_start': datetime.now(),
                                     })
-                                timeline_id = timeline.create({
-                                    'code_id': code_id.id,
-                                    'workorder_id': workorder_id,
-                                    'workcenter_id': self.workcenter_id.id,
-                                    'description': _('Time Tracking: ')+self.env.user.name,
-                                    'loss_id': loss_id[0].id,
-                                    'state': 'in_progress',
-                                    'date_start': datetime.now(),
-                                    'user_id': self.env.user.id,  # FIXME sle: can be inconsistent with company_id
-                                    'company_id': self.company_id.id,
-                                })
-                                self.time_progress_ids = timeline_id
-                                self.refresh()
-                                self.is_user_working = True
-                                self.state = 'progress'
+                                if not created:
+                                    timeline_id = timeline.create({
+                                        'code_id': code_id.id,
+                                        'workorder_id': workorder_id,
+                                        'workcenter_id': self.workcenter_id.id,
+                                        'description': _('Time Tracking: ')+self.env.user.name,
+                                        'loss_id': loss_id[0].id,
+                                        'state': 'in_progress',
+                                        'date_start': datetime.now(),
+                                        'user_id': self.env.user.id,  # FIXME sle: can be inconsistent with company_id
+                                        'company_id': self.company_id.id,
+                                    })
+                                    self.time_progress_ids = timeline_id
+                                    self.refresh()
+                                    self.is_user_working = True
+                                    self.state = 'progress'
+                                    created = True
                             else:
                                 raise UserError(_("you cannot scan a completed piece for this work order."))
                     else:
@@ -171,20 +174,24 @@ class MrpWorkOrder(models.Model):
                                                             # ('date_end', '=', False)
                                                             ])
                     minimum_duration = self.env.user.company_id.minimum_duration
-                    start_date = productivity_ids[0].date_start
-                    end_date = datetime.now()
-                    duration = (end_date - start_date).total_seconds()
                     pieces_to_done += 1
                     self.write({'pieces_done': pieces_to_done})
-                    if duration < minimum_duration:
-                        raise UserError(_("The working duration is too short, please check again"))
                     if productivity_ids:
+                        check = False
                         for line in productivity_ids:
                             if not line.date_end:
+                                check = True
+                                start_date = line.date_start
+                                end_date = datetime.now()
+                                duration = (end_date - start_date).total_seconds()
+                                if duration < minimum_duration:
+                                    raise UserError(_("The working duration is too short, please check again"))
                                 line.write({'date_end': datetime.now(),
                                             'state': 'done'})
                             else:
                                 line.write({'state': 'done'})
+                        if not check:
+                            raise UserError(_("You cannot end piece that is being paused, please try again"))
                         self.refresh()
                         self.is_user_working = True
                     pieces_scanned = []
@@ -192,14 +199,24 @@ class MrpWorkOrder(models.Model):
                         if scanned.code_id.id not in pieces_scanned:
                             pieces_scanned.append(scanned.code_id.id)
                     if len(pieces_done) == len(pieces_scanned):
-                        wo = self.search([('id', '=', workorder_id)])
-                        wo_form = Form(wo)
-                        wo = wo_form.save()
-                        wo.do_finish()
+                        query = f"""SELECT id FROM mrp_workcenter_productivity
+                                WHERE code_id != {code_id.id} AND
+                                workorder_id = {workorder_id} AND
+                                state = 'in_progress'
+                        """ 
+                        productivity_ids = self._cr.execute(query)
+                        productivity_ids = self._cr.fetchall()
+                        # check if there is other pieces still on In Progress, if not set done Workorder
+                        if not productivity_ids:
+                            wo = self.search([('id', '=', workorder_id)])
+                            wo_form = Form(wo)
+                            wo = wo_form.save()
+                            wo.do_finish()
     
     def do_finish(self):
         # res = super(MrpWorkOrder, self).do_finish()
         workcenter_tab_obj = self.env['workcenter.tab']
+        # set warning when there is issue in scanning pieces
         if self.workcenter_id.used_scan_process:
             workcenter_tab_ids = workcenter_tab_obj.search([
                                 ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
@@ -223,8 +240,33 @@ class MrpWorkOrder(models.Model):
                 for done in self.time_done_ids:
                     if done.code_id.id not in pieces_done:
                         raise UserError(_('There are pieces that are not assigned to this Work Order . Please check again'))
-        return super(MrpWorkOrder, self).do_finish()
-        
+        res = super(MrpWorkOrder, self).do_finish()
+        # set done component which consumed in the work order
+        self.production_id.post_inventory()
+        if self.production_id.workorder_ids:
+            all_wo_done = True
+            for wo in self.production_id.workorder_ids:
+                if wo.state != 'done':
+                    all_wo_done = False
+            if all_wo_done == True:
+                # finds all manufacturing orders that contain this manufacturing as a source
+                mos = self.env['mrp.production'].search([('origin','ilike',self.production_id.name)])
+                # loops through the manufacturing orders
+                for mo in mos:
+                    # checks to see the state
+                    if mo.state != 'done' and mo.state != 'cancel':
+                        warn = """
+                                Before completing this manufacturing order (%s),\n  all manufacturing orders that produce sub-assemblies must first be complete.\n
+                                %s (which produces %s x [%s] %s) is not yet complete.\n
+                                Truoc khi bam thao tac hoan thanh don hang tong (%s),\n ban phai hoan thanh truoc cac don hang nho cua don hang tong nay.\n
+                                Don hang %s (gom %s don hang x [%s] %s la chua duoc hoan thanh.)
+                                """ % (self.production_id.name,mo.name,str(int(mo.product_qty)),mo.product_id.default_code,mo.product_id.name,
+                                        self.production_id.name,mo.name,str(int(mo.product_qty)),mo.product_id.default_code,mo.product_id.name)
+                        raise Warning(warn)
+                self.production_id.button_mark_done()
+                self.production_id.write({'state': 'done'})
+        return res
+
     def _compute_working_users(self):
         res = super(MrpWorkOrder, self)._compute_working_users()
         for order in self:
@@ -249,6 +291,7 @@ class MrpWorkCenterProductivity(models.Model):
                                             'workorder_id': False,
                                             'wo_productivity_id': self.id})
         return {
+            'name': _('Pieces Pause Reason'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'workorder.pause.reason',
@@ -275,7 +318,6 @@ class MrpAbstractWorkorder(models.AbstractModel):
         workorder line in order to match the new quantity to consume for each
         component and their reserved quantity.
         """
-        print("#############",self.qty_producing, self.workcenter_id.used_scan_process)
         if not self.workcenter_id.used_scan_process:
             if self.qty_producing <= 0:
                 raise UserError(_('You have to produce at least one %s.') % self.product_uom_id.name)

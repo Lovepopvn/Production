@@ -80,8 +80,8 @@ class FedexRequest():
 
     def set_shipper(self, company_partner, warehouse_partner):
         Contact = self.factory.Contact()
-        Contact.PersonName = company_partner.name if not company_partner.is_company else ''
-        Contact.CompanyName = company_partner.name if company_partner.is_company else ''
+        Contact.PersonName = "LOVEPOP VIETNAM CO.,LTD" #company_partner.name if not company_partner.is_company else ''
+        Contact.CompanyName = "LOVEPOP VIETNAM CO.,LTD" #company_partner.name if company_partner.is_company else ''
         Contact.PhoneNumber = warehouse_partner.phone or ''
         # TODO fedex documentation asks for TIN number, but it seems to work without
 
@@ -100,8 +100,8 @@ class FedexRequest():
         self.RequestedShipment.Shipper.Address = Address
 
         # source new
-        self.RequestedShipment.Shipper.Contact.CompanyName = warehouse_partner.name
-        self.RequestedShipment.Shipper.Contact.PersonName = warehouse_partner.name
+        self.RequestedShipment.Shipper.Contact.CompanyName = "LOVEPOP VIETNAM CO.,LTD" #warehouse_partner.name
+        self.RequestedShipment.Shipper.Contact.PersonName = "LOVEPOP VIETNAM CO.,LTD" #warehouse_partner.name
         self.RequestedShipment.Shipper.Contact.PhoneNumber = warehouse_partner.phone
 
         self.RequestedShipment.Shipper.Address.StreetLines = [warehouse_partner.street, ]
@@ -155,8 +155,7 @@ class FedexRequest():
             assert recipient_partner.vat is None  # pre
 
         self.RequestedShipment.Recipient.Tins = [taxpayer_identification, ]
-        self.RequestedShipment.Recipient.Contact.CompanyName = recipient_partner.name
-        self.RequestedShipment.Recipient.Contact.PersonName = recipient_partner.name
+        self.RequestedShipment.Recipient.Contact = Contact
         self.RequestedShipment.Recipient.Contact.PhoneNumber = recipient_partner.phone
 
         self.RequestedShipment.Recipient.Address.StreetLines = [recipient_partner.street, ]
@@ -434,7 +433,7 @@ class FedexRequest():
         commodity_weight.Units = commodity_weight_units
 
         commodity.Weight = commodity_weight
-        commodity.Description = re.sub(r'[\[\]<>;={}"|]', '', commodity_description)
+        commodity.Description = re.sub(r'[<>;={}"|]', '', commodity_description)
         commodity.Quantity = commodity_quantity
         commodity.QuantityUnits = commodity_quantity_units
         customs_value = self.factory.Money()

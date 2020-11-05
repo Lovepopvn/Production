@@ -3,8 +3,9 @@ from odoo import api, fields, models
 
 class VatInConfiguration(models.Model):
     _name = 'vat.in.configuration'
+    _description = 'VAT In Configuration'
 
-    name = fields.Char('VAT category name', required=True)
+    name = fields.Char('VAT Category Name', required=True)
     default_vat_in = fields.Boolean('Default')
 
     @api.model

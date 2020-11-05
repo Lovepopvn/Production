@@ -70,14 +70,25 @@ class StockMove(models.Model):
             # operations cost is 0 or the query returned None (no routing in BoM) - process as usual
             return res
 
+        # search JE amount for all component of finished goods and add in the credit & debit value
+        # comp_amount = 0
+        # if operations_cost:
+        #     query = """
+        #         SELECT SUM(amount_total_signed) FROM 
+        #         account_move where ref ilike %s
+        #     """
+        #     self.env.cr.execute(query, ("%s%s" % (self.production_id.name,'%'), ))
+        #     comp_amount = self.env.cr.fetchall()[0][0]
+        #     credit_value += comp_amount
+
         operations_cost = round(operations_cost)
         printing_cost = self._context.get('printing_cost')
-        components_cost = credit_value - operations_cost
+        components_cost = credit_value - operations_cost - printing_cost
         # if debit_line_vals['debit']:
         #     debit_line_vals['debit'] += printing_cost
         # else:
         #     debit_line_vals['credit'] += printing_cost
-        debit_line_vals['debit'] += printing_cost
+        # debit_line_vals['debit'] += printing_cost# + comp_amount
 
         descriptions = {
             'components': _('Components: ') + description,

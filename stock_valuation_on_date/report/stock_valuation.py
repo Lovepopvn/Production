@@ -270,10 +270,10 @@ class StockValuationCategory(models.AbstractModel):
 
         to_check = self.env['product.product'].browse(product_id)
         stock_value = to_check.with_context(to_date=inventory_date, force_company=company_id).value_svl
-        return round(float(stock_value) / float(ending_inventory), 2)
+        return round(float(stock_value) / float(ending_inventory), 4)
 
     def _get_subtotal_cost(self, cost, ending_inv, current_record):
-        subtotal_cost = cost and ending_inv and round((cost * ending_inv), 2) or 0.0
+        subtotal_cost = cost and ending_inv and round((cost * ending_inv), 4) or 0.0
         current_record.update({'subtotal_cost': subtotal_cost})
         return subtotal_cost
 
@@ -381,6 +381,31 @@ class StockValuationCategory(models.AbstractModel):
         # filter by categories
         if filter_product_categ_ids:
             values = self._remove_product_cate_ids(values, filter_product_categ_ids)
+
+        # PCV: Add product values
+        Product = self.env['product.product']
+        StockValuationLayer = self.env['stock.valuation.layer']
+        svl_domain = [
+            ('create_date', '>=', start_date),
+            ('create_date', '<=', end_date),
+            # ('quantity', '>=', 0.0),
+        ]
+        for line in values:
+            product_id = line['product_id']
+            product_value_in = product_value_out = 0.0
+            if product_id:
+                product = Product.browse([product_id])
+                account_id = product.categ_id.property_stock_valuation_account_id.id
+                svl_product_domain = svl_domain + [('product_id', '=', product_id)]
+                svls = StockValuationLayer.search(svl_product_domain)
+                amls = svls.account_move_id.line_ids.filtered(lambda l: l.account_id.id == account_id)
+                product_value_in = sum(amls.mapped('debit'))
+                product_value_out = sum(amls.mapped('credit'))
+            line.update({
+                'product_value_in': product_value_in,
+                'product_value_out': product_value_out,
+            })
+
         return values
 
     def _remove_zero_inventory(self, values):
