@@ -12,7 +12,7 @@ class AccountMove(models.Model):
         for move in self:
             update_ids = []
             landed_ids = []
-            if (move.stock_move_id._is_in() if move.stock_move_id else False) or not move.stock_move_id:
+            if not move._context.get('update_price') and ((move.stock_move_id._is_in() if move.stock_move_id else False) or not move.stock_move_id):
                 for line in move.line_ids.filtered(lambda line: line.account_id.fixing_rounding):
                     diff = False
                     if line.product_id and line.account_id.fixing_rounding:
@@ -29,7 +29,7 @@ class AccountMove(models.Model):
                                     vals = ((1, line.id, {'debit': debit}))
                                     update_ids.append(vals)
                                     vals = ((0, 0, {
-                                        'name': line.name,
+                                        'name': "Fixing Round - %s" % line.product_id.default_code, #line.name,
                                         'product_id': line.product_id.id if line.product_id else False,
                                         'quantity': line.quantity,
                                         'product_uom_id': line.product_id.uom_id.id,
@@ -45,7 +45,7 @@ class AccountMove(models.Model):
                                     vals = ((1, line.id, {'debit': debit}))
                                     update_ids.append(vals)
                                     vals = ((0, 0, {
-                                        'name': line.name,
+                                        'name': "Fixing Round - %s" % line.product_id.default_code, #line.name,
                                         'product_id': line.product_id.id if line.product_id else False,
                                         'quantity': line.quantity,
                                         'product_uom_id': line.product_id.uom_id.id,
