@@ -3,11 +3,13 @@
 
 {
     'name': 'Account Fix Rounding',
-    'version': '13.0.1.0.0',
+    'version': '13.0.1.0.1',
     'category': 'Account',
     'summary': 'Account for fixing rounding issue in cost valuation & Journal Entries',
     'description': """
-        Add new journal item to fix Gap amount between JE and Cost Valuation product
+        Add new journal item to fix Gap amount between JE and Cost Valuation product \n
+        v.13.0.1.0.1 \n
+    - Fix fixing rounding function only for receipt product and finished product of MO \n
     """,
     'website': 'https://www.portcities.net',
     'author': 'Portcities Ltd.',
