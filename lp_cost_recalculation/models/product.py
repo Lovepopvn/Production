@@ -88,7 +88,7 @@ class ProductProduct(models.Model):
                 })],
             }
             am_vals_list.append(move_vals)
-        account_moves = self.env['account.move'].create(am_vals_list)
+        account_moves = self.env['account.move'].with_context(update_price=True).create(am_vals_list)
         if account_moves:
             account_moves.post()
 

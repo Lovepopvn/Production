@@ -81,7 +81,7 @@ class StockMove(models.Model):
         #     comp_amount = self.env.cr.fetchall()[0][0]
         #     credit_value += comp_amount
 
-        operations_cost = round(operations_cost)
+        operations_cost = operations_cost
         printing_cost = self._context.get('printing_cost')
         components_cost = credit_value - operations_cost - printing_cost
         # if debit_line_vals['debit']:
@@ -142,4 +142,3 @@ class StockMove(models.Model):
         if 'price_diff_line_vals' in res:
             valuation_lines_data['price_diff_line_vals'] = res['price_diff_line_vals']
         return valuation_lines_data
-
