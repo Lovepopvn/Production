@@ -39,5 +39,6 @@ class MrpProduction(models.Model):
                     click_rate = factory_constants.average_printing_cost
                 total_printed_sides = sum(self.follower_sheets_ids.mapped('total_printed_side'))
                 printing_cost = round(total_printed_sides * click_rate)
-                finished_move.price_unit = (sum([-m.stock_valuation_layer_ids.value for m in consumed_moves.sudo()]) + work_center_cost + extra_cost + printing_cost) / qty_done
+                valuation_value = -sum(consumed_moves.sudo().stock_valuation_layer_ids.mapped('value'))
+                finished_move.price_unit = (valuation_value + work_center_cost + extra_cost + printing_cost) / qty_done
         return True
