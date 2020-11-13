@@ -95,6 +95,7 @@
                                         <field name="detail_direct_labor" widget="monetary" readonly="1"/>
                                         <field name="detail_printing_cost" widget="monetary" readonly="1"/>
                                         <field name="detail_general_production_cost" widget="monetary" readonly="1"/>
+                                        <field name="ending_quantity" widget="monetary" readonly="1"/>
                                         <field name="ending_raw_material" widget="monetary" readonly="1"/>
                                         <field name="ending_sub_material" widget="monetary" readonly="1"/>
                                         <field name="ending_direct_labor" widget="monetary" readonly="1"/>

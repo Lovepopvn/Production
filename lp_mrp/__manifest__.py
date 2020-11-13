@@ -3,7 +3,7 @@
 
 {
     'name': 'Custom Manufacturing LovePop',
-    'version': '13.0.1.1.4',
+    'version': '13.0.1.1.6',
     'category': 'Manufacturing',
     'summary': 'Custom Manufacturing process',
     'description': """

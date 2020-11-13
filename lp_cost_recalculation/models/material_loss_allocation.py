@@ -74,14 +74,23 @@ class MaterialLossAllocation(models.Model):
         self._validate_journal_company()
 
         StockMove = self.env['stock.move']
+        search_domain = [
+            ('raw_material_production_id.state', '=', 'done'),
+            ('raw_material_production_id.date_finished', '>=', self.date_from),
+            ('raw_material_production_id.date_finished', '<=', self.date_to),
+        ]
         material_ids = self.delta_line_ids.mapped('material_id.id')
-        stock_moves_all_components = StockMove.search([('raw_material_production_id.state', '=', 'done'), ('raw_material_production_id.date_finished', '>=', self.date_from), ('raw_material_production_id.date_finished', '<=', self.date_to), ('product_id.id', 'in', material_ids)])
+        stock_moves_all_components = StockMove.search(search_domain + [
+            ('product_id.id', 'in', material_ids),
+        ])
         manufacturing_orders_all = stock_moves_all_components.raw_material_production_id
         self._validate_product_ceq_factor(manufacturing_orders_all)
 
         for loss_line in self.delta_line_ids:
             material_id = loss_line.material_id.id
-            stock_moves_components = StockMove.search([('raw_material_production_id.state', '=', 'done'), ('raw_material_production_id.date_finished', '>=', self.date_from), ('raw_material_production_id.date_finished', '<=', self.date_to), ('product_id.id', '=', material_id)])
+            stock_moves_components = StockMove.search(search_domain + [
+                ('product_id.id', '=', material_id),
+            ])
             manufacturing_orders = stock_moves_components.raw_material_production_id
             lines = []
             for manufacturing_order in manufacturing_orders:

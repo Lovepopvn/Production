@@ -57,6 +57,9 @@
                             <field name="carrier_price" readonly="1"/>
                         </group>
                     </group>
+                    <group>
+                        <field name="tracking_url" widget="url" readonly="1"/>
+                    </group>
                     <notebook>
                         <page string="Detail of Product Lot">
                             <field name="product_lot_ids" widget="one2many">

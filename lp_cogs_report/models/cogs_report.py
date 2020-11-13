@@ -57,7 +57,7 @@ PACK_HEADERS = [
     ('quantity', _('Quantity')),
     ('raw_material', _('1541C\nBOM Raw Material')),
     ('sub_material', _('1541P\nBOM Sub Material')),
-    ('material_loss_allocation', _('Material Loss Allocation'), '#00ffff'), # TODO?
+    ('material_loss_allocation', _('Material Loss Allocation'), '#00ffff'), # TODO color?
     ('printing_cost', _('1543P\nPrinting Cost')),
     ('printing_allocation', _('Printing Allocation'), '#00ffff'),
     ('direct_labor', _('622\nDirect Labor')),
@@ -379,6 +379,7 @@ class COGSReport(models.Model):
             ('state', '=', 'done'),
             ('date_finished', '>=', self.date_from),
             ('date_finished', '<=', self.date_to),
+            ('parent_mo_id', '=', False),
         ])
 
         products = current_mos.mapped('product_id')
@@ -404,12 +405,30 @@ class COGSReport(models.Model):
         raw_material_id = self.company_id.cogs_report_category_raw_id.id
         sub_material_id = self.company_id.cogs_report_category_sub_id.id
 
-        quantity = sum(mos.filtered(lambda m: not m.parent_mo_id).finished_move_line_ids.mapped('qty_done'))
+        initial_quantity = initial_bom_raw_material = initial_bom_sub_material \
+            = initial_direct_labor = initial_printing_cost = initial_general_production_cost \
+            = initial_finished_goods = 0
+        initial_line = False
+        if self.previous_report_id:
+            initial_line = self.previous_report_id.summary_line_ids.filtered(lambda l:
+                l.product_id == product)
+        if initial_line:
+            initial_line = initial_line[0]
+            initial_quantity = initial_line.ending_quantity
+            initial_bom_raw_material = initial_line.ending_raw_material
+            initial_bom_sub_material = initial_line.ending_sub_material
+            initial_direct_labor = initial_line.ending_direct_labor
+            initial_printing_cost = initial_line.ending_printing_cost
+            initial_general_production_cost = initial_line.ending_general_production_cost
+            initial_finished_goods = initial_line.ending_finished_goods
 
-        pack_lines_product = {mo_id: line for mo_id, line in pack_report_data['lines_pack'].items()
-            if line['product'].id == product.id}
-        wip_lines_product = {mo_id: line for mo_id, line in pack_report_data['lines_wip_pack'].items()
-            if line['product'].id == product.id}
+        quantity = sum(mos.filtered(lambda m: not m.parent_mo_id)\
+            .finished_move_line_ids.mapped('qty_done'))
+
+        pack_lines_product = [line for line in pack_report_data['lines_pack']
+            if line['product'].id == product.id]
+        # wip_lines_product = {line['mo'].id: line for line in pack_report_data['lines_wip_pack']
+        #     if line['product'].id == product.id}
 
         bom_raw_material = bom_sub_material = material_loss_allocation = direct_labor = \
             labor_cost_allocation = printing_cost = printing_cost_allocation = \
@@ -424,23 +443,30 @@ class COGSReport(models.Model):
             printing_cost_allocation = self._get_allocation_rounding(self.click_charge_id, product)
             general_production_cost = self._get_allocation_rounding(self.overhead_cost_id, product)
         else:
-            bom_raw_material = sum([l['raw_material'] for l in pack_lines_product.values()])
-            bom_sub_material = sum([l['sub_material'] for l in pack_lines_product.values()])
-            material_loss_allocation = sum([l['material_loss_allocation'] for l in pack_lines_product.values()])
-            direct_labor = sum([l['direct_labor'] for l in pack_lines_product.values()])
-            labor_cost_allocation = sum([l['direct_labor_allocation'] for l in pack_lines_product.values()])
-            printing_cost = sum([l['printing_cost'] for l in pack_lines_product.values()])
-            printing_cost_allocation = sum([l['printing_allocation'] for l in pack_lines_product.values()])
-            general_production_cost = sum([l['production_cost'] for l in pack_lines_product.values()])
+            bom_raw_material = sum([l['raw_material'] for l in pack_lines_product])
+            bom_sub_material = sum([l['sub_material'] for l in pack_lines_product])
+            material_loss_allocation = sum([l['material_loss_allocation'] for l in pack_lines_product])
+            direct_labor = sum([l['direct_labor'] for l in pack_lines_product])
+            labor_cost_allocation = sum([l['direct_labor_allocation'] for l in pack_lines_product])
+            printing_cost = sum([l['printing_cost'] for l in pack_lines_product])
+            printing_cost_allocation = sum([l['printing_allocation'] for l in pack_lines_product])
+            general_production_cost = sum([l['production_cost'] for l in pack_lines_product])
         mos_sold = mos.filtered(lambda m: m.product_lot_ids 
             and m.product_lot_ids[0].delivery_order_id.state == 'done' 
             and m.product_lot_ids[0].delivery_order_id.date_done >= self.date_from
-            and m.product_lot_ids[0].delivery_order_id.date_done >= self.date_to)
+            and m.product_lot_ids[0].delivery_order_id.date_done <= self.date_to)
         sold_quantity = sum(mos_sold.finished_move_line_ids.mapped('qty_done'))
 
         line_vals = {
             'product_id': product.id,
             'quantity': quantity,
+            'initial_quantity': initial_quantity,
+            'initial_bom_raw_material': initial_bom_raw_material,
+            'initial_bom_sub_material': initial_bom_sub_material,
+            'initial_direct_labor': initial_direct_labor,
+            'initial_printing_cost': initial_printing_cost,
+            'initial_general_production_cost': initial_general_production_cost,
+            'initial_finished_goods': initial_finished_goods,
             'bom_raw_material': bom_raw_material,
             'bom_sub_material': bom_sub_material,
             'material_loss_allocation': material_loss_allocation,
@@ -462,7 +488,7 @@ class COGSReport(models.Model):
         fields = self.summary_line_ids.fields_get()
         headers = [(field, fields[field]['string']) for field in SUMMARY_COLUMNS]
 
-        lines_values = {}
+        lines_values = []
         for line in self.summary_line_ids:
             line_values = {}
             for field in SUMMARY_COLUMNS:
@@ -476,7 +502,7 @@ class COGSReport(models.Model):
                     line_values[field] = field_content
                 else:
                     line_values[field] = str(field_content)
-            lines_values[line.id] = line_values
+            lines_values += [line_values]
 
         return headers, lines_values
 
@@ -597,7 +623,7 @@ class COGSReport(models.Model):
             offset_x += 1
 
         # Write data
-        for line in lines.values():
+        for line in lines:
             offset_y += 1
             offset_x = 0
             for header in headers:
@@ -621,6 +647,8 @@ class COGSReport(models.Model):
         self.ensure_one_names()
         self._validate_dates()
         self._validate_product_categories()
+
+        _mo_sort = lambda l: str((l.parent_mo_id and l.parent_mo_id.name or '') + (l.name or ''))
 
         finished_goods_id = self.company_id.cogs_report_category_finished_id.id
         pack_id = self.company_id.cogs_report_category_pack_id.id
@@ -647,7 +675,7 @@ class COGSReport(models.Model):
             ('date_finished', '<=', self.date_to),
         ])
         # Concatenate the lists to have both parent and child MOs in one list
-        mos_pack = mos_pack_products + mos_pack_sub
+        mos_pack = (mos_pack_products + mos_pack_sub).sorted(key=_mo_sort)
         # Find unfinished pack MOs (WIP Pack report)
         mos_wip_products = MO.search([
             ('product_id', 'in', finished_pack_products_ids),
@@ -665,7 +693,7 @@ class COGSReport(models.Model):
         # Filter out parent MOs with no child MOs done within the period
         mos_wip_products = mos_wip_products.filtered(lambda m: m.id in mos_wip_sub.parent_mo_id.ids)
         # Concatenate the lists to have both parent and child MOs in one list
-        mos_wip = mos_wip_products + mos_wip_sub
+        mos_wip = (mos_wip_products + mos_wip_sub).sorted(key=_mo_sort)
 
         data = {
             'lines_pack': self._get_report_lines(mos_pack),
@@ -685,7 +713,7 @@ class COGSReport(models.Model):
             product = mo.product_id
             if parent_mo and parent_mo.id not in mos.ids:
                 continue
-            quantity = sum(mo.finished_move_line_ids.mapped('qty_done'))
+            quantity = mo.product_qty
             raw_material = sub_material = printing_cost = direct_labor = 0
             if parent_mo or not wip:
                 raw_material = self._get_cost_of_components(mo, raw_material_id)
@@ -712,7 +740,7 @@ class COGSReport(models.Model):
                 'total_value': False,
             }
         lines = self._process_report_lines(lines, wip)
-        return lines
+        return list(lines.values())
 
 
     def _process_report_lines(self, lines, wip=False):
@@ -844,7 +872,7 @@ class COGSReport(models.Model):
                     and not l.parent_mo_id and not l.wip_pack)
             else:
                 loss_lines = allocation.allocation_line_ids.filtered(lambda l:
-                    l.parent_mo_id.id == line_mo_id and l.wip_pack)
+                    l.parent_mo_id.id == mo_id and l.wip_pack)
             if loss_lines:
                 rounding_difference = loss_lines[0].rounding_difference
                 allocation_value = rounding_difference * quantity / quantity_sum
@@ -876,13 +904,13 @@ class SummaryLine(models.Model):
     product_name = fields.Char(related='product_id.name')
     lpus_category_id = fields.Many2one('factory.constants.lpus.category', 'LPUS Category', related='product_id.lpus_category_id')
     uom_id = fields.Many2one('uom.uom', 'Unit', related='product_id.uom_id')
-    initial_quantity = fields.Integer('Quantity (Initial)', related='cogs_report_id.previous_report_id.summary_line_ids.ending_quantity')
-    initial_bom_raw_material = fields.Monetary('1541C – BOM Raw Material (Initial)', related='cogs_report_id.previous_report_id.summary_line_ids.ending_raw_material')
-    initial_bom_sub_material = fields.Monetary('1541P – BOM Sub Material (Initial)', related='cogs_report_id.previous_report_id.summary_line_ids.ending_sub_material')
-    initial_direct_labor = fields.Monetary('622 – Direct Labor (Initial)', related='cogs_report_id.previous_report_id.summary_line_ids.ending_direct_labor')
-    initial_printing_cost = fields.Monetary('1543P – Printing Cost (Initial)', related='cogs_report_id.previous_report_id.summary_line_ids.ending_printing_cost')
-    initial_general_production_cost = fields.Monetary('627 – General Production Cost (Initial)', related='cogs_report_id.previous_report_id.summary_line_ids.ending_general_production_cost')
-    initial_finished_goods = fields.Monetary('Finished Goods (Initial)', related='cogs_report_id.previous_report_id.summary_line_ids.ending_finished_goods')
+    initial_quantity = fields.Integer('Quantity (Initial)')
+    initial_bom_raw_material = fields.Monetary('1541C – BOM Raw Material (Initial)')
+    initial_bom_sub_material = fields.Monetary('1541P – BOM Sub Material (Initial)')
+    initial_direct_labor = fields.Monetary('622 – Direct Labor (Initial)')
+    initial_printing_cost = fields.Monetary('1543P – Printing Cost (Initial)')
+    initial_general_production_cost = fields.Monetary('627 – General Production Cost (Initial)')
+    initial_finished_goods = fields.Monetary('Finished Goods (Initial)')
     quantity = fields.Integer()
     ceq_quantity = fields.Float('CEQ Quantity')
     bom_raw_material = fields.Monetary('1541C – BOM Raw Material')

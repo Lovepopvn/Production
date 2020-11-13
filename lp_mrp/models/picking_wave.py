@@ -60,6 +60,7 @@ class PickingWave(models.Model):
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         help="Pricelist for shipping item.")
+    tracking_url = fields.Char(string='Tracking Link')
 
     @api.depends('tracking_number')
     def _compute_carrier_tracking_url(self):

@@ -19,7 +19,7 @@ class MrpProduction(models.Model):
     #             printing_cost = record.company_id.factory_constants_id.average_printing_cost
     #         record.average_printing_cost_when_done = printing_cost
 
-    average_printing_cost_when_done = fields.Float(readonly=True)
+    average_printing_cost_when_done = fields.Float(readonly=False)
 
     def write(self, vals):
         if self.state == 'done' and not self.average_printing_cost_when_done and 'average_printing_cost_when_done' not in vals and self.company_id and self.company_id.factory_constants_id:
