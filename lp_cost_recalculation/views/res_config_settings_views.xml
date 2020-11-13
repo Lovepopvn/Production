@@ -70,13 +70,13 @@
                                 <div class="text-muted">
                                     <field name="wip_pack_allocation_counterpart_account_direct_labor_id" options="{'no_create_edit': True, 'no_open': True}" context="{'active_test': False}" style="width: 100%;"/>
                                 </div>
-                                <label for="wip_pack_allocation_counterpart_account_overhead_cost_id" class="o_form_label mt16" string="Counterpart Account For Click Charge"/>
-                                <div class="text-muted">
-                                    <field name="wip_pack_allocation_counterpart_account_overhead_cost_id" options="{'no_create_edit': True, 'no_open': True}" context="{'active_test': False}" style="width: 100%;"/>
-                                </div>
-                                <label for="wip_pack_allocation_counterpart_account_click_charge_id" class="o_form_label mt16" string="Counterpart Account For Overhead Cost"/>
+                                <label for="wip_pack_allocation_counterpart_account_click_charge_id" class="o_form_label mt16" string="Counterpart Account For Click Charge"/>
                                 <div class="text-muted">
                                     <field name="wip_pack_allocation_counterpart_account_click_charge_id" options="{'no_create_edit': True, 'no_open': True}" context="{'active_test': False}" style="width: 100%;"/>
+                                </div>
+                                <label for="wip_pack_allocation_counterpart_account_overhead_cost_id" class="o_form_label mt16" string="Counterpart Account For Overhead Cost"/>
+                                <div class="text-muted">
+                                    <field name="wip_pack_allocation_counterpart_account_overhead_cost_id" options="{'no_create_edit': True, 'no_open': True}" context="{'active_test': False}" style="width: 100%;"/>
                                 </div>
                             </div>
                         </div>

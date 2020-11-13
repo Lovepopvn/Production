@@ -206,7 +206,11 @@ class AbstractCostRecalculation(models.AbstractModel):
     def _get_manufacturing_orders(self):
         self.ensure_one_names()
         ManufacturingOrder = self.env['mrp.production']
-        search_domain = [('state', '=', 'done'), ('date_finished', '>=', self.date_from), ('date_finished', '<=', self.date_to)]
+        search_domain = [
+            ('state', '=', 'done'),
+            ('date_finished', '>=', self.date_from),
+            ('date_finished', '<=', self.date_to),
+        ]
         manufacturing_orders = ManufacturingOrder.search(search_domain)
         return manufacturing_orders
 
@@ -293,25 +297,75 @@ class AbstractCostRecalculation(models.AbstractModel):
         return line_vals
 
 
+    def _add_extra_parent_mo_allocation_lines(self):
+        ''' Adds allocation lines for parent MOs of already created allocation lines that don't have the specified material '''
+        calculation_type = self.get_calculation_type()
+        process_ceq = calculation_type in ('material_loss', 'overhead_cost')
+
+        lines_mo_ids = self.allocation_line_ids.mo_id.ids
+        parentless_child_mos = self.allocation_line_ids.filtered(lambda l:
+            l.parent_mo_id
+            and l.parent_mo_id.id not in lines_mo_ids
+        ).parent_mo_id
+        mos = parentless_child_mos.filtered(lambda m:
+            m.state == 'done'
+            and m.date_finished >= self.date_from
+            and m.date_finished <= self.date_to
+        )
+        lines = []
+        for mo in mos:
+            finished_product_line = self._get_finished_product_line(mo)
+            parent_mo = mo.parent_mo_id
+            pa_product_id = False
+            wip_pack = False
+            if parent_mo:
+                pa_product_id = parent_mo.product_id.id
+                if parent_mo.state != 'done':
+                    wip_pack = True
+            lp_qty = finished_product_line.qty_done
+            line_vals = {
+                'mo_id': mo.id,
+                'lp_product_id': mo.product_id.id,
+                'lp_qty': lp_qty,
+                'parent_mo_id': parent_mo.id,
+                'pa_product_id': pa_product_id,
+                'wip_pack': wip_pack,
+            }
+            if process_ceq:
+                ceq_factor = finished_product_line.product_id.ceq_factor
+                if not ceq_factor:
+                    raise ValidationError(_('CEQ Factor for product "%s" is not set.') % \
+                        finished_product_line.product_id.name_get()[0][1])
+                ceq_converted_qty = lp_qty * ceq_factor
+                line_vals.update({
+                    'ceq_factor': ceq_factor,
+                    'ceq_converted_qty': ceq_converted_qty,
+                })
+            lines.append((0, 0, line_vals))
+        self.write({'allocation_line_ids': lines})
+
+
     def _process_allocation_lines(self):
         self.ensure_one_names()
         calculation_type = self.get_calculation_type()
+        self._add_extra_parent_mo_allocation_lines()
         manufacturing_orders = self.allocation_line_ids.mapped('mo_id')
 
         if calculation_type == 'material_loss':
             allocated_value_field = 'material_loss_allocation'
             ceq_converted_qty_material = {}
             for line in self.allocation_line_ids:
-                if line.material_id.id in ceq_converted_qty_material:
-                    ceq_converted_qty_material[line.material_id.id] += line.ceq_converted_qty
-                else:
-                    ceq_converted_qty_material[line.material_id.id] = line.ceq_converted_qty
+                if line.material_id:
+                    if line.material_id.id in ceq_converted_qty_material:
+                        ceq_converted_qty_material[line.material_id.id] += line.ceq_converted_qty
+                    else:
+                        ceq_converted_qty_material[line.material_id.id] = line.ceq_converted_qty
         elif calculation_type == 'labor_cost':
             allocated_value_field = 'gap_allocated_value'
             total_workcenter_cost = {}
             workcenters = self.allocation_line_ids.mapped('workcenter_id')
             for workcenter in workcenters:
-                workcenter_delta_lines = self.delta_line_ids.filtered(lambda r: r.workcenter_id.id == workcenter.id)
+                workcenter_delta_lines = self.delta_line_ids.filtered(lambda l: l.workcenter_id and l.workcenter_id.id == workcenter.id)
                 total_cost = sum(workcenter_delta_lines.mapped('calculated_labor_cost'))
                 total_workcenter_cost[workcenter.id] = total_cost
         elif calculation_type == 'click_charge':
@@ -323,7 +377,7 @@ class AbstractCostRecalculation(models.AbstractModel):
             total_ceq_converted_qty = sum(self.allocation_line_ids.mapped('ceq_converted_qty'))
 
         for manufacturing_order in manufacturing_orders:
-            mo_consumed_lines = self.allocation_line_ids.filtered(lambda r: r.mo_id.id == manufacturing_order.id)
+            mo_consumed_lines = self.allocation_line_ids.filtered(lambda l: l.mo_id.id == manufacturing_order.id)
 
             lines = []
             for line in mo_consumed_lines:
@@ -331,10 +385,10 @@ class AbstractCostRecalculation(models.AbstractModel):
                 allocation_ratio = 0.0
                 allocated_value = 0.0
                 if calculation_type == 'material_loss':
-                    if line.ceq_converted_qty:
+                    if line.material_id and line.ceq_converted_qty:
                         allocation_ratio = ceq_converted_qty_material[line.material_id.id] / line.ceq_converted_qty
                 elif calculation_type == 'labor_cost':
-                    if line.calculated_cost:
+                    if line.calculated_cost and line.workcenter_id:
                         allocation_ratio = total_workcenter_cost[line.workcenter_id.id] / line.calculated_cost
                 elif calculation_type == 'click_charge':
                     if line.calculated_cost:
@@ -347,7 +401,7 @@ class AbstractCostRecalculation(models.AbstractModel):
                     if calculation_type == 'overhead_cost':
                         allocated_value = total_overhead_cost / allocation_ratio
                     else:
-                        allocated_value = line.delta_line_id.delta_cost / allocation_ratio
+                        allocated_value = (line.delta_line_id and line.delta_line_id.delta_cost or 0) / allocation_ratio
 
                 if line.lp_qty:
                     if calculation_type == 'click_charge':
@@ -366,7 +420,7 @@ class AbstractCostRecalculation(models.AbstractModel):
                 if line.pa_product_id:
                     cogs_allocated_pa = 0.0
                     if line.pa_qty:
-                        allocated_value * line.shipped_qty_pa / line.pa_qty
+                        cogs_allocated_pa = allocated_value * line.shipped_qty_pa / line.pa_qty
                     line_vals.update({
                         'cogs_allocated_pa': cogs_allocated_pa,
                     })
@@ -582,23 +636,23 @@ class AbstractCostRecalculation(models.AbstractModel):
             }),
         ]
 
-        if not on_hand_qty:
-            lines += [
-                (0, 0, {
-                    'account_id': accounts['cogs_counterpart'],
-                    'debit': amount_1,
-                    'credit': amount_2,
-                    'name': name,
-                    'ref': ref,
-                }),
-                (0, 0, {
-                    'account_id': accounts['make_to_stock_counterpart'],
-                    'debit': amount_2,
-                    'credit': amount_1,
-                    'name': name,
-                    'ref': ref,
-                }),
-            ]
+        # if not on_hand_qty:
+        #     lines += [
+        #         (0, 0, {
+        #             'account_id': accounts['cogs_counterpart'],
+        #             'debit': amount_1,
+        #             'credit': amount_2,
+        #             'name': name,
+        #             'ref': ref,
+        #         }),
+        #         (0, 0, {
+        #             'account_id': accounts['make_to_stock_counterpart'],
+        #             'debit': amount_2,
+        #             'credit': amount_1,
+        #             'name': name,
+        #             'ref': ref,
+        #         }),
+        #     ]
 
         je_inverse_field = self.get_specific_field_names()['je_inverse_field']
         self.write({

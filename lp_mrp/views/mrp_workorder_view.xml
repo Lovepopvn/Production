@@ -34,15 +34,15 @@
                 <label for="time_progress_ids" string="Pieces in Progress"/>
                 <field name="time_progress_ids" options="{'no_open': True}" readonly="1" force_save="1">
                     <tree default_order="date_start">
-                        <field name="code_id"/>
-                        <field name="date_start"/>
-                        <field name="date_end"/>
-                        <field name="duration" widget="float_time" sum="Total duration"/>
-                        <field name="user_id"/>
-                        <field name="workcenter_id" invisible="1"/>
-                        <field name="company_id" invisible="1"/>
-                        <field name="loss_id" string="Productivity"/>
-                        <field name="state"/>
+                        <field name="code_id" force_save="1"/>
+                        <field name="date_start" force_save="1"/>
+                        <field name="date_end" force_save="1"/>
+                        <field name="duration"  force_save="1" widget="float_time" sum="Total duration"/>
+                        <field name="user_id" force_save="1"/>
+                        <field name="workcenter_id" invisible="1" force_save="1"/>
+                        <field name="company_id" invisible="1" force_save="1"/>
+                        <field name="loss_id" string="Productivity" force_save="1"/>
+                        <field name="state" force_save="1"/>
                         <button name="button_pause" string="Pause" type="object" icon="fa-pause"/>
                         <button name="button_done" string="Done" type="object"/>
                     </tree>
@@ -50,16 +50,16 @@
                 <label for="time_done_ids" string="Pieces Done"/>
                 <field name="time_done_ids" options="{'no_open': True}" readonly="1" force_save="1">
                     <tree default_order="date_start">
-                        <field name="code_id"/>
-                        <field name="date_start"/>
-                        <field name="date_end"/>
-                        <field name="duration" widget="float_time" sum="Total duration"/>
-                        <field name="user_id"/>
-                        <field name="workcenter_id" invisible="1"/>
-                        <field name="company_id" invisible="1"/>
-                        <field name="loss_id" string="Productivity"/>
-                        <field name="note"/>
-                        <field name="state"/>
+                        <field name="code_id" force_save="1"/>
+                        <field name="date_start" force_save="1"/>
+                        <field name="date_end" force_save="1"/>
+                        <field name="duration"  force_save="1" widget="float_time" sum="Total duration"/>
+                        <field name="user_id" force_save="1"/>
+                        <field name="workcenter_id" invisible="1" force_save="1"/>
+                        <field name="company_id" invisible="1" force_save="1"/>
+                        <field name="loss_id" string="Productivity" force_save="1"/>
+                        <field name="note" force_save="1"/>
+                        <field name="state" force_save="1"/>
                     </tree>
                 </field>
             </field>

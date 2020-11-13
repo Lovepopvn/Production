@@ -469,7 +469,11 @@ class ProviderFedex(models.Model):
                             res = res + [shipping_data]
                         else:
                             raise UserError(request['errors_message'])
-                shipping.master_tracking_reference = master_tracking_id
+                tracking_url = 'https://www.fedex.com/apps/fedextrack/?action=track&trackingnumber=%s' % master_tracking_id
+                shipping.write({
+                    'master_tracking_reference': master_tracking_id,
+                    'tracking_url': tracking_url
+                })
                 if len(delivery_orders) > 1:
                     for do in delivery_orders:
                         delivery = do['do']
@@ -525,7 +529,11 @@ class ProviderFedex(models.Model):
                             carrier_price = company_currency._convert(
                                 amount, order_currency, company, order.date_order or fields.Date.today())
 
-                    shipping.master_tracking_reference = request['master_tracking_id']
+                    tracking_url = 'https://www.fedex.com/apps/fedextrack/?action=track&trackingnumber=%s' % request['master_tracking_id']
+                    shipping.write({
+                        'master_tracking_reference': request['master_tracking_id'],
+                        'tracking_url': tracking_url
+                    })
                     carrier_tracking_ref = request['tracking_number']
                     logmessage = (_("Shipment created into Fedex <br/> <b>Tracking Number : </b>%s") % (carrier_tracking_ref))
 
