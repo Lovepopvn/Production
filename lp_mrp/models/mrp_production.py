@@ -3,8 +3,6 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 import math
-import datetime
-from odoo.tools import date_utils, float_compare, float_round, float_is_zero
 
 
 class MrpProduction(models.Model):
@@ -484,74 +482,3 @@ class MrpProduction(models.Model):
         for data in packaging_data_from_bom:
             if product.id == data.product_id.id:
                 return True
-
-    def _plan_workorders(self):
-        """ Plan all the production's workorders depending on the workcenters
-        work schedule"""
-        self.ensure_one()
-
-        # Schedule all work orders (new ones and those already created)
-        qty_to_produce = max(self.product_qty - self.qty_produced, 0)
-        qty_to_produce = self.product_uom_id._compute_quantity(qty_to_produce, self.product_id.uom_id)
-        start_date = self._get_start_date()
-        for workorder in self.workorder_ids:
-            workcenters = workorder.workcenter_id | workorder.workcenter_id.alternative_workcenter_ids
-
-            best_finished_date = datetime.datetime.max
-            vals = {}
-            best_workcenter = workcenters[0]
-            best_start_date = start_date
-            best_finished_date = start_date
-            for workcenter in workcenters:
-                # compute theoretical duration
-                time_cycle = workorder.operation_id.time_cycle
-                cycle_number = float_round(qty_to_produce / workcenter.capacity, precision_digits=0, rounding_method='UP')
-                duration_expected = workcenter.time_start + workcenter.time_stop + cycle_number * time_cycle * 100.0 / workcenter.time_efficiency
-
-                # get first free slot
-                # planning 0 hours gives the start of the next attendance
-                from_date = workcenter.resource_calendar_id.plan_hours(0, start_date, compute_leaves=True, resource=workcenter.resource_id, domain=[('time_type', 'in', ['leave', 'other'])])
-                # If the workcenter is unavailable, try planning on the next one
-                if from_date is False:
-                    continue
-                to_date = workcenter.resource_calendar_id.plan_hours(duration_expected / 60.0, from_date, compute_leaves=True, resource=workcenter.resource_id, domain=[('time_type', 'in', ['leave', 'other'])])
-
-                # Check if this workcenter is better than the previous ones
-                if to_date and to_date < best_finished_date:
-                    best_start_date = from_date
-                    best_finished_date = to_date
-                    best_workcenter = workcenter
-                    vals = {
-                        'workcenter_id': workcenter.id,
-                        'capacity': workcenter.capacity,
-                        'duration_expected': duration_expected,
-                    }
-
-            # If none of the workcenter are available, raise
-            # if best_finished_date == datetime.datetime.max:
-            #     raise UserError(_('Impossible to plan the workorder. Please check the workcenter availabilities.'))
-
-            # Instantiate start_date for the next workorder planning
-            if workorder.next_work_order_id:
-                if workorder.operation_id.batch == 'no' or workorder.operation_id.batch_size >= qty_to_produce:
-                    start_date = best_finished_date
-                else:
-                    cycle_number = float_round(workorder.operation_id.batch_size / best_workcenter.capacity, precision_digits=0, rounding_method='UP')
-                    duration = best_workcenter.time_start + cycle_number * workorder.operation_id.time_cycle * 100.0 / best_workcenter.time_efficiency
-                    start_date = best_workcenter.resource_calendar_id.plan_hours(duration / 60.0, best_start_date, compute_leaves=True, resource=best_workcenter.resource_id, domain=[('time_type', 'in', ['leave', 'other'])])
-
-            # Create leave on chosen workcenter calendar
-            leave = self.env['resource.calendar.leaves'].create({
-                'name': self.name + ' - ' + workorder.name,
-                'calendar_id': best_workcenter.resource_calendar_id.id,
-                'date_from': best_start_date,
-                'date_to': best_finished_date,
-                'resource_id': best_workcenter.resource_id.id,
-                'time_type': 'other'
-            })
-            vals['leave_id'] = leave.id
-            workorder.write(vals)
-        self.with_context(force_date=True).write({
-            'date_planned_start': self.workorder_ids[0].date_planned_start,
-            'date_planned_finished': self.workorder_ids[-1].date_planned_finished
-        })
