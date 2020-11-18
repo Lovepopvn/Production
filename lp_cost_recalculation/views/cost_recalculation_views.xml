@@ -61,7 +61,7 @@
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('delta_line_ids', '!=', [])]}">
-                                    Use the Compute Allocation button to create lines here.
+                                    Use the <strong>Compute Allocation</strong> button to create lines here.
                                 </p>
                             </page>
                             <page string="Allocation">
@@ -103,10 +103,10 @@
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
-                                    Use the Compute Allocation button to create lines here.
+                                    Use the <strong>Compute Allocation</strong> button to create lines here.
                                 </p>
-                                <group attrs="{'invisible': [('allocation_line_ids', '==', [])]}">
-                                    <field name="allocation_rounding_difference"/>
+                                <group attrs="{'invisible': [('allocation_line_ids', '=', [])]}">
+                                    <field name="allocation_rounding_difference" readonly="1"/>
                                 </group>
                             </page>
                         </notebook>
@@ -140,10 +140,10 @@
                                 attrs="{'invisible': ['|', ('delta_line_ids', '!=', []), ('state', '!=', 'draft')]}"/>
                         <button name="compute_allocation" string="Compute Allocation"
                                 class="oe_highlight" type="object"
-                                attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}"/>
+                                attrs="{'invisible': ['|', ('delta_line_ids', '=', []), ('state', '!=', 'draft')]}"/>
                         <button name="summarize_calculated_labor_cost"
                                 string="Re-Summarize Calculated Labor Cost" type="object"
-                                attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}"/>
+                                attrs="{'invisible': ['|', ('delta_line_ids', '=', []), ('state', '!=', 'draft')]}"/>
                         <button name="validate" string="Validate"
                                 class="oe_highlight" type="object"
                                 attrs="{'invisible': [('state', '!=', 'allocation_derived')]}"/>
@@ -183,21 +183,44 @@
                         </group>
                         <notebook>
                             <page string="List Labor Cost Gap">
+                                <group invisible="1"/> <!-- Invisible group still affects margin-top of next group - this hack protects the UI from jumping -->
+                                <group attrs="{'invisible': [('error_to_correct', '=', 0.0)]}" class="text-danger">
+                                    <field name="error_to_correct" widget="monetary"/>
+                                </group>
+                                <group attrs="{'invisible': [('error_to_correct', '!=', 0.0)]}">
+                                    <field name="error_to_correct" widget="monetary"/>
+                                </group>
                                 <field name="delta_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                     <tree editable="bottom" create="0" delete="0">
                                         <field name="currency_id" invisible="1"/>
                                         <field name="workcenter_id" readonly="1"/>
                                         <field name="calculated_labor_cost" widget="monetary" readonly="1"/>
+                                        <field name="wrong_input_correction" widget="monetary"/>
+                                        <field name="corrected_calculated_cost" widget="monetary"/>
                                         <field name="actual_labor_cost" widget="monetary"/>
                                         <field name="delta_cost" widget="monetary" readonly="1"/>
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('delta_line_ids', '!=', [])]}">
-                                    Use the Summarize Calculated Labor Cost button to create lines here.
+                                    Use the <strong>Summarize Calculated Labor Cost</strong> button to create lines here.
                                 </p>
-                                <p attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}">
-                                    Fill each line's Actual Labor Cost and click the Compute Allocation button. If you want to start over, use the Re-Summarize Calculated Labor Cost button to delete all the lines and create them again.
-                                </p>
+                                <group attrs="{'invisible': [('delta_line_ids', '=', [])]}" class="row">
+                                    <group class="o_group_col_4 col-lg-4">
+                                        <field name="total_calculated_labor_cost" widget="monetary"/>
+                                        <field name="total_calculated_labor_cost_by_accounting" widget="monetary"/>
+                                        <field name="total_calculated_labor_cost_corrected" widget="monetary"/>
+                                        <field name="error_to_correct" widget="monetary" attrs="{'invisible': [('error_to_correct', '=', 0.0)]}" class="text-danger"/>
+                                        <field name="error_to_correct" widget="monetary" attrs="{'invisible': [('error_to_correct', '!=', 0.0)]}"/>
+                                    </group>
+                                    <div class="o_group o_group_col_8 col-lg-7 p-0">
+                                        <p attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('error_to_correct', '=', 0.0)]}" class="text-danger">
+                                            Fill each line's <strong>Wrong Input Correction</strong> to make the resulting <strong>Error To Correct</strong> zero. If you want to start over, use the <strong>Re-Summarize Calculated Labor Cost</strong> button to delete all the lines and create them again.
+                                        </p>
+                                        <p attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('error_to_correct', '!=', 0.0)]}">
+                                            Fill each line's <strong>Actual Labor Cost</strong> and click the <strong>Compute Allocation</strong> button. If you want to start over, use the <strong>Re-Summarize Calculated Labor Cost</strong> button to delete all the lines and create them again.
+                                        </p>
+                                    </div>
+                                </group>
                             </page>
                             <page string="Allocation">
                                 <button name="export_allocation_lines" string="Generate XLSX Export"
@@ -237,10 +260,10 @@
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
-                                    After summarizing calculated labor cost and inputting the actual labor cost, use the Compute Allocation button to create lines here.
+                                    After summarizing calculated labor cost and inputting the actual labor cost, use the <strong>Compute Allocation</strong> button to create lines here.
                                 </p>
-                                <group attrs="{'invisible': [('allocation_line_ids', '==', [])]}">
-                                    <field name="allocation_rounding_difference"/>
+                                <group attrs="{'invisible': [('allocation_line_ids', '=', [])]}">
+                                    <field name="allocation_rounding_difference" readonly="1"/>
                                 </group>
                             </page>
                         </notebook>
@@ -274,11 +297,11 @@
                                 attrs="{'invisible': ['|', ('delta_line_ids', '!=', []), ('state', '!=', 'draft')]}"/>
                         <button name="compute_allocation" string="Compute Allocation"
                                 class="oe_highlight" type="object"
-                                attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}"/>
+                                attrs="{'invisible': ['|', ('delta_line_ids', '=', []), ('state', '!=', 'draft')]}"/>
                         <button name="generate_line"
                                 string="Re-Sum Total Printed Sides"
                                 type="object"
-                                attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}"/>
+                                attrs="{'invisible': ['|', ('delta_line_ids', '=', []), ('state', '!=', 'draft')]}"/>
                         <button name="validate" string="Validate"
                                 class="oe_highlight" type="object"
                                 attrs="{'invisible': [('state', '!=', 'allocation_derived')]}"/>
@@ -330,10 +353,10 @@
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('delta_line_ids', '!=', [])]}">
-                                    Use the Sum Total Printed Sides button to create lines here.
+                                    Use the <strong>Sum Total Printed Sides</strong> button to create lines here.
                                 </p>
-                                <p attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}">
-                                    Fill the Actual Sides and Unit Cost Per Click fileds and click the Compute Allocation button. If you want to start over, click the Re-Sum Total Printed Sides button.
+                                <p attrs="{'invisible': ['|', ('delta_line_ids', '=', []), ('state', '!=', 'draft')]}">
+                                    Fill the <strong>Actual Sides</strong> and <strong>Unit Cost Per Click</strong> fileds and click the <strong>Compute Allocation</strong> button. If you want to start over, click the <strong>Re-Sum Total Printed Sides</strong> button.
                                 </p>
                             </page>
                             <page string="Allocation">
@@ -373,10 +396,10 @@
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
-                                    After generating click charge lines and inputting the actual values, use the Compute Allocation button to create lines here.
+                                    After generating click charge lines and inputting the actual values, use the <strong>Compute Allocation</strong> button to create lines here.
                                 </p>
-                                <group attrs="{'invisible': [('allocation_line_ids', '==', [])]}">
-                                    <field name="allocation_rounding_difference"/>
+                                <group attrs="{'invisible': [('allocation_line_ids', '=', [])]}">
+                                    <field name="allocation_rounding_difference" readonly="1"/>
                                 </group>
                             </page>
                         </notebook>
@@ -406,7 +429,7 @@
                     <header>
                         <button name="compute_allocation" string="Compute Allocation"
                                 class="oe_highlight" type="object"
-                                attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}"/>
+                                attrs="{'invisible': ['|', ('delta_line_ids', '=', []), ('state', '!=', 'draft')]}"/>
                         <button name="validate" string="Validate"
                                 class="oe_highlight" type="object"
                                 attrs="{'invisible': [('state', '!=', 'allocation_derived')]}"/>
@@ -456,8 +479,8 @@
                                 <p attrs="{'invisible': [('delta_line_ids', '!=', [])]}">
                                     Create lines here.
                                 </p>
-                                <p attrs="{'invisible': ['|', ('delta_line_ids', '==', []), ('state', '!=', 'draft')]}">
-                                    Fill each line's Overhead Cost Account and Actual Cost and click the Compute Allocation button.
+                                <p attrs="{'invisible': ['|', ('delta_line_ids', '=', []), ('state', '!=', 'draft')]}">
+                                    Fill each line's <strong>Overhead Cost Account</strong> and <strong>Actual Cost</strong> and click the <strong>Compute Allocation</strong> button.
                                 </p>
                             </page>
                             <page string="Allocation">
@@ -497,10 +520,10 @@
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
-                                    After filling in the overhead cost lines, use the Compute Allocation button to create lines here.
+                                    After filling in the overhead cost lines, use the <strong>Compute Allocation</strong> button to create lines here.
                                 </p>
-                                <group attrs="{'invisible': [('allocation_line_ids', '==', [])]}">
-                                    <field name="allocation_rounding_difference"/>
+                                <group attrs="{'invisible': [('allocation_line_ids', '=', [])]}">
+                                    <field name="allocation_rounding_difference" readonly="1"/>
                                 </group>
                             </page>
                         </notebook>
