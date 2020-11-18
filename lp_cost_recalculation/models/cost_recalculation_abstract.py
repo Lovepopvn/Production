@@ -362,12 +362,6 @@ class AbstractCostRecalculation(models.AbstractModel):
                         ceq_converted_qty_material[line.material_id.id] = line.ceq_converted_qty
         elif calculation_type == 'labor_cost':
             allocated_value_field = 'gap_allocated_value'
-            total_workcenter_cost = {}
-            workcenters = self.allocation_line_ids.mapped('workcenter_id')
-            for workcenter in workcenters:
-                workcenter_delta_lines = self.delta_line_ids.filtered(lambda l: l.workcenter_id and l.workcenter_id.id == workcenter.id)
-                total_cost = sum(workcenter_delta_lines.mapped('calculated_labor_cost'))
-                total_workcenter_cost[workcenter.id] = total_cost
         elif calculation_type == 'click_charge':
             allocated_value_field = 'allocated_value'
             total_calculated_cost = sum(self.delta_line_ids.mapped('calculated_cost'))
@@ -389,7 +383,7 @@ class AbstractCostRecalculation(models.AbstractModel):
                         allocation_ratio = ceq_converted_qty_material[line.material_id.id] / line.ceq_converted_qty
                 elif calculation_type == 'labor_cost':
                     if line.calculated_cost and line.workcenter_id:
-                        allocation_ratio = total_workcenter_cost[line.workcenter_id.id] / line.calculated_cost
+                        allocation_ratio = (line.delta_line_id and line.delta_line_id.calculated_labor_cost or 0) / line.calculated_cost
                 elif calculation_type == 'click_charge':
                     if line.calculated_cost:
                         allocation_ratio = total_calculated_cost / line.calculated_cost
@@ -437,18 +431,28 @@ class AbstractCostRecalculation(models.AbstractModel):
             # PA products, LP Products that are not a part of a pack,
             # LP products that are a part of a WIP pack
 
-            lines_lp = lines_product.filtered(lambda l: 
-                not l.parent_mo_id and l.mo_id.id not in parent_mo_ids)
+            # lines_lp = lines_product.filtered(lambda l: 
+            #     not l.parent_mo_id and l.mo_id.id not in parent_mo_ids)
+            # lines_pa = lines_product.filtered(lambda l: 
+            #     not l.parent_mo_id and l.mo_id.id in parent_mo_ids)
+            # lines_lp_wip = lines_product.filtered(lambda l: 
+            #     l.parent_mo_id and l.wip_pack)
+            # rounding_difference_sum += self._calculate_unit_cost_to_adjust(
+            #     allocated_value_field, lines_lp, lp_product)
+            # rounding_difference_sum += self._calculate_unit_cost_to_adjust(
+            #     allocated_value_field, lines_pa, lp_product, 'pa')
+            # rounding_difference_sum += self._calculate_unit_cost_to_adjust(
+            #     allocated_value_field, lines_lp_wip, lp_product, wip_pack=True)
+
+            # FRD changed, we're just distinguishing between child and parent MOs
+            lines_lp_and_wip = lines_product.filtered(lambda l: 
+                (not l.parent_mo_id and l.mo_id.id not in parent_mo_ids) or l.wip_pack)
             lines_pa = lines_product.filtered(lambda l: 
                 not l.parent_mo_id and l.mo_id.id in parent_mo_ids)
-            lines_lp_wip = lines_product.filtered(lambda l: 
-                l.parent_mo_id and l.wip_pack)
             rounding_difference_sum += self._calculate_unit_cost_to_adjust(
-                allocated_value_field, lines_lp, lp_product)
+                allocated_value_field, lines_lp_and_wip, lp_product)
             rounding_difference_sum += self._calculate_unit_cost_to_adjust(
                 allocated_value_field, lines_pa, lp_product, 'pa')
-            rounding_difference_sum += self._calculate_unit_cost_to_adjust(
-                allocated_value_field, lines_lp_wip, lp_product, wip_pack=True)
 
         cost_type = 'delta_cost'
         if calculation_type == 'overhead_cost':
@@ -464,20 +468,23 @@ class AbstractCostRecalculation(models.AbstractModel):
         self.write({'allocation_rounding_difference': allocation_rounding_difference})
 
 
-    def _calculate_unit_cost_to_adjust(self, allocated_value_field, lines, lp_product, product_type='lp', wip_pack=False):
+    def _calculate_unit_cost_to_adjust(self, allocated_value_field, lines, lp_product, product_type='lp'): #, wip_pack=False
         self.ensure_one_names()
         rounding_difference = 0.0
         if lines:
-            if wip_pack:
-                allocation_sum = sum(lines.mapped(allocated_value_field))
-            else:
-                allocation_sum = sum(lines.mapped(
-                    lambda l: l[allocated_value_field] - l.cogs_allocated_lp))
+            # if wip_pack:
+            #     allocation_sum = sum(lines.mapped(allocated_value_field))
+            # else:
+            allocation_sum = sum(lines.mapped(
+                lambda l: l[allocated_value_field] - l.cogs_allocated_lp))
+            cogs_allocated_sum = 0.0
             if product_type == 'pa':
                 mo_ids = lines.mo_id.ids
                 parent_mo_lines = self.allocation_line_ids.filtered(
                     lambda l: l.parent_mo_id.id in mo_ids)
-                parent_mo_allocation_sum = sum(parent_mo_lines.mapped(allocated_value_field))
+                cogs_allocated_sum = sum(parent_mo_lines.mapped('cogs_allocated_pa'))
+                parent_mo_allocation_sum = sum(parent_mo_lines.mapped(allocated_value_field)) \
+                    - cogs_allocated_sum
                 allocation_sum += parent_mo_allocation_sum
 
             product_on_hand_qty, product_on_hand_value = self._get_on_hand(lp_product)
@@ -498,7 +505,7 @@ class AbstractCostRecalculation(models.AbstractModel):
             })
 
             unit_cost_to_adjust_rounded = lines[0]['unit_cost_to_adjust_by_' + product_type]
-            cogs_allocated = sum(lines.mapped('cogs_allocated_lp'))
+            cogs_allocated = sum(lines.mapped('cogs_allocated_lp')) + cogs_allocated_sum
             rounding_difference = unit_cost_to_adjust_rounded * allocation_qty \
                 - product_on_hand_value + cogs_allocated
             lines.write({
@@ -858,7 +865,7 @@ class AbstractAllocationLine(models.AbstractModel):
     shipped_qty_pa = fields.Integer('Shipped Quantity PA')
     cogs_allocated_lp = fields.Monetary('COGS Allocated LP')
     cogs_allocated_pa = fields.Monetary('COGS Allocated PA')
-    unit_cost_to_adjust_by_lp = fields.Monetary('Unit Cost To Adjust By LP')
-    unit_cost_to_adjust_by_pa = fields.Monetary('Unit Cost To Adjust By PA')
-    rounding_difference = fields.Float()
+    unit_cost_to_adjust_by_lp = fields.Monetary('Unit Cost to Adjust by LP')
+    unit_cost_to_adjust_by_pa = fields.Monetary('Unit Cost to Adjust by PA')
+    rounding_difference = fields.Float('Allocated Value by Product')
     currency_id = fields.Many2one('res.currency', string='Currency')

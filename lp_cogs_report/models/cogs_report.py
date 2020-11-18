@@ -384,7 +384,7 @@ class COGSReport(models.Model):
 
         products = current_mos.mapped('product_id')
         if self.previous_report_id:
-            products += self.previous_report_id.summary_line_ids.mapped('product_id')
+            products |= self.previous_report_id.summary_line_ids.mapped('product_id')
         self._validate_products_categories(products)
 
         lines = []
@@ -746,6 +746,7 @@ class COGSReport(models.Model):
     def _process_report_lines(self, lines, wip=False):
         ''' Processes provided list of dicts (lines) to add/update values that need the rest of the lines to have already been created. '''
         self.ensure_one_names()
+        decimals = self.currency_id.decimal_places
         for mo_id, line in lines.items():
             if not line['parent_mo']:
                 raw_material = sub_material = printing_cost = direct_labor = 0
@@ -783,10 +784,10 @@ class COGSReport(models.Model):
                     'sub_material': sub_material + line['sub_material'],
                     'printing_cost': printing_cost + line['printing_cost'],
                     'direct_labor': direct_labor + line['direct_labor'],
-                    'material_loss_allocation': round(material_loss_allocation),
-                    'printing_allocation': round(printing_allocation),
-                    'direct_labor_allocation': round(direct_labor_allocation),
-                    'production_cost': round(production_cost),
+                    'material_loss_allocation': round(material_loss_allocation, decimals),
+                    'printing_allocation': round(printing_allocation, decimals),
+                    'direct_labor_allocation': round(direct_labor_allocation, decimals),
+                    'production_cost': round(production_cost, decimals),
                 })
             total_value = line['raw_material'] + line['sub_material'] \
                 + line['material_loss_allocation'] + line['printing_cost'] \
