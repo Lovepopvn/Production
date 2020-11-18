@@ -499,6 +499,9 @@ class MrpProduction(models.Model):
 
             best_finished_date = datetime.datetime.max
             vals = {}
+            best_workcenter = workcenters[0]
+            best_start_date = start_date
+            best_finished_date = start_date
             for workcenter in workcenters:
                 # compute theoretical duration
                 time_cycle = workorder.operation_id.time_cycle
