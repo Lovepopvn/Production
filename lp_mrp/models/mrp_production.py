@@ -107,11 +107,15 @@ class MrpProduction(models.Model):
         for order in self:
             if not all(line.product_uom_qty == line.reserved_availability for line in order.move_raw_ids.filtered(
                     lambda x: x.product_id.categ_id.require_for_mo == True)):
-                raise UserError(_('To consume & Reserver should be same for specific product category'))
-            # if all(line.statement_id for line in line.payment_id.move_line_ids.filtered(
-            #             lambda r: r.id != line.id and r.account_id.internal_type == 'liquidity')):
+                raise UserError(_('To consume & Reserved should be same for specific product category'))
+            if not all(move.operation_id == move.bom_line_id.operation_id for move in order.move_raw_ids):
+                raise UserError(_('There is Operation To Consume in Components is not same with bill of material.\n'
+                                    'Please contact admin production.'))
         res = super(MrpProduction, self).button_plan()
         for order in self:
+            if not all(move.operation_id for move in order.move_raw_ids):
+                raise UserError(_('There is missing Operation To Consume in Components.\n'
+                                    'Please contact admin production.'))
             if order.expected_ship_date: 
                 order.sale_id.commitment_date = order.expected_ship_date
                 order.product_lot_ids.write({'do_ship_date': order.expected_ship_date})
@@ -482,3 +486,8 @@ class MrpProduction(models.Model):
         for data in packaging_data_from_bom:
             if product.id == data.product_id.id:
                 return True
+
+    def update_operation_consume(self):
+        for mrp in self:
+            for move in mrp.move_raw_ids.filtered(lambda m: m.operation_id != m.bom_line_id.operation_id):
+                move.operation_id = move.bom_line_id.operation_id.id

@@ -50,7 +50,7 @@ class LaborCostAllocation(models.Model):
         self.ensure_one_names()
         self._validate_dates()
         self._validate_state()
-        manufacturing_orders = self._get_manufacturing_orders()
+        manufacturing_orders = self._get_manufacturing_orders().filtered(lambda l: not l.mo_for_samples)
         workcenters = {}
         # based on mrp_account_enterprise/reports/mrp_cost_structure.py:21
         Workorders = self.env['mrp.workorder'].search([('production_id', 'in', manufacturing_orders.ids)])
@@ -107,7 +107,7 @@ class LaborCostAllocation(models.Model):
         if self.error_to_correct:
             raise ValidationError(_("You need to input Wrong Input Correction first to make Error To Correct 0."))
 
-        manufacturing_orders = self._get_manufacturing_orders()
+        manufacturing_orders = self._get_manufacturing_orders().filtered(lambda l: not l.mo_for_samples)
         for manufacturing_order in manufacturing_orders:
             lines = []
             for loss_line in self.delta_line_ids:

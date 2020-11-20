@@ -437,7 +437,7 @@ class COGSReport(models.Model):
             bom_raw_material = self._get_cost_of_components(mos, raw_material_id)
             bom_sub_material = self._get_cost_of_components(mos, sub_material_id)
             material_loss_allocation = self._get_allocation_rounding(self.material_loss_id, product)
-            direct_labor = self._get_cost_of_operations(mos)
+            direct_labor = self._get_cost_of_operations_from_svls(mos)
             labor_cost_allocation = self._get_allocation_rounding(self.labor_cost_id, product)
             printing_cost = self._get_cost_of_printing(mos)
             printing_cost_allocation = self._get_allocation_rounding(self.click_charge_id, product)
@@ -719,7 +719,7 @@ class COGSReport(models.Model):
                 raw_material = self._get_cost_of_components(mo, raw_material_id)
                 sub_material = self._get_cost_of_components(mo, sub_material_id)
                 printing_cost = self._get_cost_of_printing(mo)
-                direct_labor = self._get_cost_of_operations(mo)
+                direct_labor = self._get_cost_of_operations_from_svls(mo)
             material_loss_allocation = 0
 
             lines[mo.id] = {
@@ -835,7 +835,7 @@ class COGSReport(models.Model):
 
     @api.model
     def _get_cost_of_operations(self, mos):
-        ''' Retrieves total cost of operations of provided MOs. '''
+        ''' Retrieves total cost of operations of provided MOs using the cost structure SQL query. '''
         # copied and adjusted from mrp_account_enterprise/reports/mrp_cost_structure.py:17
         total_cost = 0.0
 
@@ -857,6 +857,23 @@ class COGSReport(models.Model):
                 self.env.cr.execute(query_str, (tuple(Workorders.ids), ))
                 for duration, cost_hour in self.env.cr.fetchall():
                     total_cost += duration / 60.0 * cost_hour
+        return total_cost
+
+
+    @api.model
+    def _get_cost_of_operations_from_svls(self, mos):
+        ''' Retrieves total cost of operations of provided MOs from Stock Valuation Layers instead of the cost structure SQL query. '''
+        total_cost = 0.0
+
+        SVL = self.env['stock.valuation.layer']
+        account_id = self.company_id.cogs_allocation_counterpart_account_direct_labor_id.id
+        for mo in mos:
+            moves = SVL.search([
+                ('product_id', '=', mo.product_id.id),
+                ('quantity', '>', 0),
+            ]).filtered(lambda l: l.stock_move_id.production_id.id == mo.id).account_move_id
+            amls = moves.line_ids.filtered(lambda l: l.account_id.id == account_id)
+            total_cost += sum(amls.mapped('credit'))
         return total_cost
 
 

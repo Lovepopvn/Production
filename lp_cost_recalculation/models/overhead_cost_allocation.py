@@ -25,7 +25,7 @@ class OverheadCostAllocation(models.Model):
         self._validate_dates()
         self._validate_state()
         self._validate_journal_company()
-        manufacturing_orders = self._get_manufacturing_orders()
+        manufacturing_orders = self._get_manufacturing_orders().filtered(lambda l: not l.mo_for_samples)
         self._validate_product_ceq_factor(manufacturing_orders)
         lines = []
         for manufacturing_order in manufacturing_orders:
