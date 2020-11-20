@@ -91,7 +91,7 @@ class MaterialLossAllocation(models.Model):
             stock_moves_components = StockMove.search(search_domain + [
                 ('product_id.id', '=', material_id),
             ])
-            manufacturing_orders = stock_moves_components.raw_material_production_id
+            manufacturing_orders = stock_moves_components.raw_material_production_id.filtered(lambda l: not l.mo_for_samples)
             lines = []
             for manufacturing_order in manufacturing_orders:
                 line_vals = self._get_allocation_line_vals(manufacturing_order, process_ceq=True)
