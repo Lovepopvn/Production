@@ -108,6 +108,9 @@ class MrpProduction(models.Model):
             if not all(line.product_uom_qty == line.reserved_availability for line in order.move_raw_ids.filtered(
                     lambda x: x.product_id.categ_id.require_for_mo == True)):
                 raise UserError(_('To consume & Reserved should be same for specific product category'))
+            if not all(move.bom_line_id for move in order.move_raw_ids):
+                raise UserError(_('BoM line link in component is false.\n'
+                                    'Please contact production admin to fix it.'))
             if not all(move.operation_id == move.bom_line_id.operation_id for move in order.move_raw_ids):
                 raise UserError(_('There is Operation To Consume in Components is not same with bill of material.\n'
                                     'Please contact admin production.'))
@@ -491,3 +494,18 @@ class MrpProduction(models.Model):
         for mrp in self:
             for move in mrp.move_raw_ids.filtered(lambda m: m.operation_id != m.bom_line_id.operation_id):
                 move.operation_id = move.bom_line_id.operation_id.id
+
+    def update_bom_line(self):
+        for mrp in self:
+            bom_line = []
+            for line in mrp.bom_id.bom_line_ids:
+                bom_line.append({
+                    'product': line.product_id.id,
+                    'bom_line': line.id
+                    })
+            for move in mrp.move_raw_ids:
+                head = [bom_l for bom_l in bom_line \
+                                        if bom_l['product'] == \
+                                        move.product_id.id]
+                if head:
+                    move.bom_line_id = head[0]['bom_line']
