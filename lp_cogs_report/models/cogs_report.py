@@ -827,9 +827,9 @@ class COGSReport(models.Model):
     def _get_cost_of_printing(self, mos):
         ''' Retrieves total cost of printing of provided MOs. '''
         cost = 0.0
-        if mos:
-            sides = sum(mos.follower_sheets_ids.mapped('total_printed_side'))
-            cost = sides * sum(mos.mapped('average_printing_cost_when_done'))
+        for mo in mos:
+            sides = sum(mo.follower_sheets_ids.mapped('total_printed_side'))
+            cost += sides * mo.average_printing_cost_when_done
         return cost
 
 
@@ -860,7 +860,6 @@ class COGSReport(models.Model):
         return total_cost
 
 
-    @api.model
     def _get_cost_of_operations_from_svls(self, mos):
         ''' Retrieves total cost of operations of provided MOs from Stock Valuation Layers instead of the cost structure SQL query. '''
         total_cost = 0.0
@@ -871,6 +870,8 @@ class COGSReport(models.Model):
             moves = SVL.search([
                 ('product_id', '=', mo.product_id.id),
                 ('quantity', '>', 0),
+                ('create_date', '>=', self.date_from),
+                ('create_date', '<=', self.date_to),
             ]).filtered(lambda l: l.stock_move_id.production_id.id == mo.id).account_move_id
             amls = moves.line_ids.filtered(lambda l: l.account_id.id == account_id)
             total_cost += sum(amls.mapped('credit'))
@@ -973,7 +974,8 @@ class SummaryLine(models.Model):
                 product_ceq_factor = line.product_id.ceq_factor
                 ceq_quantity = product_ceq_factor * line.quantity
                 ceq_sold_quantity = product_ceq_factor * sold_quantity
-            production_in_month = line.quantity + ceq_quantity + line.bom_raw_material \
+            # production_in_month = line.quantity + ceq_quantity + line.bom_raw_material \
+            production_in_month = line.bom_raw_material \
                 + line.bom_sub_material + line.material_loss_allocation + line.direct_labor \
                 + line.labor_cost_allocation + line.printing_cost + line.printing_cost_allocation \
                 + line.general_production_cost # 11 + 12 + 13 + 14 + 15 + 16 + 17 + 18 + 19 + 20
