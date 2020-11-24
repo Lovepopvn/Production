@@ -398,10 +398,7 @@ class AbstractCostRecalculation(models.AbstractModel):
                         allocated_value = (line.delta_line_id and line.delta_line_id.delta_cost or 0) / allocation_ratio
 
                 if line.lp_qty:
-                    if calculation_type == 'click_charge':
-                        cogs_allocated_lp = (allocated_value + line.calculated_cost) * line.shipped_qty_lp / line.lp_qty
-                    else:
-                        cogs_allocated_lp = allocated_value * line.shipped_qty_lp / line.lp_qty
+                    cogs_allocated_lp = allocated_value * line.shipped_qty_lp / line.lp_qty
                 else:
                     cogs_allocated_lp = 0.0
 
