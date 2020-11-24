@@ -345,10 +345,8 @@
                                     <tree editable="bottom" create="0" delete="0">
                                         <field name="currency_id" invisible="1"/>
                                         <field name="calculated_sides" readonly="1"/>
-                                        <field name="actual_sides"/>
-                                        <field name="unit_cost_per_click" widget="monetary"/>
                                         <field name="calculated_cost" readonly="1" widget="monetary"/>
-                                        <field name="actual_cost" readonly="1" widget="monetary"/>
+                                        <field name="actual_cost" widget="monetary"/>
                                         <field name="delta_cost" readonly="1" widget="monetary"/>
                                     </tree>
                                 </field>
