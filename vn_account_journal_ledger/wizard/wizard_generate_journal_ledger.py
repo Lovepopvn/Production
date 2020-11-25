@@ -239,7 +239,7 @@ class WizardGenerateJournalLedger(models.TransientModel):
 					if ctp.currency_id.id:
 						currency_rate = ctp.currency_id._get_rates(ctp.move_id.company_id,ctp.move_id.date.strftime('%Y-%m-%d')).get(ctp.currency_id.id)
 						# currency_rate = 
-						currency_rate = ctp.countered_amt / ctp.countered_amt_currency
+						currency_rate = ctp.countered_amt_currency and (ctp.countered_amt / ctp.countered_amt_currency) or 0
 
 					sheet.write(_('I%s') % (row_line), currency_rate, border_currency_right_text)
 					if amount_pos=='debit':
