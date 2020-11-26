@@ -379,6 +379,7 @@ class COGSReport(models.Model):
             ('state', '=', 'done'),
             ('date_finished', '>=', self.date_from),
             ('date_finished', '<=', self.date_to),
+            ('mo_for_samples', '=', False),
             ('parent_mo_id', '=', False),
         ])
 
@@ -656,6 +657,13 @@ class COGSReport(models.Model):
         Product = self.env['product.product']
         MO = self.env['mrp.production']
 
+        mo_domain_common = [
+            ('state', '=', 'done'),
+            ('date_finished', '>=', self.date_from),
+            ('date_finished', '<=', self.date_to),
+            ('mo_for_samples', '=', False),
+        ]
+
         # Get IDs of all Pack products (→ their MOs are always parent MOs)
         finished_pack_products_ids = Product.search([('categ_id.id', '=', finished_goods_id),
             ('lpus_category_id.id', '=', pack_id)]).ids
@@ -663,17 +671,11 @@ class COGSReport(models.Model):
         # Find done pack MOs in period (Pack report)
         mos_pack_products = MO.search([
             ('product_id', 'in', finished_pack_products_ids),
-            ('state', '=', 'done'),
-            ('date_finished', '>=', self.date_from),
-            ('date_finished', '<=', self.date_to),
-        ])
+        ] + mo_domain_common)
         # Find their child MOs done in period
         mos_pack_sub = MO.search([
             ('parent_mo_id', 'in', mos_pack_products.ids),
-            ('state', '=', 'done'),
-            ('date_finished', '>=', self.date_from),
-            ('date_finished', '<=', self.date_to),
-        ])
+        ] + mo_domain_common)
         # Concatenate the lists to have both parent and child MOs in one list
         mos_pack = (mos_pack_products + mos_pack_sub).sorted(key=_mo_sort)
         # Find unfinished pack MOs (WIP Pack report)
@@ -682,14 +684,12 @@ class COGSReport(models.Model):
             ('state', 'not in', ('done', 'cancel')),
             ('create_date', '>=', self.date_from),
             ('create_date', '<=', self.date_to),
+            ('mo_for_samples', '=', False),
         ])
         # Find their child MOs done in period
         mos_wip_sub = MO.search([
             ('parent_mo_id', 'in', mos_wip_products.ids),
-            ('state', '=', 'done'),
-            ('date_finished', '>=', self.date_from),
-            ('date_finished', '<=', self.date_to),
-        ])
+        ] + mo_domain_common)
         # Filter out parent MOs with no child MOs done within the period
         mos_wip_products = mos_wip_products.filtered(lambda m: m.id in mos_wip_sub.parent_mo_id.ids)
         # Concatenate the lists to have both parent and child MOs in one list
