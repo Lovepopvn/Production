@@ -24,7 +24,7 @@ class ClickChargeAllocation(models.Model):
         self.ensure_one_names()
         self._validate_dates()
         self._validate_state()
-        manufacturing_orders = self._get_manufacturing_orders()
+        manufacturing_orders = self._get_manufacturing_orders().filtered(lambda l: not l.mo_for_samples)
         calculated_sides = 0
         calculated_cost = 0.0
         for manufacturing_order in manufacturing_orders:
@@ -46,15 +46,14 @@ class ClickChargeAllocation(models.Model):
         self._validate_journal_company()
 
         manufacturing_orders = self._get_manufacturing_orders()
-        manufacturing_orders = manufacturing_orders.filtered(lambda r: sum(r.follower_sheets_ids.mapped('total_printed_side')) > 0)
+        manufacturing_orders = manufacturing_orders.filtered(lambda l: not l.mo_for_samples and sum(l.follower_sheets_ids.mapped('total_printed_side')) > 0)
         if not self.delta_line_ids or len(self.delta_line_ids) > 1:
             raise UserError(_("There should be exactly 1 line in List Click Charge to compute allocation."))
         delta_line = self.delta_line_ids[0]
-        unit_cost_per_click = delta_line.unit_cost_per_click
         lines = []
         for manufacturing_order in manufacturing_orders:
             line_vals = self._get_allocation_line_vals(manufacturing_order)
-            calculated_cost = sum(manufacturing_order.follower_sheets_ids.mapped('total_printed_side')) * unit_cost_per_click
+            calculated_cost = sum(manufacturing_order.follower_sheets_ids.mapped('total_printed_side')) * manufacturing_order.average_printing_cost_when_done
             line_vals.update({
                 'calculated_cost': calculated_cost,
                 'delta_line_id': delta_line.id,
@@ -82,19 +81,16 @@ class ClickChargeLine(models.Model):
     _description = 'Click Charge Line'
 
     calculated_sides = fields.Integer()
-    actual_sides = fields.Integer()
-    unit_cost_per_click = fields.Monetary('Actual Average Printing Cost')
     calculated_cost = fields.Monetary()
-    actual_cost = fields.Monetary(compute='_compute_delta')
+    actual_cost = fields.Monetary()
     delta_cost = fields.Monetary(compute='_compute_delta')
     click_charge_allocation_id = fields.Many2one('lp_cost_recalculation.click.charge.allocation', 'Parent Click Charge Allocation')
     currency_id = fields.Many2one('res.currency', string='Currency', related='click_charge_allocation_id.currency_id')
 
 
-    @api.depends('calculated_cost', 'actual_sides', 'unit_cost_per_click')
+    @api.depends('calculated_cost', 'actual_cost')
     def _compute_delta(self):
         for record in self:
-            record.actual_cost = record.actual_sides * record.unit_cost_per_click
             record.delta_cost = record.actual_cost - record.calculated_cost
 
 class ClickChargeConsumedLine(models.Model):

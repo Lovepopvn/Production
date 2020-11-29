@@ -9,6 +9,7 @@
                 <field name="default_operation"/>
 				<field name="used_scan_process"/>
 				<field name="default_operation_pick"/>
+				<field name="ending_work_center"/>
             </field>
 		</field>
 	</record>

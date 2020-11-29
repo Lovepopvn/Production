@@ -379,12 +379,13 @@ class COGSReport(models.Model):
             ('state', '=', 'done'),
             ('date_finished', '>=', self.date_from),
             ('date_finished', '<=', self.date_to),
+            ('mo_for_samples', '=', False),
             ('parent_mo_id', '=', False),
         ])
 
         products = current_mos.mapped('product_id')
         if self.previous_report_id:
-            products += self.previous_report_id.summary_line_ids.mapped('product_id')
+            products |= self.previous_report_id.summary_line_ids.mapped('product_id')
         self._validate_products_categories(products)
 
         lines = []
@@ -437,7 +438,7 @@ class COGSReport(models.Model):
             bom_raw_material = self._get_cost_of_components(mos, raw_material_id)
             bom_sub_material = self._get_cost_of_components(mos, sub_material_id)
             material_loss_allocation = self._get_allocation_rounding(self.material_loss_id, product)
-            direct_labor = self._get_cost_of_operations(mos)
+            direct_labor = self._get_cost_of_operations_from_svls(mos)
             labor_cost_allocation = self._get_allocation_rounding(self.labor_cost_id, product)
             printing_cost = self._get_cost_of_printing(mos)
             printing_cost_allocation = self._get_allocation_rounding(self.click_charge_id, product)
@@ -656,6 +657,13 @@ class COGSReport(models.Model):
         Product = self.env['product.product']
         MO = self.env['mrp.production']
 
+        mo_domain_common = [
+            ('state', '=', 'done'),
+            ('date_finished', '>=', self.date_from),
+            ('date_finished', '<=', self.date_to),
+            ('mo_for_samples', '=', False),
+        ]
+
         # Get IDs of all Pack products (→ their MOs are always parent MOs)
         finished_pack_products_ids = Product.search([('categ_id.id', '=', finished_goods_id),
             ('lpus_category_id.id', '=', pack_id)]).ids
@@ -663,17 +671,11 @@ class COGSReport(models.Model):
         # Find done pack MOs in period (Pack report)
         mos_pack_products = MO.search([
             ('product_id', 'in', finished_pack_products_ids),
-            ('state', '=', 'done'),
-            ('date_finished', '>=', self.date_from),
-            ('date_finished', '<=', self.date_to),
-        ])
+        ] + mo_domain_common)
         # Find their child MOs done in period
         mos_pack_sub = MO.search([
             ('parent_mo_id', 'in', mos_pack_products.ids),
-            ('state', '=', 'done'),
-            ('date_finished', '>=', self.date_from),
-            ('date_finished', '<=', self.date_to),
-        ])
+        ] + mo_domain_common)
         # Concatenate the lists to have both parent and child MOs in one list
         mos_pack = (mos_pack_products + mos_pack_sub).sorted(key=_mo_sort)
         # Find unfinished pack MOs (WIP Pack report)
@@ -682,14 +684,12 @@ class COGSReport(models.Model):
             ('state', 'not in', ('done', 'cancel')),
             ('create_date', '>=', self.date_from),
             ('create_date', '<=', self.date_to),
+            ('mo_for_samples', '=', False),
         ])
         # Find their child MOs done in period
         mos_wip_sub = MO.search([
             ('parent_mo_id', 'in', mos_wip_products.ids),
-            ('state', '=', 'done'),
-            ('date_finished', '>=', self.date_from),
-            ('date_finished', '<=', self.date_to),
-        ])
+        ] + mo_domain_common)
         # Filter out parent MOs with no child MOs done within the period
         mos_wip_products = mos_wip_products.filtered(lambda m: m.id in mos_wip_sub.parent_mo_id.ids)
         # Concatenate the lists to have both parent and child MOs in one list
@@ -719,7 +719,7 @@ class COGSReport(models.Model):
                 raw_material = self._get_cost_of_components(mo, raw_material_id)
                 sub_material = self._get_cost_of_components(mo, sub_material_id)
                 printing_cost = self._get_cost_of_printing(mo)
-                direct_labor = self._get_cost_of_operations(mo)
+                direct_labor = self._get_cost_of_operations_from_svls(mo)
             material_loss_allocation = 0
 
             lines[mo.id] = {
@@ -746,6 +746,7 @@ class COGSReport(models.Model):
     def _process_report_lines(self, lines, wip=False):
         ''' Processes provided list of dicts (lines) to add/update values that need the rest of the lines to have already been created. '''
         self.ensure_one_names()
+        decimals = self.currency_id.decimal_places
         for mo_id, line in lines.items():
             if not line['parent_mo']:
                 raw_material = sub_material = printing_cost = direct_labor = 0
@@ -783,10 +784,10 @@ class COGSReport(models.Model):
                     'sub_material': sub_material + line['sub_material'],
                     'printing_cost': printing_cost + line['printing_cost'],
                     'direct_labor': direct_labor + line['direct_labor'],
-                    'material_loss_allocation': round(material_loss_allocation),
-                    'printing_allocation': round(printing_allocation),
-                    'direct_labor_allocation': round(direct_labor_allocation),
-                    'production_cost': round(production_cost),
+                    'material_loss_allocation': round(material_loss_allocation, decimals),
+                    'printing_allocation': round(printing_allocation, decimals),
+                    'direct_labor_allocation': round(direct_labor_allocation, decimals),
+                    'production_cost': round(production_cost, decimals),
                 })
             total_value = line['raw_material'] + line['sub_material'] \
                 + line['material_loss_allocation'] + line['printing_cost'] \
@@ -826,15 +827,15 @@ class COGSReport(models.Model):
     def _get_cost_of_printing(self, mos):
         ''' Retrieves total cost of printing of provided MOs. '''
         cost = 0.0
-        if mos:
-            sides = sum(mos.follower_sheets_ids.mapped('total_printed_side'))
-            cost = sides * sum(mos.mapped('average_printing_cost_when_done'))
+        for mo in mos:
+            sides = sum(mo.follower_sheets_ids.mapped('total_printed_side'))
+            cost += sides * mo.average_printing_cost_when_done
         return cost
 
 
     @api.model
     def _get_cost_of_operations(self, mos):
-        ''' Retrieves total cost of operations of provided MOs. '''
+        ''' Retrieves total cost of operations of provided MOs using the cost structure SQL query. '''
         # copied and adjusted from mrp_account_enterprise/reports/mrp_cost_structure.py:17
         total_cost = 0.0
 
@@ -856,6 +857,24 @@ class COGSReport(models.Model):
                 self.env.cr.execute(query_str, (tuple(Workorders.ids), ))
                 for duration, cost_hour in self.env.cr.fetchall():
                     total_cost += duration / 60.0 * cost_hour
+        return total_cost
+
+
+    def _get_cost_of_operations_from_svls(self, mos):
+        ''' Retrieves total cost of operations of provided MOs from Stock Valuation Layers instead of the cost structure SQL query. '''
+        total_cost = 0.0
+
+        SVL = self.env['stock.valuation.layer']
+        account_id = self.company_id.cogs_allocation_counterpart_account_direct_labor_id.id
+        for mo in mos:
+            moves = SVL.search([
+                ('product_id', '=', mo.product_id.id),
+                ('quantity', '>', 0),
+                ('create_date', '>=', self.date_from),
+                ('create_date', '<=', self.date_to),
+            ]).filtered(lambda l: l.stock_move_id.production_id.id == mo.id).account_move_id
+            amls = moves.line_ids.filtered(lambda l: l.account_id.id == account_id)
+            total_cost += sum(amls.mapped('credit'))
         return total_cost
 
 
@@ -955,7 +974,8 @@ class SummaryLine(models.Model):
                 product_ceq_factor = line.product_id.ceq_factor
                 ceq_quantity = product_ceq_factor * line.quantity
                 ceq_sold_quantity = product_ceq_factor * sold_quantity
-            production_in_month = line.quantity + ceq_quantity + line.bom_raw_material \
+            # production_in_month = line.quantity + ceq_quantity + line.bom_raw_material \
+            production_in_month = line.bom_raw_material \
                 + line.bom_sub_material + line.material_loss_allocation + line.direct_labor \
                 + line.labor_cost_allocation + line.printing_cost + line.printing_cost_allocation \
                 + line.general_production_cost # 11 + 12 + 13 + 14 + 15 + 16 + 17 + 18 + 19 + 20

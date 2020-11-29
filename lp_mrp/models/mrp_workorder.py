@@ -240,6 +240,15 @@ class MrpWorkOrder(models.Model):
                 for done in self.time_done_ids:
                     if done.code_id.id not in pieces_done:
                         raise UserError(_('There are pieces that are not assigned to this Work Order . Please check again'))
+        if self.workcenter_id.ending_work_center:
+            # search if there is other workorder not done yet.
+            # if find it it will be warning when mark as done last workorder
+            wo_ids = self.search([
+                ('production_id', '=', self.production_id.id), 
+                ('state', 'not in', ('done','cancel')),
+                ('id', '!=', self.id)])
+            if len(wo_ids) > 0:
+                raise UserError(_('Before mark as done last workorder, please mark as done others workorder first'))
         res = super(MrpWorkOrder, self).do_finish()
         # set done component which consumed in the work order
         self.production_id.post_inventory()
@@ -265,6 +274,13 @@ class MrpWorkOrder(models.Model):
                         raise Warning(warn)
                 self.production_id.button_mark_done()
                 self.production_id.write({'state': 'done'})
+        return res
+    
+    def write(self, values):
+        res = super(MrpWorkOrder, self).write(values)
+        for wo in self:
+            if values.get('time_ids') and wo.production_id.state in ('done','cancel'):
+                raise UserError(_('You can not edit time tracking if Manufacturing order is done'))
         return res
 
     def _compute_working_users(self):

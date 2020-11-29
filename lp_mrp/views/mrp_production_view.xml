@@ -88,6 +88,17 @@
         </field>
     </record>
 
+    <record id="view_stock_move_raw_tree" model="ir.ui.view">
+	    <field name="name">view.stock.move.raw.tree</field>
+	    <field name="model">stock.move</field>
+	    <field name="inherit_id" ref="mrp.view_stock_move_raw_tree"/>
+	    <field name="arch" type="xml">
+            <field name="is_done" position="after">
+                <field name="operation_id"/>
+            </field>
+        </field>
+    </record>
+
     <record id="action_create_initial_follower_sheet" model="ir.actions.server">
 		<field name="name">Create Initial Follower Sheet</field>
 		<field name="model_id" ref="mrp.model_mrp_production"/>
@@ -102,5 +113,23 @@
 		<field name="binding_model_id" ref="mrp.model_mrp_production"/>
 		<field name="state">code</field>
 		<field name="code">action = records.correct_consumed_paper_of_the_manufacturing_order()</field>
+	</record>
+
+    <record id="action_update_operation_consume" model="ir.actions.server">
+		<field name="name">Update Operation To Consume</field>
+		<field name="model_id" ref="mrp.model_mrp_production"/>
+		<field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+		<field name="state">code</field>
+		<field name="code">action = records.update_operation_consume()</field>
+	</record>
+
+    <record id="action_update_bom_line" model="ir.actions.server">
+		<field name="name">Update Bom Line</field>
+		<field name="model_id" ref="mrp.model_mrp_production"/>
+		<field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+		<field name="state">code</field>
+		<field name="code">action = records.update_bom_line()</field>
 	</record>
 </odoo>

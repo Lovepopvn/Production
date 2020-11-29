@@ -107,11 +107,18 @@ class MrpProduction(models.Model):
         for order in self:
             if not all(line.product_uom_qty == line.reserved_availability for line in order.move_raw_ids.filtered(
                     lambda x: x.product_id.categ_id.require_for_mo == True)):
-                raise UserError(_('To consume & Reserver should be same for specific product category'))
-            # if all(line.statement_id for line in line.payment_id.move_line_ids.filtered(
-            #             lambda r: r.id != line.id and r.account_id.internal_type == 'liquidity')):
+                raise UserError(_('To consume & Reserved should be same for specific product category'))
+            if not all(move.bom_line_id for move in order.move_raw_ids):
+                raise UserError(_('BoM line link in component is false.\n'
+                                    'Please contact production admin to fix it.'))
+            if not all(move.operation_id == move.bom_line_id.operation_id for move in order.move_raw_ids):
+                raise UserError(_('There is Operation To Consume in Components is not same with bill of material.\n'
+                                    'Please contact admin production.'))
         res = super(MrpProduction, self).button_plan()
         for order in self:
+            if not all(move.operation_id for move in order.move_raw_ids):
+                raise UserError(_('There is missing Operation To Consume in Components.\n'
+                                    'Please contact admin production.'))
             if order.expected_ship_date: 
                 order.sale_id.commitment_date = order.expected_ship_date
                 order.product_lot_ids.write({'do_ship_date': order.expected_ship_date})
@@ -161,10 +168,13 @@ class MrpProduction(models.Model):
         StockMove = self.env['stock.move']
         FollowerSheet = self.env['follower.sheet']
         for mo in self:
-            wo_id = self.env['mrp.workorder'].search([('production_id', '=', mo.id), ('workcenter_id.default_operation_pick', '=', True), ('state', 'not in', ['done', 'cancel'])])
-            if not wo_id:
-                raise UserError("Pick Paper not available")
-            
+            wo_id = False
+            if mo.state not in ('draft', 'confirmed'):
+                wo_id = self.env['mrp.workorder'].search([('production_id', '=', mo.id), ('workcenter_id.default_operation_pick', '=', True), ('state', 'not in', ['done', 'cancel'])])
+                if not wo_id:
+                    raise UserError("Pick Paper not available")
+                wo_id = wo_id.id
+
             # IF PRODUCT FOLLOWER CHANGED
             sql_old_product = """
                 SELECT product_id, old_product_id, sheets_required FROM follower_sheet WHERE mo_id = %s AND old_product_id IS NOT NULL GROUP BY product_id, old_product_id, sheets_required
@@ -219,7 +229,7 @@ class MrpProduction(models.Model):
                                 'origin': mo.name,
                                 'picking_type_id': mo.picking_type_id.id,
                                 'group_id': mo.procurement_group_id.id,
-                                'workorder_id': wo_id.id,
+                                'workorder_id': wo_id,
                             })
                             new_move._action_confirm()
                     elif old_follower and not all_follower:
@@ -259,7 +269,7 @@ class MrpProduction(models.Model):
                                     'origin': mo.name,
                                     'picking_type_id': mo.picking_type_id.id,
                                     'group_id': mo.procurement_group_id.id,
-                                    'workorder_id': wo_id.id,
+                                    'workorder_id': wo_id,
                                 })
                                 new_move._action_confirm()
                     sql_check_follower = """
@@ -273,52 +283,53 @@ class MrpProduction(models.Model):
                             unlink_move._do_unreserve()
                             unlink_move._action_cancel()
                             unlink_move.unlink()
-            WorkOrderLine = self.env['mrp.workorder.line']
-            workorder_id = self.env['mrp.workorder'].search([('production_id', '=', mo.id), ('workcenter_id.default_operation_pick', '=', True)])
-            if workorder_id:
-                move_lines = []
-                workorder_lines = []
-                data_stock_move = StockMove.search([('raw_material_production_id', '=', mo.id)])
-                
-                for stock_moveline in data_stock_move:
-                    move_lines.append(stock_moveline.product_id.id)
-                
-                data_workorder_line = WorkOrderLine.search([('raw_workorder_id', '=', workorder_id.id)])
-                for lines in data_workorder_line:
-                    if lines.product_id.id in move_lines:
-                        stock_move = StockMove.search([('product_id', '=', lines.product_id.id), ('raw_material_production_id', '=', mo.id)])
-                        lines.write({
-                            'qty_to_consume': stock_move.product_uom_qty,
-                            'move_id': stock_move.id
-                        })
-                        workorder_lines.append(lines.product_id.id)
-                    else:
-                        lines.unlink()
-                
-                for stock_moveline in data_stock_move:
-                    if stock_moveline.product_id.id not in workorder_lines:
-                        WorkOrderLine.create({
-                            'raw_workorder_id': workorder_id.id,
-                            'move_id': stock_moveline.id,
-                            'product_id': stock_moveline.product_id.id,
-                            'qty_to_consume': stock_moveline.product_uom_qty,
-                            'qty_reserved': stock_moveline.product_uom_qty,
-                            'product_uom_id': stock_moveline.product_uom.id,
-                            'qty_done': stock_moveline.product_uom_qty,
-                        })
+            if mo.state not in ('draft', 'confirmed'):
+                WorkOrderLine = self.env['mrp.workorder.line']
+                workorder_id = self.env['mrp.workorder'].search([('production_id', '=', mo.id), ('workcenter_id.default_operation_pick', '=', True)])
+                if workorder_id:
+                    move_lines = []
+                    workorder_lines = []
+                    data_stock_move = StockMove.search([('raw_material_production_id', '=', mo.id)])
+                    
+                    for stock_moveline in data_stock_move:
+                        move_lines.append(stock_moveline.product_id.id)
+                    
+                    data_workorder_line = WorkOrderLine.search([('raw_workorder_id', '=', workorder_id.id)])
+                    for lines in data_workorder_line:
+                        if lines.product_id.id in move_lines:
+                            stock_move = StockMove.search([('product_id', '=', lines.product_id.id), ('raw_material_production_id', '=', mo.id)])
+                            lines.write({
+                                'qty_to_consume': stock_move.product_uom_qty,
+                                'move_id': stock_move.id
+                            })
+                            workorder_lines.append(lines.product_id.id)
+                        else:
+                            lines.unlink()
+                    
+                    for stock_moveline in data_stock_move:
+                        if stock_moveline.product_id.id not in workorder_lines:
+                            WorkOrderLine.create({
+                                'raw_workorder_id': workorder_id.id,
+                                'move_id': stock_moveline.id,
+                                'product_id': stock_moveline.product_id.id,
+                                'qty_to_consume': stock_moveline.product_uom_qty,
+                                'qty_reserved': stock_moveline.product_uom_qty,
+                                'product_uom_id': stock_moveline.product_uom.id,
+                                'qty_done': stock_moveline.product_uom_qty,
+                            })
 
-                self.env.cr.execute("""
-                    SELECT product_id, COUNT(*) FROM mrp_workorder_line WHERE raw_workorder_id = %s GROUP BY product_id HAVING COUNT(*) > 1
-                """, (workorder_id.id, ))
-                double_workorder = self.env.cr.fetchall()
-                if double_workorder:
-                    for doub in double_workorder:
-                        b = 0
-                        work_line = WorkOrderLine.search([('product_id', '=', doub[0]), ('raw_workorder_id', '=', workorder_id.id)])
-                        if len(work_line) > 1:
-                            while b < len(work_line)-1:
-                                work_line[b].unlink()
-                                b += 1
+                    self.env.cr.execute("""
+                        SELECT product_id, COUNT(*) FROM mrp_workorder_line WHERE raw_workorder_id = %s GROUP BY product_id HAVING COUNT(*) > 1
+                    """, (workorder_id.id, ))
+                    double_workorder = self.env.cr.fetchall()
+                    if double_workorder:
+                        for doub in double_workorder:
+                            b = 0
+                            work_line = WorkOrderLine.search([('product_id', '=', doub[0]), ('raw_workorder_id', '=', workorder_id.id)])
+                            if len(work_line) > 1:
+                                while b < len(work_line)-1:
+                                    work_line[b].unlink()
+                                    b += 1
             mo.follower_sheets_ids.write({'old_product_id': False})
 
     def change_products(self, id, product_id):
@@ -482,3 +493,23 @@ class MrpProduction(models.Model):
         for data in packaging_data_from_bom:
             if product.id == data.product_id.id:
                 return True
+
+    def update_operation_consume(self):
+        for mrp in self:
+            for move in mrp.move_raw_ids.filtered(lambda m: m.operation_id != m.bom_line_id.operation_id):
+                move.operation_id = move.bom_line_id.operation_id.id
+
+    def update_bom_line(self):
+        for mrp in self:
+            bom_line = []
+            for line in mrp.bom_id.bom_line_ids:
+                bom_line.append({
+                    'product': line.product_id.id,
+                    'bom_line': line.id
+                    })
+            for move in mrp.move_raw_ids:
+                head = [bom_l for bom_l in bom_line \
+                                        if bom_l['product'] == \
+                                        move.product_id.id]
+                if head:
+                    move.bom_line_id = head[0]['bom_line']
