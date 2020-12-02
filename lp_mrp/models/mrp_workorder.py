@@ -2,7 +2,7 @@
 '''Mrp Work Order'''
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError, Warning
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.tests.common import Form
 
 
@@ -288,6 +288,17 @@ class MrpWorkOrder(models.Model):
         for order in self:
             if order.workcenter_id.used_scan_process and order.state != 'done':
                 order.is_user_working = True
+
+    def scheduler_update_wo_date(self):
+        wos_ids = self.search([('state', 'not in', ('done','cancel'))])
+        date_start = fields.datetime.now()
+        date = date_start + timedelta(minutes=60)
+        for wo in wos_ids:
+            print(date_start,"||",date)
+            wo.write({
+                'duration_expected': 60,
+                'date_planned_start': date_start,
+                'date_planned_finished': date})
 
 
 class MrpWorkCenterProductivity(models.Model):
