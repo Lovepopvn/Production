@@ -23,6 +23,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/data_sequence.xml',
+        'data/scheduler_data.xml',
         'wizard/cancel_so_wizard_view.xml',
         'wizard/mo_divisible_confirmation_view.xml',
         'wizard/do_remove_wave_view.xml',
