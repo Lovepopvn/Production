@@ -11,6 +11,7 @@ class ProductLot(models.Model):
     _name = 'product.lot'
     _inherit = ['barcodes.barcode_events_mixin']
     _description = 'Product Lot'
+    _order = 'write_date DESC'
 
     name = fields.Char('Product Lot', default="/", copy=False)
     state = fields.Selection([
