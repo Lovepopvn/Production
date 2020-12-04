@@ -30,9 +30,9 @@ class vat_in_report(models.AbstractModel):
             {'name': _('Ngày phát hành'), 'class': 'date'},
             {'name': _('Tên người bán')},
             {'name': _('Mã sốthuế người bán')},
-            {'name': _('Mặt hàng')},
+            # {'name': _('Mặt hàng')},
             {'name': _('Giá trị HHDVmua vào chưa có thuế'), 'class': 'number'},
-            {'name': _('Thuế suất (%)'), 'class': 'number'},
+            # {'name': _('Thuế suất (%)'), 'class': 'number'},
             {'name': _('Thuế GTGT'), 'class': 'number'},
             {'name': _('Ghi chú hoặc thời hạn thanh toán trả chậm')},
         ]
@@ -52,6 +52,26 @@ class vat_in_report(models.AbstractModel):
         self._cr.execute(sql)
         taxs = self._cr.dictfetchall()
         return taxs
+    
+    def _get_tax_amount_by_categ(self, vat_categ_id, move_id):
+        """get tax amount per vat category"""
+        move = self.env['account.move.line']
+        aml = move.search([('vat_in_config_id', '=', vat_categ_id), ('move_id', '=', move_id)])
+        aml = aml.filtered(lambda line: line.tax_line_id)
+        tax_amount = 0
+        for line in aml:
+            tax_amount += line.debit
+        return tax_amount
+    
+    def _get_untax_amount_by_categ(self, vat_categ_id, move_id):
+        """get untax amount per vat category"""
+        move = self.env['account.move.line']
+        aml = move.search([('vat_in_config_id', '=', vat_categ_id), ('move_id', '=', move_id)])
+        aml = aml.filtered(lambda line: not line.tax_line_id)
+        untax_amount = 0
+        for line in aml:
+            untax_amount += line.debit
+        return untax_amount
 
     def _get_aml_by_vat_categ(self, options, vat_categ, tax_ids):
         company_id = self.env.user.company_id
@@ -64,6 +84,7 @@ class vat_in_report(models.AbstractModel):
         aml_cond = self._get_aml_cond(tax_ids)
 
         sql = f"""SELECT aml.id as id,
+                         am.id as move_id,
                          am.company_id,
                          am.name,
                          aml.account_id,
@@ -71,7 +92,6 @@ class vat_in_report(models.AbstractModel):
                          rp.vat as partner_vat,
                          aml.partner_id,
                          aml.date,
-                         aml.product_id,
                          am.vat_invoice_no as vat_invoice_number,
                          aml.tax_line_id as tax,
                          CASE WHEN am.type in ('out_refund', 'in_refund')  OR aml.ref like 'Reversal of%%'
@@ -80,9 +100,8 @@ class vat_in_report(models.AbstractModel):
                   FROM account_move_line aml
                        JOIN account_move am on aml.move_id = am.id
                        JOIN account_account aa on aa.id = aml.account_id
-                       LEFT JOIN product_product pp on pp.id = aml.product_id
                        LEFT JOIN res_partner rp on rp.id = aml.partner_id
-                  WHERE aml.product_id is not null and (aml.date >= '{date_from}')
+                  WHERE (aml.date >= '{date_from}')
                         AND aml.vat_in_config_id = {vat_categ.id} 
                         AND (aml.date <= '{date_to}')
                         AND aml.company_id = {company_id.id}
@@ -95,9 +114,22 @@ class vat_in_report(models.AbstractModel):
         vat_report_results = self._cr.dictfetchall()
         for am in vat_report_results:
             aml_id = am.get('id')
+            move_id = am.get('move_id')
+            tax_amount = self._get_tax_amount_by_categ(vat_categ.id, move_id)
+            untax_amount = self._get_untax_amount_by_categ(vat_categ.id, move_id)
             taxs = self._get_taxs_by_aml(aml_id)
             am['taxes'] = taxs
-        return vat_report_results
+            am['amount_tax'] = tax_amount
+            am['amount_untaxed'] = untax_amount
+        done = set()
+        result = []
+        for d in vat_report_results:
+            if d['name'] not in done:
+                done.add(d['name'])
+                result.append(d)
+        return result
+    
+    
 
     def get_all_total(self, options, line_id, type='purchase'):
         vatcategs = {}
@@ -115,20 +147,14 @@ class vat_in_report(models.AbstractModel):
             for am in results:
                 tax_rate = 0
                 taxed = 0
-                for t in am.get('taxes'):
-                    if t.get('amount_type') == 'percent':
-                        taxed += am.get('tax_amount') * (t.get('amount') / 100)
-                        tax_rate += t.get('amount')
-                    elif t.get('amount_type') == 'fixed':
-                        taxed += t.get('amount')
-                sum_base += am.get('tax_amount')
-                sum_taxed += taxed
-                sum_tax_rate += tax_rate
+                sum_base += am.get('amount_untaxed')
+                sum_taxed += am.get('amount_tax')
+                # sum_tax_rate += tax_rate
 
         return {
             'global_base': sum_base,
             'global_taxed': sum_taxed,
-            'global_tax_rate': sum_tax_rate
+            # 'global_tax_rate': sum_tax_rate
         }
 
     def _group_by_vat_categ(self, options, line_id, type='purchase'):
@@ -174,7 +200,7 @@ class vat_in_report(models.AbstractModel):
                     'name': len(display_name) > 40 and not context.get('print_mode') and display_name[
                                                                                          :40] + '...' or display_name,
                     'title_hover': display_name,
-                    'columns': [{'name': v} for v in ['', '', '', '', '', '', '', '', '']],
+                    'columns': [{'name': v} for v in ['', '', '', '', '', '', '']],
                     'level': 2,
                     'unfoldable': True,
                     'unfolded': 'vat_%s' % (vat.id,) in options.get('unfolded_lines') or unfold_all,
@@ -188,6 +214,7 @@ class vat_in_report(models.AbstractModel):
                 seq = 1
                 for am in amls:
                     line = self.env['account.move.line'].browse(am.get('id'))
+                    
                     name = line.name and line.name or ''
                     if line.ref:
                         name = name and name + ' - ' + line.ref or line.ref
@@ -203,16 +230,9 @@ class vat_in_report(models.AbstractModel):
                     partner_name_title = partner_name
                     taxed = 0
                     tax_rate = 0
-                    for t in am.get('taxes'):
-                        if t.get('amount_type') == 'percent':
-                            taxed += am.get('tax_amount') * (t.get('amount') / 100)
-                            tax_rate += t.get('amount')
-                        elif t.get('amount_type') == 'fixed':
-                            taxed += t.get('amount')
-
-                    sum_base += am.get('tax_amount')
-                    sum_taxed += taxed
-                    sum_tax_rate += tax_rate
+                    sum_base += am.get('amount_untaxed')
+                    sum_taxed += am.get('amount_tax')
+                    # sum_tax_rate += tax_rate
                     if partner_name and len(partner_name) > 35 and not self.env.context.get(
                             'no_format') and not self.env.context.get('print_mode'):
                         partner_name = partner_name[:32] + "..."
@@ -222,8 +242,8 @@ class vat_in_report(models.AbstractModel):
                     elif line.payment_id:
                         caret_type = 'account.payment'
                     columns = [{'name': v} for v in
-                               [invoice_vat, invoice_date, partner_name, partner_vat, line.product_id.name,
-                                self.format_value(am.get('tax_amount')), tax_rate, self.format_value(taxed),
+                               [invoice_vat, invoice_date, partner_name, partner_vat,
+                                self.format_value(am.get('amount_untaxed')), self.format_value(am.get('amount_tax')),
                                 line.move_id.note]]
                     columns[1]['class'] = 'whitespace_print'
                     columns[2]['class'] = 'whitespace_print'
@@ -265,7 +285,7 @@ class vat_in_report(models.AbstractModel):
                         'parent_id': 'vat_%s' % (vat.id,),
                         'name': _('Tổng '),
                         'columns': [{'name': v} for v in
-                                    ['', '', '', '', '', self.format_value(sum_base), '', self.format_value(sum_taxed),
+                                    ['', '', '', '', self.format_value(sum_base), self.format_value(sum_taxed),
                                      '']],
                     })
 
@@ -278,8 +298,7 @@ class vat_in_report(models.AbstractModel):
                 'id': 'total_global',
                 'name': _('Tổng số toàn cầu'),
                 'title_hover': _('Tổng số toàn cầu'),
-                'columns': [{'name': v} for v in ['', '', '', '', '', self.format_value(total.get('global_base')),
-                                                  self.format_value(total.get('global_tax_rate')),
+                'columns': [{'name': v} for v in ['', '', '', '',self.format_value(total.get('global_base')),
                                                   self.format_value(total.get('global_taxed')), '']],
                 'level': 2,
             })
@@ -376,7 +395,6 @@ class vat_in_report(models.AbstractModel):
         ctx.update({'no_format': True, 'print_mode': True, 'prefetch_fields': False})
         # deactivating the prefetching saves ~35% on get_lines running time
         lines = self.with_context(ctx)._get_lines(options)
-
         if options.get('hierarchy'):
             lines = self._create_hierarchy(lines)
         sheet.hide_gridlines(2)
@@ -439,10 +457,9 @@ class vat_in_report(models.AbstractModel):
                 sheet.write_datetime(y + y_offset, 0, cell_value, date_default_col1_style)
             else:
                 sheet.write(y + y_offset, 0, cell_value, col1_style)
-
             if lines[y].get('id') == 'total_global':
-                amount_without_tax = lines[y]['columns'][5].get('name')
-                taxes = lines[y]['columns'][7].get('name')
+                amount_without_tax = lines[y]['columns'][4].get('name')
+                taxes = lines[y]['columns'][5].get('name')
                 amount_with_tax = amount_without_tax + taxes
 
             # write all the remaining cells
@@ -476,6 +493,6 @@ class vat_in_report(models.AbstractModel):
 
         workbook.close()
         output.seek(0)
-        generated_file = output.read()
+        response.stream.write(output.read())
         output.close()
-        return generated_file
+        # return generated_file

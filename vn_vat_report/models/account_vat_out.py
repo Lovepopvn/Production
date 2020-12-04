@@ -547,6 +547,6 @@ class vat_out_report(models.AbstractModel):
 
         workbook.close()
         output.seek(0)
-        generated_file = output.read()
+        response.stream.write(output.read())
         output.close()
-        return generated_file
+        # return generated_file
