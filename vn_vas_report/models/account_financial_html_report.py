@@ -1506,33 +1506,33 @@ class CustomFormulaLine(object):
 			self.crb = fields['crb']
 		if fields.get('drb'):
 			self.drb = fields['drb']
+		if obj is not None:
+			if obj_is_dict==False and obj.source in ['gl','bs_01_dn']:
+				try:
+					if obj.source == 'gl':
+						self.balance = obj._get_gl_balance()
+					elif obj.source == 'bs_01_dn':
+						self.balance = obj.with_context(fetch_outside_origin_report=True)._get_bs_01_dn_balance()
 
-		if obj_is_dict==False and obj.source in ['gl','bs_01_dn']:
-			try:
-				if obj.source == 'gl':
-					self.balance = obj._get_gl_balance()
-				elif obj.source == 'bs_01_dn':
-					self.balance = obj.with_context(fetch_outside_origin_report=True)._get_bs_01_dn_balance()
-
-					
-				# elif obj.source == 'aml' and obj.group_line:
-				# 	self.balance = obj._get_group_balance()
-			except Exception as E:
-				_logger.error(E)
-				_logger.info('Passing Raise Exception')
-				pass
-		
-		elif obj_is_dict==False and obj.source == 'aml' and obj.calc_type:
-			if obj.group_line:
-				self.balance = obj._get_group_balance()
-			else:
-				if fields.get('crb') or fields.get('drb'):
-					if 'crb' in obj.calc_type:
-						# if crb
-						self.balance = self.crb
-					elif 'drb' in obj.calc_type:
-						# if drb
-						self.balance = self.drb
+						
+					# elif obj.source == 'aml' and obj.group_line:
+					# 	self.balance = obj._get_group_balance()
+				except Exception as E:
+					_logger.error(E)
+					_logger.info('Passing Raise Exception')
+					pass
+			
+			elif obj_is_dict==False and obj.source == 'aml' and obj.calc_type:
+				if obj.group_line:
+					self.balance = obj._get_group_balance()
+				else:
+					if fields.get('crb') or fields.get('drb'):
+						if 'crb' in obj.calc_type:
+							# if crb
+							self.balance = self.crb
+						elif 'drb' in obj.calc_type:
+							# if drb
+							self.balance = self.drb
 
 # patching
 FormulaLine.__init__ = CustomFormulaLine.__init__
