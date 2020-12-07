@@ -208,7 +208,7 @@ class ProviderFedex(models.Model):
                 commodity_country_of_manufacture = shipping.product_lot_ids[0].delivery_order_id.location_id.company_id.country_id.code
 
                 product_lots = []
-                for lot in shipping.product_lot_ids:
+                for lot in shipping.product_lot_ids.sorted(lambda l: l.scanning_order):
                     com_desc = "[%s] %s" % (lot.product_id.default_code, lot.product_id.name)
                     if lot.product_id.fsc_group_id or lot.product_id.fsc_status_id:
                         if lot.product_id.fsc_group_id and lot.product_id.fsc_status_id:
