@@ -11,7 +11,7 @@ class ProductLot(models.Model):
     _name = 'product.lot'
     _inherit = ['barcodes.barcode_events_mixin']
     _description = 'Product Lot'
-    _order = 'write_date DESC'
+    _order = 'scanning_order DESC'
 
     name = fields.Char('Product Lot', default="/", copy=False)
     state = fields.Selection([
@@ -206,7 +206,11 @@ class ProductLot(models.Model):
 
     def set_ready_shipped(self):
         for lot in self:
-            lot.ready_to_shipped = True
+            shipped_lot_num = self.env['ir.sequence'].next_by_code('lot.shipped') or 0
+            lot.write({
+                'ready_to_shipped': True,
+                'scanning_order': shipped_lot_num
+            })
     
     def remove_shipped(self):
         for lot in self:
@@ -228,8 +232,10 @@ class ProductLot(models.Model):
                     delivery = product.delivery_order_id.name
                 raise Warning(_('This container belongs to a delivery order %(delivery)s that is already in a picking wave %(wave_id)s') % {'wave_id': product.picking_wave_id.name, 'delivery':delivery})
             else:
+                shipped_lot_num = self.env['ir.sequence'].next_by_code('lot.shipped') or 0
                 product.write({
                     'ready_to_shipped': True,
+                    'scanning_order': shipped_lot_num
                 })
                 return True
         else:
