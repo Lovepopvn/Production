@@ -127,7 +127,7 @@ class PickingWave(models.Model):
             wave.shipping_status = 'shipped'
             wave.validate_so(wave.delivery_order_ids)
             wave._send_confirmation_email()
-
+    
     def open_website_url(self):
         self.ensure_one()
         if not self.carrier_tracking_url:
