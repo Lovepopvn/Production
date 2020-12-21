@@ -98,23 +98,23 @@ class AccountFinancialHtmlReport(models.Model):
 			elif options.get('date') and not options['date'].get('filter'):
 				options['date'].update({'filter':default_filter})
 
-			comparison = options.get('comparison')
-			if comparison and comparison.get('number_period') in [1,0] and comparison.get('filter') != 'no_comparison':
-				comparison.update({'filter':'previous_period', 'number_period':1, "string":"Previous Period",})
-				options.update({'comparison':comparison})
-			else:
-				if not comparison:
-					options.update({
-						"comparison":{
-							'filter':'previous_period',
-							'number_period':1,
-							"string":"Previous Period",
-							"periods":[],
-							"date_from":"",
-							"date_to":""
-						},
+			# comparison = options.get('comparison')
+			# if comparison and comparison.get('number_period') in [1,0] and comparison.get('filter') != 'no_comparison':
+			# 	comparison.update({'filter':'previous_period', 'number_period':1, "string":"Previous Period",})
+			# 	options.update({'comparison':comparison})
+			# else:
+			# 	if not comparison:
+			# 		options.update({
+			# 			"comparison":{
+			# 				'filter':'previous_period',
+			# 				'number_period':1,
+			# 				"string":"Previous Period",
+			# 				"periods":[],
+			# 				"date_from":"",
+			# 				"date_to":""
+			# 			},
 
-					})
+			# 		})
 			res = super().get_report_informations(options)
 
 			new_options = res.get('options')
@@ -1118,6 +1118,13 @@ class AccountFinancialHtmlReportLine(models.Model):
 					if group_line.zero_if_negative and rec['columns'][0]['no_format_name'] < 0.0:
 						rec['columns'][0]['no_format_name'] = 0
 						rec['columns'][0]['name'] = 0
+					if 'periods' in self._context:
+						num = 1
+						for i in self._context['periods']:
+							if group_line.zero_if_negative and rec['columns'][num]['no_format_name'] < 0.0:
+								rec['columns'][num]['no_format_name'] = 0
+								rec['columns'][num]['name'] = 0
+								num+=1
 		
 		return sup
 
@@ -1271,6 +1278,10 @@ class AccountFinancialHtmlReportLine(models.Model):
 							dm_domain[idx] = new_dm
 
 					result += dm_domain
+	 
+			state_ctx = self._context.get('state')
+			if state_ctx:
+				result += [('move_id.state','=',state_ctx)]
 			
 			return result
 
