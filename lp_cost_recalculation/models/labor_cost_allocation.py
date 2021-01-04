@@ -3,6 +3,8 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
+from .cost_recalculation_abstract import TIMEZONE_RELATIVEDELTA
+
 
 class LaborCostAllocation(models.Model):
     _name = 'lp_cost_recalculation.labor.cost.allocation'
@@ -91,9 +93,14 @@ class LaborCostAllocation(models.Model):
             account_id = record._get_accounts()['make_to_stock_counterpart']
             domain = [
                 ('account_id', '=', account_id),
-                ('date', '>=', record.date_from),
-                ('date', '<=', record.date_to),
+                ('date', '>=', record.date_from + TIMEZONE_RELATIVEDELTA),
+                ('date', '<=', record.date_to + TIMEZONE_RELATIVEDELTA),
             ]
+            # date in AML is date, not datetime, timezone delta needs to be added, otherwise the time part 
+            # of (datetime) record.date_* gets cropped and for ICT (GMT+7) the date_from casts to the previous 
+            # month's last day 
+            # ('2020-12-01 00:00:00' in ICT is '2020-11-30 17:00:00', without the time part 
+            # the date is just '2020-11-30' instead of '2020-12-01')
             total_cost = sum(AML.search(domain).mapped('credit'))
             record.write({'total_calculated_labor_cost_by_accounting': total_cost})
 
