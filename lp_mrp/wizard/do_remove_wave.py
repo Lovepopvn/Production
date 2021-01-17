@@ -14,9 +14,15 @@ class DoRemoveWave(models.TransientModel):
     
     def action_confirm(self):
         product_lot_ids = self.env['product.lot'].search([('delivery_order_id', '=', self.picking_id.id)])
-        query = """
-                    update product_lot set picking_wave_id = null, tracking_number = null, shipper_reference = null, create_date = '%s'
-                    where id in %s
-                        """ % (datetime.now(),tuple(product_lot_ids.ids))
+        if len(product_lot_ids) > 1:
+            query = """
+                        update product_lot set picking_wave_id = null, tracking_number = null, shipper_reference = null, create_date = '%s'
+                        where id in %s
+                            """ % (datetime.now(),tuple(product_lot_ids.ids))
+        else:
+            query = """
+                        update product_lot set picking_wave_id = null, tracking_number = null, shipper_reference = null, create_date = '%s'
+                        where id = %s
+                            """ % (datetime.now(),(product_lot_ids.id))
         self._cr.execute(query)
         self.picking_id.write({'wave_id': False})
