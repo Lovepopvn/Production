@@ -93,7 +93,25 @@ class WizardGenerateJournalLedger(models.TransientModel):
 		for acc in self.account_ids:
 			sheet = workbook.add_worksheet(str(acc.code))
 			company_id = self.env.user.company_id
-
+			if self.with_currency:
+				total_init_debit_cur = 0
+				total_init_credit_cur = 0
+				total_init_cur = 0
+				currency = ''
+				curr_initial_balance = self.env['account.move.line.ctp'].search([('move_id.state','=','posted'), ('move_id.date','<',self.start_date), '|', ('dr_account_id','=',acc.id), ('cr_account_id','=',acc.id)]).sorted(lambda r:(r.move_id.date,r.move_id.name))
+				for ctp in curr_initial_balance:
+					if ctp.currency_id:
+						currency = ctp.currency_id.name or ''
+					amount_pos = 'debit'
+					if ctp.dr_account_id.id == acc.id:
+						amount_pos = 'debit'
+					elif ctp.cr_account_id.id == acc.id:
+						amount_pos = 'credit'
+					if amount_pos=='debit':
+						total_init_debit_cur += ctp.countered_amt_currency
+					elif amount_pos == 'credit':
+						total_init_credit_cur += ctp.countered_amt_currency
+				total_init_cur = total_init_debit_cur - total_init_credit_cur
 			sheet.set_column('A:I', 25)
 			sheet.set_column('J:K', 30)
 
@@ -209,10 +227,20 @@ class WizardGenerateJournalLedger(models.TransientModel):
 			sheet.write_formula(_('F%s') % (row+9), _("=ABS(%s)") % debit_opening_balance, border_currency_right_text)
 			sheet.write_formula(_('G%s') % (row+9), _("=ABS(%s)") % credit_opening_balance, border_currency_right_text)
 			if self.with_currency:
-				sheet.merge_range(_('H%s:K%s') % (row+9,row+9),'', border_text)
+				sheet.write(_('H%s') % (row+9),_("%s")%(currency,), border_right_text)
+				sheet.write(_('I%s') % (row+9),_("%s")%('',), border_right_text)
+				# sheet.merge_range(_('H%s:K%s') % (row+9,row+9),'', border_text)			
+				if total_init_cur>0:
+					sheet.write(_('J%s') % (row+9), total_init_cur,border_currency_right_text)
+					sheet.write(_('K%s') % (row+9), 0,border_currency_right_text)
+				else:
+					sheet.write(_('J%s') % (row+9), 0,border_currency_right_text)
+					sheet.write(_('K%s') % (row+9), abs(total_init_cur),border_currency_right_text)
 			row_line = row+10
 			total_debit = 0.0
 			total_credit = 0.0
+			total_debit_cur = 0.0
+			total_credit_cur = 0.0
 			for ctp in counterpart_ids:
 				sheet.write(_('A%s') % (row_line),_("%s")%(odoo_format_date(self.env, ctp.move_id.date) or '',), border_right_text)
 				sheet.write(_('B%s') % (row_line),_("%s")%(ctp.move_id.name or '',), border_left_text)
@@ -245,10 +273,13 @@ class WizardGenerateJournalLedger(models.TransientModel):
 					if amount_pos=='debit':
 						sheet.write(_('J%s') % (row_line), ctp.countered_amt_currency or 0.00,border_currency_right_text)
 						sheet.write(_('K%s') % (row_line),0.00,border_currency_right_text)
+						total_debit_cur += ctp.countered_amt_currency
+
 					elif amount_pos == 'credit':
 						
 						sheet.write(_('J%s') % (row_line), 0.00,border_currency_right_text)
-						sheet.write(_('K%s') % (row_line), ctp.countered_amt_currency or 0.00, border_currency_right_text)
+						sheet.write(_('K%s') % (row_line), ctp.countered_amt_currency or 0.00, border_currency_right_text)					
+						total_credit_cur += ctp.countered_amt_currency
 
 				row_line = row_line + 1
 
@@ -269,8 +300,21 @@ class WizardGenerateJournalLedger(models.TransientModel):
 			sheet.write_formula(_('F%s') % (row_line+1), _("=ABS(%s)") % debit_cb,border_currency_right_text)
 			sheet.write_formula(_('G%s') % (row_line+1), _("=ABS(%s)") % credit_cb,border_currency_right_text)
 			if self.with_currency:
-				sheet.merge_range(_('H%s:K%s') % (row_line+1,row_line+1),'', border_text)
-				sheet.merge_range(_('H%s:K%s') % (row_line,row_line),'', border_text)
+				# sheet.merge_range(_('H%s:K%s') % (row_line+1,row_line+1),'', border_text)
+				# sheet.merge_range(_('H%s:K%s') % (row_line,row_line),'', border_text)
+				sheet.write(_('H%s') % (row_line), '',border_currency_right_text)
+				sheet.write(_('I%s') % (row_line), '', border_currency_right_text)
+				sheet.write(_('H%s') % (row_line+1), '',border_currency_right_text)
+				sheet.write(_('I%s') % (row_line+1), '', border_currency_right_text)
+				sheet.write(_('J%s') % (row_line), total_debit_cur,border_currency_right_text)
+				sheet.write(_('K%s') % (row_line), total_credit_cur, border_currency_right_text)
+				closing_balance = (total_init_debit_cur+total_debit_cur) - (total_init_credit_cur+total_credit_cur)
+				if closing_balance > 0:
+					sheet.write(_('J%s') % (row_line+1), closing_balance ,border_currency_right_text)
+					sheet.write(_('K%s') % (row_line+1), 0, border_currency_right_text)
+				else:
+					sheet.write(_('J%s') % (row_line+1), 0 ,border_currency_right_text)
+					sheet.write(_('K%s') % (row_line+1), abs(closing_balance), border_currency_right_text)
 
 
 			# row = row + row_line + 3
