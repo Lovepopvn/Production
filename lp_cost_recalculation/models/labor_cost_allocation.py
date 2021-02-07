@@ -4,7 +4,6 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 from .cost_recalculation_abstract import TIMEZONE_RELATIVEDELTA
-# from odoo.tools.misc import profile
 
 
 class LaborCostAllocation(models.Model):
@@ -106,7 +105,6 @@ class LaborCostAllocation(models.Model):
             record.write({'total_calculated_labor_cost_by_accounting': total_cost})
 
 
-    # @profile('/opt/profiling/labor_cost_compute.profile')
     def compute_allocation(self):
         self.ensure_one_names()
         self._validate_dates()
@@ -120,17 +118,13 @@ class LaborCostAllocation(models.Model):
         for manufacturing_order in manufacturing_orders:
             lines = []
             for loss_line in self.delta_line_ids:
-                # get IDs of relevant work orders
-                query_str = """
-                    SELECT id
-                    FROM mrp_workorder w
-                    WHERE w.production_id = %s
-                        AND w.workcenter_id = %s
-                        AND w.state = 'done'
-                """
-                self.env.cr.execute(query_str, (manufacturing_order.id, loss_line.workcenter_id.id))
-                workorder_ids = [id for id in self.env.cr.fetchall()]
-                if not workorder_ids:
+                Workorders = self.env['mrp.workorder'].search([
+                    # ('production_id', 'in', manufacturing_orders.ids),
+                    ('production_id', '=', manufacturing_order.id),
+                    ('workcenter_id', '=', loss_line.workcenter_id.id),
+                    ('state', '=', 'done')
+                ])
+                if not Workorders:
                     continue
                 line_vals = self._get_allocation_line_vals(manufacturing_order)
 
@@ -139,13 +133,15 @@ class LaborCostAllocation(models.Model):
                 query_str = """
                     SELECT sum(t.duration) / 60 * wc.costs_hour "total_cost"
                     FROM mrp_workcenter_productivity t
+                    LEFT JOIN mrp_workorder w ON (w.id = t.workorder_id)
                     LEFT JOIN mrp_workcenter wc ON (wc.id = t.workcenter_id )
                     WHERE t.workorder_id IS NOT NULL AND t.workorder_id IN %s
                     GROUP BY wc.id
                 """
-                self.env.cr.execute(query_str, (tuple(workorder_ids), ))
-                for total_cost in self.env.cr.fetchall():
-                    calculated_cost += total_cost[0]
+                self.env.cr.execute(query_str, (tuple(Workorders.ids), ))
+                RoutingWorkcenter = self.env['mrp.routing.workcenter']
+                for total_cost in self.env.cr.fetchall()[0]:
+                    calculated_cost += total_cost
 
                 # line preparation
                 line_vals.update({
