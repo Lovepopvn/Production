@@ -100,6 +100,8 @@
                                         <field name="unit_cost_to_adjust_by_lp" widget="monetary" readonly="1"/>
                                         <field name="unit_cost_to_adjust_by_pa" widget="monetary" readonly="1"/>
                                         <field name="rounding_difference" readonly="1"/>
+                                        <field name="cogs_allocation_by_product" readonly="1"/>
+                                        <field name="stock_allocation_by_product" readonly="1"/>
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
@@ -257,6 +259,8 @@
                                         <field name="unit_cost_to_adjust_by_lp" widget="monetary" readonly="1"/>
                                         <field name="unit_cost_to_adjust_by_pa" widget="monetary" readonly="1"/>
                                         <field name="rounding_difference" readonly="1"/>
+                                        <field name="cogs_allocation_by_product" readonly="1"/>
+                                        <field name="stock_allocation_by_product" readonly="1"/>
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
@@ -391,6 +395,8 @@
                                         <field name="unit_cost_to_adjust_by_lp" widget="monetary" readonly="1"/>
                                         <field name="unit_cost_to_adjust_by_pa" widget="monetary" readonly="1"/>
                                         <field name="rounding_difference" readonly="1"/>
+                                        <field name="cogs_allocation_by_product" readonly="1"/>
+                                        <field name="stock_allocation_by_product" readonly="1"/>
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">
@@ -515,6 +521,8 @@
                                         <field name="unit_cost_to_adjust_by_lp" widget="monetary" readonly="1"/>
                                         <field name="unit_cost_to_adjust_by_pa" widget="monetary" readonly="1"/>
                                         <field name="rounding_difference" readonly="1"/>
+                                        <field name="cogs_allocation_by_product" readonly="1"/>
+                                        <field name="stock_allocation_by_product" readonly="1"/>
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('allocation_line_ids', '!=', [])]}">

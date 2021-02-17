@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, _lt
 from odoo.exceptions import UserError, ValidationError
 from odoo.addons.http_routing.models.ir_http import slugify
 from odoo.tools.misc import xlsxwriter
@@ -26,8 +26,8 @@ ALLOCATION_DOMAIN = "[('date_from', '=', date_from), ('date_to', '=', date_to), 
 PREVIOUS_REPORT_DOMAIN = "[('date_from', '=', previous_date_from), "\
      + "('date_to', '=', previous_date_to), ('state', '=', '%s')]" % (STATES[2][0])
 
-DATE_FORMAT = _('%d/%m/%Y')
-EXCEL_DATE_FORMAT = _('dd/mm/yyyy')
+DATE_FORMAT = _lt('%d/%m/%Y')
+EXCEL_DATE_FORMAT = _lt('dd/mm/yyyy')
 
 EXCEL_FONT_SIZE = 10
 EXCEL_FONT = 'Arial'
@@ -45,25 +45,25 @@ PACK_TOP_HEADERS = [
         'end': 14,
         'background': '#f7caac',
         'background_header': '#92d050',
-        'text': _('FINISHED GOODS'),
+        'text': _lt('FINISHED GOODS'),
     },
 ]
 PACK_HEADERS = [
-    ('mo', _('MO Number')),
-    ('product', _('Product')),
-    ('product_code', _('Internal Reference')),
-    ('product_name', _('Product Name')),
-    ('parent_mo', _('Parent MO')),
-    ('quantity', _('Quantity')),
-    ('raw_material', _('1541C\nBOM Raw Material')),
-    ('sub_material', _('1541P\nBOM Sub Material')),
-    ('material_loss_allocation', _('Material Loss Allocation'), '#00ffff'), # TODO color?
-    ('printing_cost', _('1543P\nPrinting Cost')),
-    ('printing_allocation', _('Printing Allocation'), '#00ffff'),
-    ('direct_labor', _('622\nDirect Labor')),
-    ('direct_labor_allocation', _('Direct Labor Allocation'), '#00ffff'),
-    ('production_cost', _('627\nGeneral Production Cost')),
-    ('total_value', _('Finished Goods Total Value')),
+    ('mo', _lt('MO Number')),
+    ('product', _lt('Product')),
+    ('product_code', _lt('Internal Reference')),
+    ('product_name', _lt('Product Name')),
+    ('parent_mo', _lt('Parent MO')),
+    ('quantity', _lt('Quantity')),
+    ('raw_material', _lt('1541C\nBOM Raw Material')),
+    ('sub_material', _lt('1541P\nBOM Sub Material')),
+    ('material_loss_allocation', _lt('Material Loss Allocation'), '#00ffff'), # TODO color?
+    ('printing_cost', _lt('1543P\nPrinting Cost')),
+    ('printing_allocation', _lt('Printing Allocation'), '#00ffff'),
+    ('direct_labor', _lt('622\nDirect Labor')),
+    ('direct_labor_allocation', _lt('Direct Labor Allocation'), '#00ffff'),
+    ('production_cost', _lt('627\nGeneral Production Cost')),
+    ('total_value', _lt('Finished Goods Total Value')),
 ]
 
 SUMMARY_TOP_HEADERS = [
@@ -79,28 +79,28 @@ SUMMARY_TOP_HEADERS = [
         'end': 11,
         'background': '#f7caac',
         'background_header': '#fce5cd',
-        'text': _('Beginning'),
+        'text': _lt('Beginning'),
     },
     {
         'start': 12,
         'end': 22,
         'background': '#a4c2f4',
         'background_header': '#a4c2f4',
-        'text': _('FINISHED GOODS'),
+        'text': _lt('FINISHED GOODS'),
     },
     {
         'start': 23,
         'end': 31,
         'background': '#dd7e6b',
         'background_header': '#ea9999',
-        'text': _('DETAIL COGS'),
+        'text': _lt('DETAIL COGS'),
     },
     {
         'start': 32,
         'end': 38,
         'background': '#b6d7a8',
         'background_header': '#92d050',
-        'text': _('Ending Value / Inventory Value'),
+        'text': _lt('Ending Value / Inventory Value'),
     },
 ]
 SUMMARY_COLUMNS = [

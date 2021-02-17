@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, _lt
 from odoo.exceptions import ValidationError, UserError
 from odoo.addons.http_routing.models.ir_http import slugify
 from odoo.tools.misc import xlsxwriter
@@ -18,10 +18,10 @@ STATES = [('draft', 'Draft'), ('allocation_derived', 'Allocation Derived'), ('po
 DEFAULT_STATE = STATES[0][0]
 
 MODEL_NAMES = {
-    'material_loss': _('Material Loss Allocation'),
-    'labor_cost': _('Labor Cost Allocation'),
-    'click_charge': _('Click Charge Allocation'),
-    'overhead_cost': _('Overhead Cost Allocation'),
+    'material_loss': _lt('Material Loss Allocation'),
+    'labor_cost': _lt('Labor Cost Allocation'),
+    'click_charge': _lt('Click Charge Allocation'),
+    'overhead_cost': _lt('Overhead Cost Allocation'),
 }
 
 SPECIFIC_FIELDS = {
@@ -99,7 +99,7 @@ class AbstractCostRecalculation(models.AbstractModel):
     @api.model
     def get_model_name(self):
         calculation_type = self.get_calculation_type()
-        return MODEL_NAMES[calculation_type]
+        return str(MODEL_NAMES[calculation_type])
 
 
     @api.model
@@ -428,19 +428,6 @@ class AbstractCostRecalculation(models.AbstractModel):
             # PA products, LP Products that are not a part of a pack,
             # LP products that are a part of a WIP pack
 
-            # lines_lp = lines_product.filtered(lambda l: 
-            #     not l.parent_mo_id and l.mo_id.id not in parent_mo_ids)
-            # lines_pa = lines_product.filtered(lambda l: 
-            #     not l.parent_mo_id and l.mo_id.id in parent_mo_ids)
-            # lines_lp_wip = lines_product.filtered(lambda l: 
-            #     l.parent_mo_id and l.wip_pack)
-            # rounding_difference_sum += self._calculate_unit_cost_to_adjust(
-            #     allocated_value_field, lines_lp, lp_product)
-            # rounding_difference_sum += self._calculate_unit_cost_to_adjust(
-            #     allocated_value_field, lines_pa, lp_product, 'pa')
-            # rounding_difference_sum += self._calculate_unit_cost_to_adjust(
-            #     allocated_value_field, lines_lp_wip, lp_product, wip_pack=True)
-
             # FRD changed, we're just distinguishing between child and parent MOs
             lines_lp_and_wip = lines_product.filtered(lambda l: 
                 (not l.parent_mo_id and l.mo_id.id not in parent_mo_ids) or l.wip_pack)
@@ -593,18 +580,23 @@ class AbstractCostRecalculation(models.AbstractModel):
 
         lp_products = self.allocation_line_ids.mapped('lp_product_id')
         pa_products = self.allocation_line_ids.mapped('pa_product_id')
-        products = set(lp_products + pa_products)
+        products = lp_products | pa_products
 
         accounts = self._get_accounts()
 
         for product in products:
             lines_lp = self.allocation_line_ids.filtered(lambda r: r.lp_product_id.id == product.id and not r.parent_mo_id)
-            je_amount = sum(lines_lp.mapped('cogs_allocated_lp'))
             lines_pa = self.allocation_line_ids.filtered(lambda r: r.pa_product_id.id == product.id)
-            lines = lines_lp + lines_pa
-            je_amount += sum(lines.mapped('cogs_allocated_pa'))
+            lines = lines_lp | lines_pa
+            je_amount = sum(lines.mapped(lambda l: l.cogs_allocated_lp + l.cogs_allocated_pa))
             if je_amount != 0:
                 self._create_journal_entry(je_amount, product, accounts)
+
+            for line in lines_lp:
+                line.write({
+                    'cogs_allocation_by_product': je_amount,
+                    'stock_allocation_by_product': line.rounding_difference - je_amount,
+                })
 
         self.account_move_ids.action_post()
 
@@ -639,24 +631,6 @@ class AbstractCostRecalculation(models.AbstractModel):
                 'ref': ref,
             }),
         ]
-
-        # if not on_hand_qty:
-        #     lines += [
-        #         (0, 0, {
-        #             'account_id': accounts['cogs_counterpart'],
-        #             'debit': amount_1,
-        #             'credit': amount_2,
-        #             'name': name,
-        #             'ref': ref,
-        #         }),
-        #         (0, 0, {
-        #             'account_id': accounts['make_to_stock_counterpart'],
-        #             'debit': amount_2,
-        #             'credit': amount_1,
-        #             'name': name,
-        #             'ref': ref,
-        #         }),
-        #     ]
 
         je_inverse_field = self.get_specific_field_names()['je_inverse_field']
         self.write({
@@ -818,6 +792,8 @@ class AbstractCostRecalculation(models.AbstractModel):
             'unit_cost_to_adjust_by_lp',
             'unit_cost_to_adjust_by_pa',
             'rounding_difference',
+            'cogs_allocation_by_product',
+            'stock_allocation_by_product',
         ]
 
         columns = columns_start[calculation_type] + columns_start_common + columns_calculated[calculation_type] + columns_mid_common + columns_mid[calculation_type] + columns_end_common
@@ -865,4 +841,6 @@ class AbstractAllocationLine(models.AbstractModel):
     unit_cost_to_adjust_by_lp = fields.Monetary('Unit Cost to Adjust by LP')
     unit_cost_to_adjust_by_pa = fields.Monetary('Unit Cost to Adjust by PA')
     rounding_difference = fields.Float('Allocated Value by Product')
+    cogs_allocation_by_product = fields.Monetary('COGS Allocation by Product')
+    stock_allocation_by_product = fields.Monetary('Stock Allocation by Product')
     currency_id = fields.Many2one('res.currency', string='Currency')
