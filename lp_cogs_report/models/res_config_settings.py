@@ -27,6 +27,8 @@ class ResCompany(models.Model):
         "Account to get Printing Cost")
     cogs_production_location_id = fields.Many2one('stock.location', \
         "Source Location for Production")
+    cogs_production_location_dest_id = fields.Many2one('stock.location', \
+        "Destination Location for Production")
     cogs_location_id = fields.Many2one('stock.location', "Source Location for COGS")
     cogs_location_dest_id = fields.Many2one('stock.location', "Destination Location for COGS")
     cogs_pufp_location_id = fields.Many2one('stock.location', "Source Location for PUFP")
@@ -64,6 +66,9 @@ class ResConfigSettings(models.TransientModel):
             readonly=False)
     cogs_production_location_id = fields.Many2one('stock.location', \
         "Source Location for Production", related='company_id.cogs_production_location_id', \
+            readonly=False)
+    cogs_production_location_dest_id = fields.Many2one('stock.location', \
+        "Destination Location for Production", related='company_id.cogs_production_location_dest_id', \
             readonly=False)
     cogs_location_id = fields.Many2one('stock.location', "Source Location for COGS", \
         related='company_id.cogs_location_id', readonly=False)

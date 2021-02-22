@@ -207,16 +207,6 @@ class COGSReport(models.Model):
             errors.append(_("Account to get Labor Cost"))
         if not self.company_id.cogs_printing_cost_account_id:
             errors.append(_("Account to get Printing Cost"))
-        if not self.company_id.cogs_production_location_id:
-            errors.append(_("Source Location for Production"))
-        if not self.company_id.cogs_location_id:
-            errors.append(_("Source Location for COGS"))
-        if not self.company_id.cogs_location_dest_id:
-            errors.append(_("Destination Location for COGS"))
-        if not self.company_id.cogs_pufp_location_id:
-            errors.append(_("Source Location for PUFP"))
-        if not self.company_id.cogs_pufp_location_dest_id:
-            errors.append(_("Destination Location for PUFP"))
 
         if errors:
             missing_accounts = '\n'.join(errors)
@@ -229,6 +219,8 @@ class COGSReport(models.Model):
         errors = []
         if not self.company_id.cogs_production_location_id:
             errors.append(_("Source Location for Production"))
+        if not self.company_id.cogs_production_location_dest_id:
+            errors.append(_("Destination Location for Production"))
         if not self.company_id.cogs_location_id:
             errors.append(_("Source Location for COGS"))
         if not self.company_id.cogs_location_dest_id:
@@ -621,7 +613,7 @@ class COGSReport(models.Model):
         report_name = _('COST OF GOODS SOLD – %s') % report_type
         report_period_label = _('Report period')
         report_period = _('From %s to %s') % (
-            (self.date_from + TIMEZONE_RELATIVEDELTA).strftime(str(DATE_FORMAT),)
+            (self.date_from + TIMEZONE_RELATIVEDELTA).strftime(str(DATE_FORMAT)),
             (self.date_to + TIMEZONE_RELATIVEDELTA).strftime(str(DATE_FORMAT))
         )
 
@@ -798,6 +790,9 @@ class COGSReport(models.Model):
         return account_ids
     
     def _get_product_component_cost(self, mos, cost_type):
+        company = self.company_id
+        location_id = company.cogs_production_location_id.id
+        location_dest_id = company.cogs_production_location_dest_id.id
         account_ids = self._get_cost_account(cost_type)
         amount = 0
         if mos and account_ids:
@@ -812,8 +807,11 @@ class COGSReport(models.Model):
                     AND svl.quantity > 0
                     AND aml.account_id IN %s
                     AND sm.production_id IN %s
+                    AND sm.location_id = %s
+                    AND sm.location_dest_id = %s
             """
-            self._cr.execute(query, (tuple(account_ids), tuple(mos.ids)))
+            query_parameter = (tuple(account_ids), tuple(mos.ids), location_id, location_dest_id)
+            self._cr.execute(query, query_parameter)
             result = self._cr.fetchone()
             amount = result and result[0] or 0
         return amount

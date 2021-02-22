@@ -48,6 +48,10 @@
                                 <div class="text-muted">
                                     <field name="cogs_production_location_id" options="{'no_create_edit': True, 'no_open': True}" context="{'active_test': False}" />
                                 </div>
+                                <label for="cogs_production_location_dest_id" class="o_form_label" />
+                                <div class="text-muted">
+                                    <field name="cogs_production_location_dest_id" options="{'no_create_edit': True, 'no_open': True}" context="{'active_test': False}" />
+                                </div>
                                 <label for="cogs_location_id" class="o_form_label" />
                                 <div class="text-muted">
                                     <field name="cogs_location_id" options="{'no_create_edit': True, 'no_open': True}" context="{'active_test': False}" />
