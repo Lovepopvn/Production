@@ -69,16 +69,10 @@
                                         <field name="lpus_category_id" readonly="1"/>
                                         <field name="uom_id" readonly="1"/>
                                         <field name="initial_quantity" readonly="1"/>
-                                        <field name="initial_bom_raw_material" widget="monetary" readonly="1"/>
-                                        <field name="initial_bom_sub_material" widget="monetary" readonly="1"/>
-                                        <field name="initial_direct_labor" widget="monetary" readonly="1"/>
-                                        <field name="initial_printing_cost" widget="monetary" readonly="1"/>
-                                        <field name="initial_general_production_cost" widget="monetary" readonly="1"/>
                                         <field name="initial_finished_goods" readonly="1"/>
-                                        <field name="quantity" readonly="1"/>
-                                        <field name="ceq_quantity" readonly="1"/>
-                                        <field name="bom_raw_material" widget="monetary" readonly="1"/>
-                                        <field name="bom_sub_material" widget="monetary" readonly="1"/>
+                                        <field name="quantity" readonly="1"/> <!-- keep -->
+                                        <field name="ceq_quantity" readonly="1"/> <!-- keep -->
+                                        <field name="bom_material_cost" widget="monetary" readonly="1"/>
                                         <field name="material_loss_allocation" widget="monetary" readonly="1"/>
                                         <field name="direct_labor" widget="monetary" readonly="1"/>
                                         <field name="labor_cost_allocation" widget="monetary" readonly="1"/>
@@ -88,20 +82,34 @@
                                         <field name="production_in_month" widget="monetary" readonly="1"/>
                                         <field name="sold_quantity" readonly="1"/>
                                         <field name="ceq_sold_quantity" readonly="1"/>
-                                        <field name="unit_cost" widget="monetary" readonly="1"/>
-                                        <field name="cogs" widget="monetary" readonly="1"/>
-                                        <field name="detail_raw_material" widget="monetary" readonly="1"/>
-                                        <field name="detail_sub_material" widget="monetary" readonly="1"/>
-                                        <field name="detail_direct_labor" widget="monetary" readonly="1"/>
-                                        <field name="detail_printing_cost" widget="monetary" readonly="1"/>
-                                        <field name="detail_general_production_cost" widget="monetary" readonly="1"/>
+                                        <field name="cogs_before_allocation" readonly="1" />
+                                        <field name="detail_material_loss_allocation" readonly="1" />
+                                        <field name="detail_labor_cost_allocation" readonly="1" />
+                                        <field name="detail_printing_cost_allocation" readonly="1" />
+                                        <field name="detail_overhead_cost_allocation" readonly="1" />
+                                        <field name="cogs_after_allocation" readonly="1" />
+                                        <field name="usage_quantity" readonly="1" />
+                                        <field name="consumed_value" readonly="1" />
                                         <field name="ending_quantity" widget="monetary" readonly="1"/>
-                                        <field name="ending_raw_material" widget="monetary" readonly="1"/>
-                                        <field name="ending_sub_material" widget="monetary" readonly="1"/>
-                                        <field name="ending_direct_labor" widget="monetary" readonly="1"/>
-                                        <field name="ending_printing_cost" widget="monetary" readonly="1"/>
-                                        <field name="ending_general_production_cost" widget="monetary" readonly="1"/>
                                         <field name="ending_finished_goods" widget="monetary" readonly="1"/>
+                                        <!-- <field name="initial_bom_raw_material" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="initial_bom_sub_material" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="initial_direct_labor" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="initial_printing_cost" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="initial_general_production_cost" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="bom_sub_material" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="unit_cost" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="cogs" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="detail_raw_material" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="detail_sub_material" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="detail_direct_labor" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="detail_printing_cost" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="detail_general_production_cost" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="ending_raw_material" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="ending_sub_material" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="ending_direct_labor" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="ending_printing_cost" widget="monetary" readonly="1"/> -->
+                                        <!-- <field name="ending_general_production_cost" widget="monetary" readonly="1"/> -->
                                     </tree>
                                 </field>
                                 <p attrs="{'invisible': [('summary_line_ids', '!=', [])]}">
