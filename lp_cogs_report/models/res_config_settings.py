@@ -16,10 +16,10 @@ class ResCompany(models.Model):
 
     cogs_report_category_finished_ids = fields.Many2many(\
         'product.category', 'finished_category_company_rel', 'company_id', 'category_id', \
-            string='COGS Report Product Category for Finished Goods')    
+            string='COGS Report Product Categories for Finished Goods')    
     cogs_report_category_pack_ids = fields.Many2many('factory.constants.lpus.category', \
         'company_lpus_category_rel', 'company_id', 'category_id', \
-            string='COGS Report LPUS Product Category for Packs')
+            string='COGS Report LPUS Product Categories for Packs')
     cogs_material_cost_account_id = fields.Many2one('account.account', \
         "Account to get Material cost")
     cogs_labor_cost_account_id = fields.Many2one('account.account', "Account to get Labor Cost")
@@ -51,10 +51,10 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.cogs_report_category_sub_id', readonly=False)
     
     cogs_report_category_finished_ids = fields.Many2many(
-        'product.category', string='COGS Report Product Category for Finished Goods',
+        'product.category', string='COGS Report Product Categories for Finished Goods',
         related='company_id.cogs_report_category_finished_ids', readonly=False)
     cogs_report_category_pack_ids = fields.Many2many(
-        'factory.constants.lpus.category', string='COGS Report LPUS Product Category for Packs',
+        'factory.constants.lpus.category', string='COGS Report LPUS Product Categories for Packs',
         related='company_id.cogs_report_category_pack_ids', readonly=False)
     cogs_material_cost_account_id = fields.Many2one('account.account', \
         "Account to get Material cost", related='company_id.cogs_material_cost_account_id', \

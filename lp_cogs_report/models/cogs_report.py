@@ -439,7 +439,7 @@ class COGSReport(models.Model):
         quantity = sum(mos.filtered(lambda m: not m.parent_mo_id)\
             .finished_move_line_ids.mapped('qty_done'))
 
-        pack_lines_product = [line for line in pack_report_data['lines_pack']
+        pack_lines_product = [line for line in pack_report_data
             if (line['product'].id == product.id and not line['parent_mo'])]
         
         material_cost = 0
@@ -570,8 +570,7 @@ class COGSReport(models.Model):
             'top_headers': PACK_TOP_HEADERS,
             'header_styles': {},
         }
-        self._write_sheet(workbook, sheet_pack, headers, data['lines_pack'], styles, type_pack)
-        # self._write_sheet(workbook, sheet_wip, headers, data['lines_wip_pack'], styles, type_wip)
+        self._write_sheet(workbook, sheet_pack, headers, data, styles, type_pack)
 
         # summary sheet
         type_summary = _('Summary')
@@ -678,54 +677,137 @@ class COGSReport(models.Model):
 
         finished_goods_ids = self.company_id.cogs_report_category_finished_ids.ids
         pack_ids = self.company_id.cogs_report_category_pack_ids.ids
-        sub_material_id = self.company_id.cogs_report_category_sub_id.id
+        account_id = self.company_id.cogs_material_cost_account_id.id
+        
         Product = self.env['product.product']
         MO = self.env['mrp.production']
 
-        mo_domain_common = [
-            ('state', '=', 'done'),
-            ('date_finished', '>=', self.date_from),
-            ('date_finished', '<=', self.date_to),
-            ('mo_for_samples', '=', False),
-        ]
+        query = """
+            WITH PPIMV AS (
+                SELECT
+                    sm.raw_material_production_id AS mrp_id,
+                    svl.product_id,
+                    aml.debit
+                FROM stock_valuation_layer svl
+                    JOIN stock_move sm ON svl.stock_move_id = sm.id
+                    LEFT JOIN account_move_line aml ON svl.account_move_id = aml.move_id 
+                        AND aml.account_id = %s
+                WHERE 
+                    sm.raw_material_production_id IN (
+                        SELECT
+                            p.id
+                        FROM mrp_production p
+                            JOIN product_product pp ON pp.id = p.product_id
+                                JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                        WHERE 
+                            p.state = 'done' 
+                            AND (p.mo_for_samples IS NULL OR p.mo_for_samples IS False)
+                            AND p.date_finished BETWEEN %s AND %s
+                            AND pt.categ_id IN %s
+                            AND pt.lpus_category_id IN %s
+                    )
+                ORDER BY sm.raw_material_production_id
+            )
+            SELECT
+                mo,
+                parent_mo,
+                product_code,
+                product,
+                type,
+                quantity,
+                material_cost
+            FROM (
+                SELECT
+                    CONCAT(p1.id) AS seq,
+                    p1.id AS mo, 
+                    p1.parent_mo_id AS parent_mo, 
+                    pp.default_code AS product_code,
+                    p1.product_id AS product,
+                    'Parent' AS type,
+                    p1.product_qty AS quantity,
+                    SUM(PPIMV.debit) AS material_cost
+                FROM mrp_production p1
+                    JOIN PPIMV ON p1.id = PPIMV.mrp_id
+                    JOIN product_product pp ON p1.product_id = pp.id
+                        JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                GROUP BY p1.id, p1.parent_mo_id, pp.default_code, p1.product_id, p1.product_qty
+                UNION
+                SELECT 
+                    CONCAT(p2.parent_mo_id, '-', p2.id) AS seq,
+                    p2.id AS mo, 
+                    p2.parent_mo_id AS parent_mo,
+                    pp.default_code AS product_code,
+                    p2.product_id AS product,
+                    'Child' AS type,
+                    p2.product_qty AS quantity,
+                    SUM(PPIMV.debit) AS material_cost
+                FROM mrp_production p2
+                    JOIN PPIMV ON p2.parent_mo_id = PPIMV.mrp_id AND p2.product_id = PPIMV.product_id
+                    JOIN product_product pp ON p2.product_id = pp.id
+                        JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                GROUP BY p2.id, p2.parent_mo_id, pp.default_code, p2.product_id, p2.product_qty
+            ) AS material_list
+            ORDER BY seq
+        """
+        query_parameter = [account_id, self.date_from, self.date_to, tuple(finished_goods_ids), \
+            tuple(pack_ids)]
+        self._cr.execute(query, query_parameter)
+        data = []
+        for line in self._cr.dictfetchall():
+            mo = MO.browse(line['mo'])
+            parent_mo = MO.browse(line['parent_mo'])
+            product = Product.browse(line['product'])
+            line.update({
+                'mo': mo,
+                'parent_mo': parent_mo,
+                'product': product
+            })
+            data.append(line)
 
-        # Get IDs of all Pack products (→ their MOs are always parent MOs)
-        finished_pack_products_ids = Product.search([('categ_id.id', 'in', finished_goods_ids),
-            ('lpus_category_id.id', 'in', pack_ids)]).ids
+        # mo_domain_common = [
+        #     ('state', '=', 'done'),
+        #     ('date_finished', '>=', self.date_from),
+        #     ('date_finished', '<=', self.date_to),
+        #     ('mo_for_samples', '=', False),
+        # ]
+
+        # # Get IDs of all Pack products (→ their MOs are always parent MOs)
+        # finished_pack_products_ids = Product.search([('categ_id.id', 'in', finished_goods_ids),
+        #     ('lpus_category_id.id', 'in', pack_ids)]).ids
 
         # Find done pack MOs in period (Pack report)
-        mos_pack_products = MO.search([
-            ('product_id', 'in', finished_pack_products_ids),
-        ] + mo_domain_common)
-        # Find their child MOs done in period
-        mos_pack_sub = MO.search([
-            ('parent_mo_id', 'in', mos_pack_products.ids),
-        ] + mo_domain_common)
-        # Concatenate the lists to have both parent and child MOs in one list
-        mos_pack = (mos_pack_products + mos_pack_sub).sorted(key=_mo_sort)
-
-        # WIP ##############################################
-        # Find unfinished pack MOs (WIP Pack report)
-        # mos_wip_products = MO.search([
+        # mos_pack_products = MO.search([
         #     ('product_id', 'in', finished_pack_products_ids),
-        #     ('state', 'not in', ('done', 'cancel')),
-        #     ('create_date', '>=', self.date_from),
-        #     ('create_date', '<=', self.date_to),
-        #     ('mo_for_samples', '=', False),
-        # ])
-        # Find their child MOs done in period
-        # mos_wip_sub = MO.search([
-        #     ('parent_mo_id', 'in', mos_wip_products.ids),
         # ] + mo_domain_common)
-        # Filter out parent MOs with no child MOs done within the period
-        # mos_wip_products = mos_wip_products.filtered(lambda m: m.id in mos_wip_sub.parent_mo_id.ids)
-        # Concatenate the lists to have both parent and child MOs in one list
-        # mos_wip = (mos_wip_products + mos_wip_sub).sorted(key=_mo_sort)
+        # # Find their child MOs done in period
+        # mos_pack_sub = MO.search([
+        #     ('parent_mo_id', 'in', mos_pack_products.ids),
+        # ] + mo_domain_common)
+        # # Concatenate the lists to have both parent and child MOs in one list
+        # mos_pack = (mos_pack_products + mos_pack_sub).sorted(key=_mo_sort)
 
-        data = {
-            'lines_pack': self._get_report_lines(mos_pack),
-            # 'lines_wip_pack': self._get_report_lines(mos_wip, True),
-        }
+        # # WIP ##############################################
+        # # Find unfinished pack MOs (WIP Pack report)
+        # # mos_wip_products = MO.search([
+        # #     ('product_id', 'in', finished_pack_products_ids),
+        # #     ('state', 'not in', ('done', 'cancel')),
+        # #     ('create_date', '>=', self.date_from),
+        # #     ('create_date', '<=', self.date_to),
+        # #     ('mo_for_samples', '=', False),
+        # # ])
+        # # Find their child MOs done in period
+        # # mos_wip_sub = MO.search([
+        # #     ('parent_mo_id', 'in', mos_wip_products.ids),
+        # # ] + mo_domain_common)
+        # # Filter out parent MOs with no child MOs done within the period
+        # # mos_wip_products = mos_wip_products.filtered(lambda m: m.id in mos_wip_sub.parent_mo_id.ids)
+        # # Concatenate the lists to have both parent and child MOs in one list
+        # # mos_wip = (mos_wip_products + mos_wip_sub).sorted(key=_mo_sort)
+
+        # data = {
+        #     'lines_pack': self._get_report_lines(mos_pack),
+        #     # 'lines_wip_pack': self._get_report_lines(mos_wip, True),
+        # }
         return data
 
     def _get_report_lines(self, mos, wip=False):
@@ -799,10 +881,9 @@ class COGSReport(models.Model):
             query = """
                 SELECT
                     SUM(aml.credit)
-                FROM account_move_line aml
-                    JOIN account_move am ON am.id = aml.move_id
-                        JOIN stock_valuation_layer svl ON svl.account_move_id = am.id
-                            JOIN stock_move sm ON sm.id = svl.stock_move_id
+                FROM stock_valuation_layer svl
+                    JOIN stock_move sm ON sm.id = svl.stock_move_id
+                    LEFT JOIN account_move_line aml ON aml.move_id = svl.account_move_id
                 WHERE aml.credit > 0
                     AND svl.quantity > 0
                     AND aml.account_id IN %s
@@ -897,10 +978,11 @@ class COGSReport(models.Model):
     def _get_allocation_value(self, product_id, allocation, cogs=False):
         allocation_value = 0.0
         if product_id and allocation:
-            amount_key = cogs and 'cogs_allocation_by_product' or 'rounding_difference'
+            amount_key = cogs and 'cogs_allocation_by_product' or 'stock_allocation_by_product'
             allocation_lines = allocation.allocation_line_ids.filtered(lambda l: \
-                l.lp_product_id.id == product_id and l[amount_key] != 0.00)
-            allocation_value = allocation_lines and allocation_lines[0][amount_key] or 0.0
+                l.lp_product_id.id == product_id and amount_key in l and l[amount_key] != 0.00)
+            if allocation_lines and amount_key in allocation:
+                allocation_value = allocation_lines[0][amount_key]
         return allocation_value
 
     @api.model
@@ -926,11 +1008,11 @@ class COGSReport(models.Model):
         query = """
             SELECT
                 SUM(ABS(COALESCE(svl.quantity, 0))) AS sold_quantity,
-                SUM(CASE WHEN aml.account_id = %s THEN aml.debit ELSE 0.0 END) AS cogs_value
-            FROM account_move_line aml
-                JOIN account_move am ON am.id = aml.move_id
-                    JOIN stock_valuation_layer svl ON svl.account_move_id = am.id
-                        JOIN stock_move sm ON sm.id = svl.stock_move_id
+                SUM(COALESCE(aml.debit, 0)) AS cogs_value
+            FROM stock_valuation_layer svl
+                JOIN stock_move sm ON sm.id = svl.stock_move_id
+                LEFT JOIN account_move_line aml ON (aml.move_id = svl.account_move_id \
+                    AND aml.account_id = %s)
             WHERE svl.quantity < 0
                 AND svl.create_date BETWEEN %s AND %s
                 AND svl.product_id = %s
@@ -952,18 +1034,17 @@ class COGSReport(models.Model):
         }
         company = self.company_id
         material_categ_ids = company.cogs_report_category_finished_ids
-        account_ids = material_categ_ids.mapped('property_stock_account_output_categ_id').ids
+        account_ids = material_categ_ids.mapped('property_stock_account_input_categ_id').ids
         location_id = company.cogs_pufp_location_id.id
         location_dest_id = company.cogs_pufp_location_dest_id.id
         query = """
             SELECT
-                SUM(abs(COALESCE(svl.quantity, 0))) as used_quantity,
-                SUM(CASE WHEN aml.account_id IN %s THEN aml.debit ELSE 0.0 END) AS consumed_value
-            FROM account_move_line aml
-                JOIN account_move am ON am.id = aml.move_id
-                    JOIN stock_valuation_layer svl ON svl.account_move_id = am.id
-                        JOIN stock_move sm ON sm.id = svl.stock_move_id
-                JOIN account_account acc ON acc.id = aml.account_id
+                SUM(abs(COALESCE(svl.quantity, 0))) as usage_quantity,
+                SUM(COALESCE(aml.debit, 0)) AS consumed_value
+            FROM stock_valuation_layer svl
+                JOIN stock_move sm ON sm.id = svl.stock_move_id
+                    LEFT JOIN account_move_line aml ON (aml.move_id = svl.account_move_id 
+                        AND aml.account_id IN %s)
             WHERE svl.quantity < 0
                 AND svl.create_date BETWEEN %s AND %s
                 AND svl.product_id = %s
