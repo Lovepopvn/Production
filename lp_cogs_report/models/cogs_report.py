@@ -402,7 +402,7 @@ class COGSReport(models.Model):
             ('date_finished', '>=', self.date_from),
             ('date_finished', '<=', self.date_to),
             ('mo_for_samples', '=', False),
-            ('parent_mo_id', '=', False),
+            # ('parent_mo_id', '=', False),
         ])
 
         products = current_mos.mapped('product_id')
@@ -436,12 +436,12 @@ class COGSReport(models.Model):
             initial_quantity = initial_line.ending_quantity
             initial_finished_goods = initial_line.ending_finished_goods
 
-        quantity = sum(mos.filtered(lambda m: not m.parent_mo_id)\
-            .finished_move_line_ids.mapped('qty_done'))
+        quantity = sum(mos.finished_move_line_ids.mapped('qty_done'))
 
         pack_lines_product = [line for line in pack_report_data
             if (line['product'].id == product.id and not line['parent_mo'])]
-        
+        # Filter to get only MO without parent
+        mos = mos.filtered(lambda m: not m.parent_mo_id)        
         material_cost = 0
         if product.lpus_category_id.id in pack_ids:
             material_cost = sum([l['material_cost'] for l in pack_lines_product])
@@ -453,7 +453,8 @@ class COGSReport(models.Model):
         labor_cost_allocation = self._get_allocation_value(product.id, self.labor_cost_id)
         printing_cost_allocation = self._get_allocation_value(product.id, self.click_charge_id)
         general_production_cost = self._get_allocation_value(product.id, self.overhead_cost_id)
-        production_in_month = material_cost + general_production_cost
+        production_in_month = material_cost + direct_labor + printing_cost + labor_cost_allocation \
+            + printing_cost_allocation + general_production_cost
         # mos_sold = mos.filtered(lambda m: m.product_lot_ids 
         #     and m.product_lot_ids[0].delivery_order_id.state == 'done' 
         #     and m.product_lot_ids[0].delivery_order_id.date_done >= self.date_from
@@ -981,7 +982,7 @@ class COGSReport(models.Model):
             amount_key = cogs and 'cogs_allocation_by_product' or 'stock_allocation_by_product'
             allocation_lines = allocation.allocation_line_ids.filtered(lambda l: \
                 l.lp_product_id.id == product_id and amount_key in l and l[amount_key] != 0.00)
-            if allocation_lines and amount_key in allocation:
+            if allocation_lines and amount_key in allocation_lines[0]:
                 allocation_value = allocation_lines[0][amount_key]
         return allocation_value
 
