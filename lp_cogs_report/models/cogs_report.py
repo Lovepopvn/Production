@@ -401,7 +401,7 @@ class COGSReport(models.Model):
             ('state', '=', 'done'),
             ('date_finished', '>=', self.date_from),
             ('date_finished', '<=', self.date_to),
-            ('mo_for_samples', '=', False),
+            # ('mo_for_samples', '=', False),
             # ('parent_mo_id', '=', False),
         ])
 
@@ -440,8 +440,6 @@ class COGSReport(models.Model):
 
         pack_lines_product = [line for line in pack_report_data
             if (line['product'].id == product.id and not line['parent_mo'])]
-        # Filter to get only MO without parent
-        mos = mos.filtered(lambda m: not m.parent_mo_id)        
         material_cost = 0
         if product.lpus_category_id.id in pack_ids:
             material_cost = sum([l['material_cost'] for l in pack_lines_product])
@@ -474,8 +472,8 @@ class COGSReport(models.Model):
         cogs_after_allocation = cogs_value + cogs_general_production_cost
 
         usage_detail_amount = self._get_detail_usage_amount(product.id)
-        usage_quantity = usage_detail_amount.get('usage_quantity')
-        consumed_value = usage_detail_amount.get('consumed_value')
+        usage_quantity = usage_detail_amount.get('usage_quantity') or 0.0
+        consumed_value = usage_detail_amount.get('consumed_value') or 0.0
 
         line_vals = {
             'product_id': product.id,
@@ -501,8 +499,9 @@ class COGSReport(models.Model):
             'cogs_after_allocation': cogs_after_allocation,
             'usage_quantity': usage_quantity,
             'consumed_value': consumed_value,
-            'ending_quantity': initial_quantity + quantity - sold_quantity,
-            'ending_finished_goods': initial_finished_goods + production_in_month - cogs_after_allocation,
+            'ending_quantity': initial_quantity + quantity - sold_quantity - usage_quantity,
+            'ending_finished_goods': initial_finished_goods + production_in_month - \
+                cogs_after_allocation - consumed_value,
         }
         return line_vals
 
@@ -702,7 +701,7 @@ class COGSReport(models.Model):
                                 JOIN product_template pt ON pt.id = pp.product_tmpl_id
                         WHERE 
                             p.state = 'done' 
-                            AND (p.mo_for_samples IS NULL OR p.mo_for_samples IS False)
+                            -- AND (p.mo_for_samples IS NULL OR p.mo_for_samples IS False)
                             AND p.date_finished BETWEEN %s AND %s
                             AND pt.categ_id IN %s
                             AND pt.lpus_category_id IN %s
