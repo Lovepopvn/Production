@@ -744,13 +744,13 @@ class COGSReport(models.Model):
                 FROM mrp_production p2
                     JOIN PPIMV ON p2.parent_mo_id = PPIMV.mrp_id AND p2.product_id = PPIMV.product_id
                     JOIN product_product pp ON p2.product_id = pp.id
-                        JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                        JOIN product_template pt ON pp.product_tmpl_id = pt.id AND pt.categ_id IN %s
                 GROUP BY p2.id, p2.parent_mo_id, pp.default_code, p2.product_id, p2.product_qty
             ) AS material_list
             ORDER BY seq
         """
         query_parameter = [account_id, self.date_from, self.date_to, tuple(finished_goods_ids), \
-            tuple(pack_ids)]
+            tuple(pack_ids), tuple(finished_goods_ids)]
         self._cr.execute(query, query_parameter)
         data = []
         for line in self._cr.dictfetchall():

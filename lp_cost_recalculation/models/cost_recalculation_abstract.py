@@ -598,6 +598,12 @@ class AbstractCostRecalculation(models.AbstractModel):
                     'stock_allocation_by_product': line.rounding_difference - je_amount,
                 })
 
+            # If in a WIP pack, there is still a non-zero rounding difference even in product in pack (has parent MO) → need to compute for all
+            for line in lines_pa:
+                line.write({
+                    'stock_allocation_by_product': line.rounding_difference,
+                })
+
         self.account_move_ids.action_post()
 
 
