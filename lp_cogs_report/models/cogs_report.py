@@ -405,7 +405,11 @@ class COGSReport(models.Model):
             # ('parent_mo_id', '=', False),
         ])
 
-        products = current_mos.mapped('product_id')
+        company = self.env.user.company_id
+        finished_goods_category_ids = company.cogs_report_category_finished_ids
+
+        products = current_mos.mapped('product_id').filtered(lambda p: p.categ_id in \
+            finished_goods_category_ids)
         if self.previous_report_id:
             products |= self.previous_report_id.summary_line_ids.mapped('product_id')
         self._validate_products_categories(products)
