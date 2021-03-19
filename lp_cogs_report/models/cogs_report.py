@@ -455,8 +455,9 @@ class COGSReport(models.Model):
         labor_cost_allocation = self._get_allocation_value(product.id, self.labor_cost_id)
         printing_cost_allocation = self._get_allocation_value(product.id, self.click_charge_id)
         general_production_cost = self._get_allocation_value(product.id, self.overhead_cost_id)
-        production_in_month = material_cost + direct_labor + printing_cost + labor_cost_allocation \
-            + printing_cost_allocation + general_production_cost
+        production_in_month = material_cost + direct_labor + printing_cost \
+            + material_cost_allocation + labor_cost_allocation + printing_cost_allocation \
+                + general_production_cost
         # mos_sold = mos.filtered(lambda m: m.product_lot_ids 
         #     and m.product_lot_ids[0].delivery_order_id.state == 'done' 
         #     and m.product_lot_ids[0].delivery_order_id.date_done >= self.date_from
@@ -473,7 +474,9 @@ class COGSReport(models.Model):
             self.click_charge_id, cogs=True)
         cogs_general_production_cost = self._get_allocation_value(product.id, \
             self.overhead_cost_id, cogs=True)
-        cogs_after_allocation = cogs_value + cogs_general_production_cost
+        cogs_after_allocation = cogs_value + cogs_material_cost_allocation \
+            + cogs_labor_cost_allocation + cogs_printing_cost_allocation \
+                + cogs_general_production_cost
 
         usage_detail_amount = self._get_detail_usage_amount(product.id)
         usage_quantity = usage_detail_amount.get('usage_quantity') or 0.0
