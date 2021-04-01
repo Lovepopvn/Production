@@ -5,7 +5,7 @@
     'website': "https://www.portcities.net",
 
     'category': 'Accounting',
-    'version': '13.0.1.0.0',
+    'version': '13.0.2.0.3',
 
     'depends': [
         'lp_cost_recalculation',

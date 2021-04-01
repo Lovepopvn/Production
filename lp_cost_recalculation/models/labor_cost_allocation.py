@@ -107,7 +107,8 @@ class LaborCostAllocation(models.Model):
 
 
     # @profile('/opt/profiling/labor_cost_compute.profile')
-    def compute_allocation(self):
+    def compute_allocation_old(self):
+        # TODO delete in future iterations
         self.ensure_one_names()
         self._validate_dates()
         self._validate_state()
@@ -155,6 +156,54 @@ class LaborCostAllocation(models.Model):
                 })
                 lines.append((0, 0, line_vals))
             self.write({'allocation_line_ids': lines})
+
+        self._process_allocation_lines()
+        self.write({'state': 'allocation_derived'})
+
+
+    # @profile('/opt/profiling/labor_cost_compute.profile')
+    def compute_allocation(self):
+        self.ensure_one_names()
+        self._validate_dates()
+        self._validate_state()
+        self._validate_journal_company()
+
+        if self.error_to_correct:
+            raise ValidationError(_("You need to input Wrong Input Correction first to make Error To Correct 0."))
+
+        manufacturing_orders = {mo.id: mo for mo in self._get_manufacturing_orders().filtered(lambda l: not l.mo_for_samples)}
+
+        query_str = """
+            SELECT mo_id, wc_id, ll_id, SUM(total_cost) "total_cost"
+            FROM (
+                SELECT mo.id "mo_id", wo.id "wo_id", wc.id "wc_id",
+                    (SELECT id FROM lp_cost_recalculation_labor_cost_gap_line
+                        WHERE labor_cost_allocation_id = %s
+                            AND workcenter_id = wc.id) "ll_id",
+                    SUM(wop.duration) / 60 * wc.costs_hour "total_cost"
+                FROM mrp_production mo
+                LEFT JOIN mrp_workorder wo ON mo.id = wo.production_id
+                LEFT JOIN mrp_workcenter_productivity wop ON wo.id = wop.workorder_id
+                LEFT JOIN mrp_workcenter wc ON wc.id = wo.workcenter_id
+                WHERE wo.state = 'done'
+                    AND mo.state = 'done'
+                    AND mo.date_finished BETWEEN %s AND %s
+                    AND (mo.mo_for_samples = FALSE OR mo.mo_for_samples IS NULL)
+                GROUP BY mo.id, wo.id, wc.id
+            ) a
+            GROUP BY mo_id, wc_id, ll_id
+        """
+        lines = []
+        self.env.cr.execute(query_str, (self.id, self.date_from, self.date_to))
+        for mo_id, wc_id, ll_id, total_cost in self.env.cr.fetchall():
+            line_vals = self._get_allocation_line_vals(manufacturing_orders[mo_id])
+            line_vals.update({
+                'workcenter_id': wc_id,
+                'calculated_cost': total_cost,
+                'delta_line_id': ll_id,
+            })
+            lines.append((0, 0, line_vals))
+        self.write({'allocation_line_ids': lines})
 
         self._process_allocation_lines()
         self.write({'state': 'allocation_derived'})
