@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    	 <menuitem name="Overtime"
+            id="overtime_management_main_menu"
+            sequence="10" 
+				/>        
+        
+        <menuitem
+            id= "overtime_managment_main_submenu"
+            parent= "overtime_management_main_menu"
+            sequence= "1"
+            name= "Overtime"
+            /> 
+            
+        <record id="bt_overtime_management_tree" model="ir.ui.view">
+            <field name="name">bt.hr.overtime.tree</field>
+            <field name="model">bt.hr.overtime</field>
+            <field name="arch" type="xml">
+                <tree string="Overtime">
+                	<field name="employee_id"/>
+                	<field name="manager_id"/>
+                	<field name="start_date"/>
+                    <field name="overtime_hours"/>
+                </tree>
+            </field>
+         </record>
+         
+         <record id="bt_overtime_management_search" model="ir.ui.view">
+            <field name="name">bt.hr.overtime.search</field>
+            <field name="model">bt.hr.overtime</field>
+            <field name="arch" type="xml">
+                <search string="Overtime">
+                	<field name="employee_id"/>
+                	<field name="manager_id"/>
+                	<field name="start_date"/>
+                	<separator/>
+                	 <group expand="1" string="Group By">
+                	 	<filter string="Employee" name="employee_id" context="{'group_by':'employee_id'}"/>
+                	 	<filter string="Manager" name="manager_id" context="{'group_by':'manager_id'}"/>
+                	 	<filter string="Date" name="start_date" context="{'group_by':'start_date'}"/>
+                	 	<filter string="State" name="state" context="{'group_by':'state'}"/>
+                	 </group>
+                </search>
+            </field>
+         </record>  
+         
+          <record id="bt_overtime_management_form" model="ir.ui.view">
+            <field name="name">bt.hr.overtime.form</field>
+            <field name="model">bt.hr.overtime</field>
+            <field name="arch" type="xml">
+                <form string="Overtime">
+                <header>
+                	<button name="action_submit" type="object" string="Submit" groups="base.group_user" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                	<button name="action_cancel" type="object" string="Cancel" groups="base.group_user,hr.group_hr_manager" attrs="{'invisible':[('state', '!=', 'confirm')]}"/>
+                	<button name="action_approve" type="object" string="Approve" groups="hr.group_hr_manager" attrs="{'invisible':[('state', '!=', 'confirm')]}"/>
+                	<button name="action_refuse" type="object" string="Refuse" groups="hr.group_hr_manager" attrs="{'invisible':[('state', '!=', 'confirm')]}"/>
+                	<field name="state" widget="statusbar" statusbar_visible="draft,confirm,refuse,validate,cancel"/>
+                </header>
+               	<sheet>
+               		<div class="oe_button_box" name="button_box">
+                        <button name="action_view_attendance" type="object" 
+                        class="oe_stat_button" icon="fa-user" string="Attendance">
+                        </button>
+                    </div>
+                	<group>
+                    	<group>
+                    		<field name="employee_id" required="True" readonly="1"/>
+                			<field name="manager_id" readonly="1"/>
+                    	</group>
+                    	<group>
+                    		<field name="start_date" readonly="1"/>
+                    		<field name="overtime_hours" readonly="1" />
+                   			<field name="attendance_id" invisible="1"/>
+                    	</group>
+                    </group>
+                   <notebook>
+                   		<page string="Notes">
+                   			<field name="notes"/>
+                   		</page>
+                   </notebook>
+               	</sheet>
+               </form>
+            </field>
+          </record> 
+          
+          <record id="action_bt_overtime_management" model="ir.actions.act_window">
+	            <field name="name">Overtime</field>
+	            <field name="type">ir.actions.act_window</field>
+	            <field name="res_model">bt.hr.overtime</field>	            
+	            <field name="view_mode">tree,form</field>
+	            <field name="search_view_id" ref="bt_overtime_management_search"/>
+	            <field name="help" type="html">
+	                <p class="oe_view_nocontent_create">
+	                    Create Overtime Request
+	                </p>
+	            </field>
+	        </record>
+	        
+	        <menuitem action="action_bt_overtime_management" name="Overtime Records"
+	            id="menu_action_bt_overtime_management" parent="overtime_managment_main_submenu"
+	            sequence="1"/> 
+	            
+<!--  Inherits HR Contract View-->
+			<record id="hr_contract_view_form2" model="ir.ui.view">
+	            <field name="name">hr.contract.form2</field>
+	            <field name="model">hr.contract</field>
+	            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+	            <field name="arch" type="xml">
+	            	<data>
+	            		<xpath expr="//field[@name='hr_responsible_id']" position="before">
+	            			<field name="work_hours"/>
+	            		</xpath>
+	            	</data>
+	            </field>
+	        </record>    
+            
+<!-- Inherits HR Attendance View -->
+			
+			<record id="hr_attendance_view_form2" model="ir.ui.view">
+	            <field name="name">hr.attendance.form2</field>
+	            <field name="model">hr.attendance</field>
+	            <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+	            <field name="arch" type="xml">
+	                <data>
+	                	<xpath expr="//field[@name='check_out']" position="after">
+	                		<field name="overtime_created" invisible="1"/>
+	                	</xpath>
+	                </data>
+	            </field>
+            </record>
+		
+	</data>
+</odoo>

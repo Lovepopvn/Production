@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   	 <record id="ir_cron_scheduler_overtime" model="ir.cron">
+         <field name="name">Run Overtime Scheduler</field>
+         <field name="model_id" ref="model_bt_hr_overtime"/>
+         <field name="state">code</field>
+         <field name="code">model.run_overtime_scheduler()</field>
+         <field name="interval_number">1</field>
+         <field name="interval_type">days</field>
+         <field name="numbercall">-1</field>
+         <field name="doall" eval="False"/>
+    </record>
+</odoo>
