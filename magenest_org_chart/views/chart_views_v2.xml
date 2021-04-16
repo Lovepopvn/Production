@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="assets_backend" name="Org Chart Department assets"
+                  inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script src="/org_chart_organization/static/js/jquery.orgchart.js"></script>
+                <!--                <script src="/org_chart_organization/static/js/jquery.min.js"></script>-->
+                <script src="/org_chart_organization/static/js/org_chart_employee_v2.js"></script>
+                <script src="/org_chart_organization/static/js/org_chart_department_v2.js"></script>
+                <script src="/org_chart_organization/static/js/html2canvas.js"></script>
+                <script src="/org_chart_organization/static/js/jspdf.min.js"></script>
+
+                <!--                <script src="/org_chart_organization/static/js/org_chart_employee.js"></script>-->
+            </xpath>
+        </template>
+
+        <menuitem id="menu_org_chart_v2"
+                  name="Chart V2"
+                  parent="hr.menu_hr_root"
+                  sequence="5"/>
+
+        <record id="action_org_chart_department_v2" model="ir.actions.client">
+            <field name="name">Department Chart V2</field>
+            <field name="tag">org_chart_department_v2</field>
+        </record>
+
+        <menuitem id="menu_org_chart_department_2"
+                  name="Department Chart 2"
+                  action="action_org_chart_department_v2"
+                  parent="menu_org_chart_v2"
+                  sequence="0"/>
+
+        <record id="action_org_chart_employee_v2" model="ir.actions.client">
+            <field name="name">Employee Chart V2</field>
+            <field name="tag">org_chart_employee_v2</field>
+        </record>
+
+        <menuitem id="menu_org_chart_employee_2"
+                  name="Employee Chart 2"
+                  action="action_org_chart_employee_v2"
+                  parent="menu_org_chart_v2"
+                  sequence="0"/>
+
+    </data>
+</odoo>

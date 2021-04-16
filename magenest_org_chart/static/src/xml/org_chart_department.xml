@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="org_chart_organization.get_org_chart_template">
+        <div id="departments"></div>
+        <script src="/org_chart_organization/static/js/get_department_org_chart.js"></script>
+    </t>
+</templates>

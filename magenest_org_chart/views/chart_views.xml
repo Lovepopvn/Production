@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="assets_backend" name="Org Chart Department assets"
+                  inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script src="/org_chart_organization/static/js/orgchart.js"></script>
+                <script src="/org_chart_organization/static/js/org_chart_department.js"></script>
+                <script src="/org_chart_organization/static/js/org_chart_employee.js"></script>
+            </xpath>
+        </template>
+
+        <menuitem id="menu_org_chart"
+                  name="Chart"
+                  parent="hr.menu_hr_root"
+                  sequence="4"/>
+
+        <record id="action_org_chart_department" model="ir.actions.client">
+            <field name="name">Department Chart</field>
+            <field name="tag">org_chart_department</field>
+        </record>
+
+        <menuitem id="menu_org_chart_department"
+                  name="Department Chart"
+                  action="action_org_chart_department"
+                  parent="menu_org_chart"
+                  sequence="0"/>
+
+        <record id="action_org_chart_employee" model="ir.actions.client">
+            <field name="name">Employee Chart</field>
+            <field name="tag">org_chart_employee</field>
+        </record>
+
+        <menuitem id="menu_org_chart_employee"
+                  name="Employee Chart"
+                  action="action_org_chart_employee"
+                  parent="menu_org_chart"
+                  sequence="1"/>
+    </data>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="org_chart_organization.get_org_chart_department_template">
+        <link rel="stylesheet" href="/org_chart_organization/static/css/jquery.orgchart.css"/>
+        <link rel="stylesheet" href="/org_chart_organization/static/css/style.css"/>
+        <style type="text/css">
+    .orgchart { background: #fff; }
+  </style>
+        <div id="chart-container" style="min-height: 700px;"></div>
+        <script type="text/javascript" src="/org_chart_organization/static/js/jquery.orgchart.js"></script>
+        <script type="text/javascript">
+            setTimeout(function () {
+    $('#chart-container').orgchart({
+        'data': department_data,
+        'nodeContent': 'title',
+        'pan': true,
+        'zoom': true,
+        'exportButton': true,
+        'exportFilename': 'MyOrgChart',
+        'exportFileextension': 'pdf'
+    });
+}, 1500);
+  </script>
+    </t>
+</templates>
